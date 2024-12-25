@@ -5,16 +5,16 @@ import reportWebVitals from './reportWebVitals';
 import './index.css';
 import { Provider } from 'react-redux';
 import store from './redux/store';
-import { ThemeProvider } from "@material-tailwind/react";
+// import { ThemeProvider } from "@material-tailwind/react";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
 
     <Provider store={store}>
-      <ThemeProvider>
+      {/* <ThemeProvider> */}
       <App />
-      </ThemeProvider>
+      {/* </ThemeProvider> */}
     </Provider>
   
 );

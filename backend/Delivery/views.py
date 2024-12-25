@@ -15,14 +15,18 @@ from  django.core.exceptions  import ObjectDoesNotExist
 from rest_framework.decorators import api_view
 from users.serializers import UserSerializer
 from django.utils.timezone import now
+from rest_framework.parsers import MultiPartParser, FormParser
+import json
 
 
 User = get_user_model()
 
 
 class RequestDelivery(APIView):
+
     def post(self,request):
         data = request.data
+        print(data)
         serializer = DeliverySerializers(data =data, context={'request': request})
         if serializer.is_valid():
             print('delivery valid')
@@ -31,8 +35,27 @@ class RequestDelivery(APIView):
             print(data.id,'deliveryy idddddddddddddddddd')
             return Response({"delivery_id":delivery_id},status=status.HTTP_200_OK)
         print(serializer.errors)
+    
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     
+
+# class RequestDelivery(APIView):
+#     def post(self, request):
+#         data = request.data
+#         print("Incoming data:", data)
+#         serializer = DeliverySerializers(data=data, context={'request': request})
+        
+#         if serializer.is_valid():
+#             print('Delivery valid')
+#             delivery_instance = serializer.save()
+#             return Response({"delivery_id": delivery_instance.id}, status=status.HTTP_200_OK)
+        
+#         print(serializer.errors)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 class DeliveryList(APIView):
     def get(self, request):
         print('helloooo')

@@ -7,7 +7,7 @@ from users.models import CustomUser
 class AddressesSerializers(serializers.ModelSerializer):
     class Meta:
         model = Addresses
-        fields = ['id','address_line_1','address_line_2','city','state','postal_code','country','latitude','longitude','point']
+        fields = ['id','address_line_1','address_line_2','city','state','postal_code','country','latitude','longitude']
 
 
 
@@ -16,20 +16,17 @@ class DeliverySerializers(serializers.ModelSerializer):
     from_address = AddressesSerializers()
     to_address = AddressesSerializers()
     courier = serializers.PrimaryKeyRelatedField(queryset=Courier.objects.all(), required=False, allow_null=True)
+    # image = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model= Delivery
-        fields = ['id', 'user','from_address','to_address','package_size','courier','status','delivered_at','picked_upat','created_at','updated_at','is_pickedup','pickup_otp','dropoff_otp','is_completed']
+        fields = ['id', 'user','from_address','to_address','package_size','courier','status','delivered_at','picked_upat','created_at','updated_at','is_pickedup','pickup_otp','dropoff_otp','is_completed','length','width','height','weight']
 
     def create(self, validated_data):
         # Extract the nested address data
         from_address_data = validated_data.pop('from_address')
         to_address_data = validated_data.pop('to_address')
-        # user = self.context['request'].user  # Access the user from the request context
-        # userr = CustomUser.objects.filter(id=user.id).first()
-        # validated_data['user'] = userr 
-
-        # Create the address objects
+      
        
 
         from_address = Addresses.objects.create(**from_address_data)
@@ -44,6 +41,8 @@ class DeliverySerializers(serializers.ModelSerializer):
         )
 
         return delivery
+    
+    
     
 
 class CourierSerializer(serializers.ModelSerializer):

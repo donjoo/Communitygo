@@ -95,6 +95,13 @@ function DeliveryDetails() {
                 <p>
                   <strong>Size:</strong> {delivery.package_size}
                 </p>
+                <p><strong>Dimensions:</strong> 
+                  <span id="length"></span> {delivery.length}cm (Length), 
+                  <span id="width"></span> {delivery.width}cm (Width), 
+                  <span id="height"></span>{delivery.height} cm (Height), 
+                  
+                </p>
+                <p><span id="weight"></span> {delivery.weight}kg (Weight)</p>
                 <p>
                   <strong>Status:</strong> {delivery.status}
                 </p>

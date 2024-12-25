@@ -5,7 +5,7 @@ from django.contrib.gis.geos import Point
 
 
 
-class Addresses(models.Model):
+class Addresses(gis_models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,related_name='address',default=1)
     address_line_1 = models.CharField(max_length=225)
     address_line_2 = models.CharField(max_length=225,blank=True,null=True)
@@ -15,13 +15,12 @@ class Addresses(models.Model):
     country        = models.CharField(max_length=100,default='India')
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
-    point = gis_models.PointField(geography=True, srid=4326, null=True, blank=True)
 
-    def save(self, *args, **kwargs):
-        # Automatically set the PointField if latitude and longitude are provided
-        if self.latitude and self.longitude:
-            self.point = Point(self.longitude, self.latitude)
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # Automatically set the PointField if latitude and longitude are provided
+    #     if self.latitude and self.longitude:
+    #         self.point = Point(self.longitude, self.latitude)
+    #     super().save(*args, **kwargs)
 
 
 
@@ -58,6 +57,7 @@ class Delivery(models.Model):
     # courier     = models.ForeignKey(Courier, on_delete=models.SET_NULL, null=True,blank=True, related_name='assigned_deliveries')
     courier     = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True,blank=True, related_name='assigned_courier',default=None)
     status = models.CharField(max_length=12, choices=DELIVERY_STATUS, default='PENDING')
+    image = models.ImageField(upload_to='package_images/', null=True, blank=True)
     pickup_otp = models.CharField(max_length=4,null=True, blank=True)
     dropoff_otp = models.CharField(max_length=4,null=True,blank=True)
     delivered_at = models.DateTimeField(null=True,blank=True)
@@ -66,6 +66,11 @@ class Delivery(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     is_completed = models.BooleanField(default=False)
     is_pickedup = models.BooleanField(default=False)
+    length = models.FloatField(null=True, blank=True)  # Length of the package in cm
+    width = models.FloatField(null=True, blank=True)   # Width of the package in cm
+    height = models.FloatField(null=True, blank=True)  # Height of the package in cm
+    weight = models.FloatField(null=True, blank=True)  # Weight in kg
+
 
 
     def __str__(self):

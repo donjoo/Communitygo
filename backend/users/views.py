@@ -15,7 +15,6 @@ from django.contrib.auth import authenticate
 from .serializers import UserProfileSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
-
 User = get_user_model()
 
 class SignupView(APIView):
@@ -78,6 +77,9 @@ class UserProfileView(APIView):
 
     def get(self, request, *args,**kwargs):
         try:
+
+   
+           
             user = User.objects.get(id=request.user.id)
             deliveries = Delivery.objects.filter(user=user)
             couriers = Courier.objects.filter(user=user)
