@@ -231,6 +231,7 @@ function Usermanagement() {
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">email verified</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
@@ -242,6 +243,7 @@ function Usermanagement() {
               <td  onClick={() => navigate(`/user/${user.id}`)} className="px-6 py-4 whitespace-nowrap">{user.first_name}</td>
               <td  onClick={() => navigate(`/user/${user.id}`)} className="px-6 py-4 whitespace-nowrap">{user.email}</td>
               <td className="px-6 py-4 whitespace-nowrap">{user.username}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{user.email_verified ? 'Yes' : 'No'}</td>
               {/* </Link> */}
               <td className="px-6 py-4 whitespace-nowrap">
              

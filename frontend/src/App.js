@@ -23,6 +23,7 @@ import Navigation from "./components/map/Navigation";
 import Dropofflocation from "./pages/Delivery/Courier/Dropofflocation";
 import CourierCompleted from "./pages/Delivery/Courier/Delivery_complete";
 import AdminDeliveryDetails from "./pages/Admin/AdminDeliverydetails";
+import VerifyOtp from "./pages/User/VerifyOtp";
 
 
 function Signin(){
@@ -52,6 +53,7 @@ function App() {
 
         <Route path="/login" element={<Signin />} />
         <Route path="/register" element={<RegisterAndLogout />} />
+        <Route path='/verifyotp' element={< VerifyOtp />} />
         <Route path="/" element={<Home />}/>
         <Route path="/logout" element={<Logout />} /> {/* Redirects and clears localStorage */}     
         <Route path="/request-delivery" element={<RequestDelivery />} />

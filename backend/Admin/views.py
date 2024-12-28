@@ -72,7 +72,7 @@ class UserList(APIView):
 
     def get(self,request):
     
-            users = User.objects.filter(is_superadmin=False,is_deleted = False)
+            users = User.objects.filter(is_superadmin=False,is_deleted = False).order_by('-id') 
             user_serializer = UserSerializer(users,many=True)
 
             return Response({
@@ -85,7 +85,12 @@ class DeliveryList(APIView):
     permission_classes =[IsAuthenticated,IsAdminUser]
 
     def get(self,request):
-        deliveries = Delivery.objects.all()
+        filter_status = request.query_params.get('filter', None)  # Get filter from query params
+        print(filter_status)
+        if filter_status:
+            deliveries = Delivery.objects.filter(status=filter_status).order_by('-created_at') 
+        else:
+            deliveries = Delivery.objects.all().order_by('-created_at') 
         delivery_serializer = DeliverySerializers(deliveries,many=True)
 
         return Response({

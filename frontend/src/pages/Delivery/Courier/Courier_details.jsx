@@ -13,6 +13,11 @@ function CourierDetails() {
   const [loading, setLoading] = useState(true);
   const [user,setUser] = useState(null);
   const navigate = useNavigate()
+  const [pickupTime, setPickupTime] = useState('');
+  const [dropoffTime,setDropoffTime] = useState('');
+  const [showForm, setShowForm] = useState(false);  // State to toggle the form visibility
+
+  
 
 
   useEffect(() => {
@@ -37,7 +42,21 @@ function CourierDetails() {
   }, [deliveryId]);
 
 
-
+  const handletimeSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post('update_time/',{
+        deliveryId:deliveryId,
+        est_pickup:pickupTime,
+        est_dropoff:dropoffTime,
+      });
+    } catch (error) {
+      console.error('couldnt update time')
+    }
+    console.log("Estimated Pick-Up Time:", pickupTime);
+ 
+    setShowForm(false);
+  };
 
 
   // Show loading state
@@ -65,7 +84,7 @@ function CourierDetails() {
             <div className="flex flex-col md:flex-row justify-between gap-3">
               {/* Right Section: Delivery Details (Equal Height) */}
               <div className="w-full md:w-1/3 min-h-[400px] space-y-4">
-                <div className="bg-white p-4 rounded-lg shadow-lg h-full">
+                <div className="bg-white p-4 rounded-lg shadow-lg h-full relative">
                   <h2 className="text-xl font-semibold text-gray-800 mb-4">Delivery Details</h2>
                   <div className="grid gap-3">
                     <div>
@@ -78,10 +97,70 @@ function CourierDetails() {
                   </div>
                   <div className="mt-3">
                     <p className="text-lg text-gray-600"><strong>Status:</strong> {delivery?.status}</p>
+                    {delivery.delivered_at ? (
                     <p className="text-lg text-gray-600"><strong>Delivery Time:</strong> {formatDate(delivery?.delivered_at)}</p>
+                  ):('')}
                   </div>
-                  
-                  {courier?.rating != null ? (
+                  {!delivery.est_pickup?(
+                  <div className="absolute bottom-4 left-4">
+      {/* Button to open the form */}
+
+
+      <button
+        onClick={() => setShowForm(!showForm)} // Toggle form visibility
+        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+      >
+        {showForm ? "Close Form" : "Enter Estimated Pick-Up Time"}
+      </button>
+
+      {/* Conditionally render the form based on state */}
+      {showForm && (
+        <form onSubmit={handletimeSubmit} className="flex flex-col space-y-4 p-4 bg-gray-100 rounded-md shadow-md w-72 mt-4">
+          <label htmlFor="pickupTime" className="text-sm font-medium text-gray-700">
+            Estimated Pick-Up Time
+          </label>
+          <input
+            id="pickupTime"
+            type="time"
+            value={pickupTime}
+            onChange={(e) => setPickupTime(e.target.value)}
+            className="p-2 border rounded-md"
+            required
+          />
+
+
+          <label htmlFor="pickupTime" className="text-sm font-medium text-gray-700">
+            Estimated drop off Time
+          </label>
+          <input
+            id="dropoffTime"
+            type="time"
+            value={dropoffTime}
+            onChange={(e) => setDropoffTime(e.target.value)}
+            className="p-2 border rounded-md"
+            required
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+          >
+            Submit
+          </button>
+        </form>
+      )}
+    </div>
+  ):(
+<div>
+<p className="text-lg text-gray-600">
+  <strong>Estimated pick up time:</strong> {delivery?.est_pickup ? new Date(delivery.est_pickup).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+</p>
+<p className="text-lg text-gray-600">
+  <strong>Estimated delivery time:</strong> {delivery?.est_dropoff ? new Date(delivery.est_dropoff).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+</p>
+
+    </div>
+  )}
+                  {courier?.rating >0 ? (
                     <p className="text-yellow-500 flex items-center">
                       <span className="mr-2">Rating:</span>
                       {courier.rating}
@@ -93,7 +172,7 @@ function CourierDetails() {
                       </span>
                     </p>
                   ) : (
-                    <p className="text-gray-600">No rating available</p>
+                    <p className="text-gray-600"></p>
                   )}
                 </div>
               </div>
@@ -107,8 +186,9 @@ function CourierDetails() {
                     <p className="text-lg text-gray-600 mt-2">
                       {delivery?.from_address?.city}, {delivery?.from_address?.state}
                     </p>
+                    {delivery.picked_upat? (
                     <p className="text-lg text-gray-600 mt-2"><strong>Pickup Time:</strong> {formatDate(delivery?.picked_upat)}</p>
-
+                  ):('')}
                     {/* Styled Button */}
                     {delivery.is_pickedup ? (<div  className="absolute bottom-4 right-4">Pickup Completed</div>) : (
                     <button onClick={()=>navigate(`/pickuplocation/${deliveryId}`)}    className="absolute bottom-4 right-4 bg-orange-500 text-white px-4 py-2 rounded-full shadow-md hover:bg-orange-600 focus:outline-none">

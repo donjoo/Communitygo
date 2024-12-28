@@ -125,7 +125,9 @@ const Register = () => {
             password: formData.password,
           });
 
-          navigate('/login',{replace:true});
+          navigate('/verifyotp', {
+            state: { email: formData.email },
+          });
         }catch (error) {
           console.error('Signup failed:' , error);
           setErr("Signup Failed")

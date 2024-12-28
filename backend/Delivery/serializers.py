@@ -20,7 +20,7 @@ class DeliverySerializers(serializers.ModelSerializer):
 
     class Meta:
         model= Delivery
-        fields = ['id', 'user','from_address','to_address','package_size','courier','status','delivered_at','picked_upat','created_at','updated_at','is_pickedup','pickup_otp','dropoff_otp','is_completed','length','width','height','weight']
+        fields = ['id', 'user','from_address','to_address','package_size','courier','status','delivered_at','picked_upat','created_at','updated_at','is_pickedup','pickup_otp','dropoff_otp','is_completed','length','width','height','weight', 'est_pickup', 'est_dropoff']
 
     def create(self, validated_data):
         # Extract the nested address data
@@ -42,7 +42,16 @@ class DeliverySerializers(serializers.ModelSerializer):
 
         return delivery
     
-    
+class UpdateDeliveryTimeSerializer(serializers.Serializer):
+    deliveryId = serializers.IntegerField(required=True)
+    est_pickup = serializers.DateTimeField(required=True)
+    est_dropoff = serializers.DateTimeField(required=True)
+
+
+    class Meta:
+        model = Delivery
+        fields = ['est_pickup', 'est_dropoff']
+
     
 
 class CourierSerializer(serializers.ModelSerializer):

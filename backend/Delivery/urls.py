@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RequestDelivery,DeliveryList,DeliverySearch,AcceptDelivery,DeliveryDetailView,Courier_details,Rate_courier,Courier_completed,courier_currlocation,Pickedup_StatusUpdate,verify_otp
+from .views import RequestDelivery,DeliveryList,DeliverySearch,AcceptDelivery,UpdateTime,DeliveryDetailView,Courier_details,Rate_courier,Courier_completed,courier_currlocation,Pickedup_StatusUpdate,verify_otp
 
 app_name='Delivery'
 
@@ -14,7 +14,8 @@ urlpatterns = [
     path('<int:delivery_id>/picked_up/',Pickedup_StatusUpdate,name='pickedup_status'),
     path('<int:delivery_id>/verify-otp/',verify_otp,name='verify_otp'),
     path('<int:delivery_id>/couriercompleted/',Courier_completed,name='courier_completed'),
-    path('<int:courier_id>/ratecourier',Rate_courier,name='courier_rating'),
+    path('<int:courier_id>/ratecourier/',Rate_courier,name='courier_rating'),
+    path('update_time/',UpdateTime.as_view(),name='deliverytime_update')
 
 
 ]

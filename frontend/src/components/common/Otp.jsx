@@ -66,7 +66,7 @@ const OtpCard = () => {
       }
     } catch (error) {
       console.error("Error verifying OTP:", error);
-      setMessage("An error occurred. Please try again later.");
+      setMessage("Invalid OTP. Please try again");
     }
   };
 

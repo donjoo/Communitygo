@@ -34,7 +34,7 @@ function DeliveryDetails() {
 
   const handleRatingSubmit = async (rating) => {
     try {
-     const response =  await api.post(`/rating/${courier.id}`, { rating });
+     const response =  await api.post(`${courier.id}/ratecourier/`, { rating });
      if (response.status === 200) {
             alert("Rating submitted successfully!");
             setCourier((prevCourier) => ({

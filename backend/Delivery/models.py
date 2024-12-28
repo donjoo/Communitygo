@@ -70,6 +70,9 @@ class Delivery(models.Model):
     width = models.FloatField(null=True, blank=True)   # Width of the package in cm
     height = models.FloatField(null=True, blank=True)  # Height of the package in cm
     weight = models.FloatField(null=True, blank=True)  # Weight in kg
+    est_pickup = models.DateTimeField(null=True,blank=True)
+    est_dropoff = models.DateTimeField(null=True,blank=True)
+    
 
 
 

@@ -16,6 +16,8 @@ function DeliveryManagement() {
     const [deliveries, setDeliveries] = useState([]);
     const [error,setError]    = useState(null);
     const user = useSelector((state) => state.auth.user);
+    const [selectedStatus, setSelectedStatus] = useState("");
+
     const [statuses] = useState([
         "PENDING",
         "ASSIGNED",
@@ -44,7 +46,10 @@ function DeliveryManagement() {
 
     const fetchDeliveries = async () => {
         try {
-            const response = await adminAxiosInstance.get('deliverylist/');
+
+             const params = selectedStatus ? { filter: selectedStatus } : {};
+
+            const response = await adminAxiosInstance.get('deliverylist/',{params});
 
             if (response.data){
                 setDeliveries(response.data.deliveries); 
@@ -56,7 +61,19 @@ function DeliveryManagement() {
         }
     };
 
-    
+    const handleFiltersChange = (event) => {
+      try{
+      const selected = event.target.value;
+      setSelectedStatus(selected)
+   // Filter deliveries by selected status
+      }catch (error) {
+        console.log('couldnt filter')
+      }
+     
+    };
+
+
+
     const handleStatusChange = async (deliveryId, newStatus) => {
         try {
           const response = await adminAxiosInstance.patch(
@@ -72,9 +89,11 @@ function DeliveryManagement() {
           alert("Failed to update status");
         }
       };
+
+
     useEffect(() => {
         fetchDeliveries()
-    },[])
+    },[selectedStatus])
 
 
 
@@ -84,7 +103,22 @@ function DeliveryManagement() {
     <div className="container mx-auto p-4">
     <h1 className="text-2xl font-bold mb-4">Delivery Management</h1>
     
-   
+    <div className="flex items-center space-x-2 mb-6">
+        <label htmlFor="status">Filter by Status:</label>
+        <select
+          id="status"
+          value={selectedStatus}
+          onChange={handleFiltersChange}
+          className="px-4 py-2 border rounded-md text-lg"
+        >
+          <option value="">All</option>
+          {statuses.map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
+      </div>
 
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white">

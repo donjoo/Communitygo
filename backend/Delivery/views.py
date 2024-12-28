@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import DeliverySerializers, CourierSerializer
+from .serializers import DeliverySerializers, CourierSerializer,UpdateDeliveryTimeSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import status
@@ -17,12 +17,27 @@ from users.serializers import UserSerializer
 from django.utils.timezone import now
 from rest_framework.parsers import MultiPartParser, FormParser
 import json
+from rest_framework.permissions import BasePermission
+from rest_framework.exceptions import PermissionDenied
+from datetime import datetime
 
 
 User = get_user_model()
 
 
+class IsEmailVerified(BasePermission):
+    def has_permission(self, request, view):
+        if not request.user.is_authenticated:
+            return False  # DRF will handle unauthenticated users with 401
+        if not request.user.email_verified:
+            return False
+        return True
+
+
+
+
 class RequestDelivery(APIView):
+    permission_classes = [IsEmailVerified]
 
     def post(self,request):
         data = request.data
@@ -53,7 +68,43 @@ class RequestDelivery(APIView):
 #         print(serializer.errors)
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class UpdateTime(APIView):
+    def post(self, request):
+        data = request.data
+        print(data)
+        today = datetime.now().date()
+        try:
+            if 'est_pickup' in data:
+                data['est_pickup'] = f"{today}T{data['est_pickup']}:00"
+            if 'est_dropoff' in data:
+                data['est_dropoff'] = f"{today}T{data['est_dropoff']}:00"
+        except Exception as e:
+            return Response({'error': 'Invalid time format'}, status=status.HTTP_400_BAD_REQUEST)
+        serializer = UpdateDeliveryTimeSerializer(data=data)
+        
+        if serializer.is_valid():
+            try:
 
+                
+                # Retrieve the delivery object using the provided deliveryId
+                delivery = Delivery.objects.get(id=serializer.validated_data['deliveryId'])
+                
+                # Update the estimated pickup and dropoff times
+                delivery.est_pickup = serializer.validated_data['est_pickup']
+                delivery.est_dropoff = serializer.validated_data['est_dropoff']
+                
+                # Save the updated delivery object
+                delivery.save()
+                
+                # Return a success response
+                return Response({"message": "Estimated times updated successfully."}, status=status.HTTP_200_OK)
+            
+            except Delivery.DoesNotExist:
+                return Response({"error": "Delivery not found."}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Return validation errors if the serializer is not valid
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DeliveryList(APIView):
@@ -78,6 +129,8 @@ class DeliveryList(APIView):
             return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class DeliverySearch(APIView):
+    permission_classes = [IsEmailVerified]
+
     def get(self,request):
         deliveries = Delivery.objects.filter(status = 'PENDING').exclude(user=request.user)
         if deliveries.exists():
@@ -93,7 +146,7 @@ def generate_otp():
     return otp
 
 class AcceptDelivery(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated,IsEmailVerified]
 
     def post(self, request, delivery_id):
         print(delivery_id,'dleiveryyryyryr')

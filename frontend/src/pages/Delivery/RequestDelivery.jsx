@@ -242,6 +242,9 @@ export default function DeliveryPage() {
             details: '',
           });
         } else {
+          if (response.status == 403) {
+            console.log('email not verified')
+          }
           alert('Failed to submit delivery request. Please try again.');
         }
       } catch (error) {

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react'
 import api from '../../api'
 import UserProfile from '../../components/common/UserProfile';
@@ -14,6 +14,7 @@ export default function Profile() {
   const [error, setError] = useState();
   const [deliveries, setDeliveries] = useState(null)
   const [couriers,setCouriers] = useState(null)
+  const navigate = useNavigate()
   
   useEffect(() => {
     const fetchprofile = async () => {
@@ -61,42 +62,94 @@ export default function Profile() {
   }
 
 
+  const handlemailverify = async (e) =>{
+    e.preventDefault();
+    try {
+      const response = await api.post('resend_otp/',{
+        email:user.email,
+      });
+      if (response.status >= 200 && response.status < 300){
+        navigate('/verifyotp', {
+          state: { email: user.email },
+        });
+      }
+    }catch (error){
+      console.log('email varification failed')
+    }
+   
+  }
+
+ 
+
+
   return (
     <>
     <Navbar />
         < UserProfile user={user} deliveries={deliveries}/>
-        {/* <div className="px-6 py-4 bg-gray-200 dark:bg-gray-700">
-          <Link href="/profile/edit" className="block w-full py-2 px-4 bg-orange-500 text-white text-center rounded-md hover:bg-orange-600 transition-colors">
-            Edit Profile
-          </Link>
-        </div> */}
 
+
+{user.email_verified ? (''):(
+        <div className="mt-4 text-left pl-4">
+          <p  className=" text-gray-600 font-semibold py-4">Your email is not verified, verify to use our services.</p>
+      <button
+        className="px-6 py-2 bg-blue-600 text-white rounded-md"
+        onClick={handlemailverify}
+      >
+        Verify Email
+      </button>
+    </div>
+
+)}
+        
 
 <section className="mt-10">
+{deliveries.length > 0 ? (
+      <>
   <div className="bg-white shadow-md rounded-lg">
     {/* Heading */}
+
+   
     <h1 className="text-2xl font-semibold text-white bg-orange-600 rounded-t-lg px-6 py-4">
       My Requested Deliveries
     </h1>
 
     {/* Table */}
     <div className="p-4">
-      <Deliverylist deliveries={deliveries} />
+    
+            <Deliverylist deliveries={deliveries} />
+         
     </div>
-  </div>
+    </div>
+    </>
+     ) : (
+      <p className="text-center text-gray-600 font-semibold py-4">You haven't requested any deliveries yet.</p>
+    )}
+ 
+  
 </section>
 <section className="mt-10">
+{couriers.length > 0 ? (
+    <>
   <div className="bg-white shadow-md rounded-lg">
     {/* Heading */}
-    <h1 className="text-2xl font-semibold text-white bg-orange-600 rounded-t-lg px-6 py-4">
+   
+ 
+   <h1 className="text-2xl font-semibold text-white bg-orange-600 rounded-t-lg px-6 py-4">
       My Courier
     </h1>
 
     {/* Table */}
     <div className="p-4">
-      <Courierlist couriers={couriers} />
+   
+            <Courierlist couriers={couriers} />
+         
     </div>
-  </div>
+    </div>
+  </>  
+  ) : (
+    <p className="text-center text-gray-600 font-semibold py-4">You haven't been a courier.</p>
+    )}
+ 
 </section>
 
 <Footer />

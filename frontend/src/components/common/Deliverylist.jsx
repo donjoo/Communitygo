@@ -48,7 +48,7 @@ function Deliverylist({ deliveries }) {
     </TableRow>
   </TableHeader>
   <TableBody>
-      {currentDeliveries.map((delivery) => (
+    {currentDeliveries.map((delivery) => (
 
 <TableRow  key={delivery.id}>
       <TableCell className=" p-4 font-medium">{delivery.id}</TableCell>

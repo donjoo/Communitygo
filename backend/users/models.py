@@ -48,7 +48,6 @@ class CustomUser(AbstractBaseUser):
     is_active       = models.BooleanField(default=True)
     is_deleted      = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
-    email_otp = models.CharField(max_length=6, null=True, blank=True)
     date_joined     = models.DateTimeField(auto_now_add=True)
     last_login      = models.DateTimeField(auto_now_add=True)
     is_admin        = models.BooleanField(default=False)
@@ -82,7 +81,7 @@ class UserProfile(models.Model):
 class OTPRecord(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='otp_record')
     otp = models.CharField(max_length=4)  # Assuming OTP is a 6-character string
-    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp for when OTP was created
+    created_at = models.DateTimeField()  # Timestamp for when OTP was created
     expires_at = models.DateTimeField()  # Timestamp for OTP expiration time
 
     def __str__(self):
