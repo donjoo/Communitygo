@@ -12,6 +12,7 @@ function DeliveryDetails() {
   const [courier, setCourier] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const baseURL = "http://localhost:8000"; // Replace with your actual base URL if different
 
   useEffect(() => {
     const fetchDeliveryDetails = async () => {
@@ -172,6 +173,7 @@ function DeliveryDetails() {
 
               {/* Status (Aligned to top-right) */}
               <div className="flex justify-end">
+                <div>
                 <h2 className="text-lg font-semibold text-gray-600">
                   Status: <span>{delivery.status}</span>
                 </h2>
@@ -179,7 +181,19 @@ function DeliveryDetails() {
                 {(!courier?.rating && delivery.status === 'DELIVERED') ? (
                   <RatingCard courierId={courier?.id} onSubmit={handleRatingSubmit} /> // Display RatingCard when no rating is given and delivery status is 'DELIVERED'
                     ) : ('')}
+
+                  </div>
+
+                  <div>
+                  {delivery.image && (
+                    <img src={`${baseURL}${delivery.image}`} alt={delivery.description} style={{ width: '100px', height: '100px' }} />
+                  )}
+
+                  </div>
+
+                    
                 </div>
+                
             </div>
 
           

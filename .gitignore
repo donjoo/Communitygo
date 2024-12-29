@@ -6,3 +6,4 @@ env/
 .pack
 *.json
 # test
+/backend/media/package_images/

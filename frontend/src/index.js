@@ -10,13 +10,15 @@ import store from './redux/store';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  <>
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
 
     <Provider store={store}>
       {/* <ThemeProvider> */}
       <App />
       {/* </ThemeProvider> */}
     </Provider>
-  
+    </>
 );
 
 // If you want to start measuring performance in your app, pass a function

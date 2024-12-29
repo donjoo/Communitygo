@@ -16,6 +16,8 @@ function CourierDetails() {
   const [pickupTime, setPickupTime] = useState('');
   const [dropoffTime,setDropoffTime] = useState('');
   const [showForm, setShowForm] = useState(false);  // State to toggle the form visibility
+  const baseURL = "http://localhost:8000"; // Replace with your actual base URL if different
+
 
   
 
@@ -100,6 +102,13 @@ function CourierDetails() {
                     {delivery.delivered_at ? (
                     <p className="text-lg text-gray-600"><strong>Delivery Time:</strong> {formatDate(delivery?.delivered_at)}</p>
                   ):('')}
+                  </div>
+
+                  <div>
+                  {delivery.image && (
+                    <img src={`${baseURL}${delivery.image}`} alt={delivery.description} style={{ width: '100px', height: '100px' }} />
+                  )}
+
                   </div>
                   {!delivery.est_pickup?(
                   <div className="absolute bottom-4 left-4">
@@ -186,6 +195,9 @@ function CourierDetails() {
                     <p className="text-lg text-gray-600 mt-2">
                       {delivery?.from_address?.city}, {delivery?.from_address?.state}
                     </p>
+                    <p className="text-lg text-gray-600 mt-2">{delivery?.postal_code}</p>
+
+
                     {delivery.picked_upat? (
                     <p className="text-lg text-gray-600 mt-2"><strong>Pickup Time:</strong> {formatDate(delivery?.picked_upat)}</p>
                   ):('')}
@@ -205,6 +217,7 @@ function CourierDetails() {
                   <p className="text-lg text-gray-600 mt-2">
                     {delivery?.to_address?.city}, {delivery?.to_address?.state}
                   </p>
+                  <p className="text-lg text-gray-600 mt-2">{delivery?.to_address?.postal_code}</p>
 
 
                   {delivery.is_completed ? (<div  className="absolute bottom-4 right-4">Delivery Completed</div>) : (

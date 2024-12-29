@@ -179,81 +179,74 @@ export default function DeliveryPage() {
 
 
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user.username, 'user iddd')
+    console.log(user.username, 'user iddd');
 
     if (validate()) {
-      console.log('Submitting:', formData);
-      const payload = {
-        user: user.id,
-        from_address: {
+        console.log('Submitting:', formData);
+        
+        // Create FormData object
+        const formDataa = new FormData();
+        formDataa.append('user', user.id);
+        const fromAddressData = {
           address_line_1: formData.from_address,
           city: formData.from_city,
           postal_code: formData.from_postal_code,
           state: formData.from_state,
           latitude: pickupCoordinates.latitude,
-          longitude: pickupCoordinates.longitude,
-        },
-        to_address: {
+          longitude: pickupCoordinates.longitude
+      };
+      formDataa.append('from_address', JSON.stringify(fromAddressData));
+
+      // Create nested to_address object
+      const toAddressData = {
           address_line_1: formData.to_address,
           city: formData.to_city,
           postal_code: formData.to_postal_code,
           state: formData.to_state,
           latitude: dropoffCoordinates.latitude,
-          longitude: dropoffCoordinates.longitude,
-        },
-        package_size: formData.package_size,
-        details: formData.details,
-        courier: formData.courier,
-        status: formData.status || 'PENDING',
-        height:formData.height,
-        length:formData.length,
-        width:formData.width,
-        weight:formData.weight, // Set default if needed
+          longitude: dropoffCoordinates.longitude
       };
+      formDataa.append('to_address', JSON.stringify(toAddressData));
+        // Append other fields
+        formDataa.append('package_size', formData.package_size);
+        formDataa.append('details', formData.details);
 
 
-      try {
-        const response = await api.post('request_delivery/', payload,
-        );
+        const courierId = formData.courier === 'undefined' ? null : formData.courier;
+        if (courierId) {
+            formData.append('courier', courierId);
+        };
 
-        if (response.status >= 200 && response.status < 300) {
-          setDelivery_id(response.data.delivery_id)
-          console.log(response.data.delivery_id, 'responseeeeeeee')
-          console.log(delivery_id, 'deliveryiddd')
-          alert('Delivery request submitted successfully!');
-          setFormData({
-            from_address: '',
-            from_city: '',
-            from_postal_code: '',
-            from_state: '',
-            to_address: '',
-            to_city: '',
-            to_postal_code: '',
-            to_state: '',
-            package_size: 'SM',
-            length:'',
-            width:'',
-            height:'',
-            weight:'',
-            details: '',
-          });
-        } else {
-          if (response.status == 403) {
-            console.log('email not verified')
-          }
-          alert('Failed to submit delivery request. Please try again.');
+        formDataa.append('status', formData.status || 'PENDING');
+        formDataa.append('height', formData.height);
+        formDataa.append('length', formData.length);
+        formDataa.append('width', formData.width);
+        formDataa.append('weight', formData.weight);
+
+        // Append the image file
+        const imageFile = document.getElementById("image-upload").files[0]; // Assuming you have an input with id "image-upload"
+        if (imageFile) {
+            formDataa.append('image', imageFile); // Append the image file
         }
-      } catch (error) {
-        console.error('Error submitting form:', error);
-        alert('An error occurred. Please try again later.');
-      }
-    }
-  };
 
+        try {
+            const response = await api.post('request_delivery/', formDataa, {
+                headers: {
+                    'Content-Type': 'multipart/form-data' // Important for file uploads
+                }
+            });
+
+            if (response.status >= 200 && response.status < 300) {
+                setDelivery_id(response.data.delivery_id);
+                console.log(response.data.delivery_id, 'Delivery ID');
+            }
+        } catch (error) {
+            console.error("Error submitting delivery request:", error.response.data);
+        }
+    }
+};
 
   useEffect(() => {
     if (delivery_id) {
@@ -504,7 +497,8 @@ export default function DeliveryPage() {
                     <label className="block text-gray-800 font-semibold mb-2">
                       Upload Image:
                     </label>
-                    <input type="file" onChange={handleImageChange} className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                    <input type="file" id="image-upload" accept="image/*" />
+
 
                   </div>
 

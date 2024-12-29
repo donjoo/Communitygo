@@ -52,8 +52,8 @@ function Deliverylist({ deliveries }) {
 
 <TableRow  key={delivery.id}>
       <TableCell className=" p-4 font-medium">{delivery.id}</TableCell>
-      <TableCell className="p-4">{delivery.from_address.address_line_1}, {delivery.from_address.city}, {delivery.from_address.state}</TableCell>
-      <TableCell className="p-4">{delivery.to_address.address_line_1}, {delivery.to_address.city}, {delivery.to_address.state}</TableCell>
+      <TableCell className="p-4">{delivery.from_address_data.address_line_1}, {delivery.from_address_data.city}, {delivery.from_address_data.state}</TableCell>
+      <TableCell className="p-4">{delivery.to_address_data.address_line_1}, {delivery.to_address_data.city}, {delivery.to_address_data.state}</TableCell>
       <TableCell className="p-4">{delivery.package_size}</TableCell>
       <TableCell className="p-4">{delivery.status}</TableCell>
     

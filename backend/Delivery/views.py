@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import DeliverySerializers, CourierSerializer,UpdateDeliveryTimeSerializer
+from .serializers import DeliverySerializers, CourierSerializer,UpdateDeliveryTimeSerializer,DeliveryViewSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import status
@@ -120,7 +120,7 @@ class DeliveryList(APIView):
             deliveries = Delivery.objects.filter(user=user)
 
             if deliveries.exists():
-                serializer = DeliverySerializers(deliveries, many=True, context={'request': request})
+                serializer = DeliveryViewSerializer(deliveries, many=True, context={'request': request})
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response({"message": "No deliveries found."}, status=status.HTTP_404_NOT_FOUND)
@@ -134,7 +134,7 @@ class DeliverySearch(APIView):
     def get(self,request):
         deliveries = Delivery.objects.filter(status = 'PENDING').exclude(user=request.user)
         if deliveries.exists():
-            serializer = DeliverySerializers(deliveries, many=True)
+            serializer = DeliveryViewSerializer(deliveries, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"message":"No available deliveries found"})
@@ -260,7 +260,7 @@ class DeliveryDetailView(APIView):
         try:
             # delivery = Delivery.objects.get(id=delivery_id)
             delivery = get_object_or_404(Delivery.objects.select_related('courier'), id=delivery_id)
-            serializer = DeliverySerializers(delivery)
+            serializer = DeliveryViewSerializer(delivery)
 
             courier_data = None
 
@@ -279,12 +279,6 @@ class DeliveryDetailView(APIView):
                 "courier":courier_data,
                 'user':userser.data,
             }
-            # if delivery.courier:
-            #     data["courier"] = courierser.data
-                        # "id": delivery.courier.id,
-                        # "username": delivery.courier.username,
-                        # "phone_number": delivery.courier.phone_number,
-        
          
             return Response(data, status=status.HTTP_200_OK)
         except Delivery.DoesNotExist:
@@ -299,7 +293,7 @@ class Courier_details(APIView):
             delivery = get_object_or_404(Delivery, id=delivery_id)
 
             delivery = get_object_or_404(Delivery.objects.select_related('courier'), id=delivery_id)
-            serializer = DeliverySerializers(delivery)
+            serializer = DeliveryViewSerializer(delivery)
 
             courier = Courier.objects.get(delivery = delivery)
             user = User.objects.get(email = delivery.user)

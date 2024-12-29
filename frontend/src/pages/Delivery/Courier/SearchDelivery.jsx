@@ -14,10 +14,8 @@ const DeliverySearch = () => {
 
   useEffect(() => {
     const fetchDeliveries = async () => {
-      if (!user) {
-        setError('User is not authenticated.');
-        return; // Stop fetching if no user is available
-      }
+      console.log('jjjjjjjj',user,'userrrrrr')
+      
 
       try {
         const response = await api.get('deliverysearch/');
@@ -37,17 +35,9 @@ const DeliverySearch = () => {
   }, [user]);
 
 
-  // const handleAccept = (deliveryId) => {
-  //   const 
-  //   console.log('Accepted delivery with ID:', deliveryId);
-  // };
+
 
     const acceptdelivery = async (deliveryId) => {
-      if (!user) {
-        setError('User is not authenticated.');
-        return; // Stop fetching if no user is available
-      }
-
       try {
         const response = await api.post(`${deliveryId}/acceptdelivery/`);
         if (response.status === 200){
@@ -56,11 +46,6 @@ const DeliverySearch = () => {
         console.log('Error accepting delivery', error)
       }
     }
-
-
-
-
-
 
 
   return (
