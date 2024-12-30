@@ -4,6 +4,6 @@ node_modules/
 justenv/
 env/
 .pack
-*.json
+
 # test
 /backend/media/package_images/
