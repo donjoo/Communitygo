@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'Admin',
     'users',
     'Delivery',
+    'RideShare',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',

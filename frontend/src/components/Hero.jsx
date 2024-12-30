@@ -16,6 +16,7 @@ const Hero = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const [showChoices, setShowChoices] = useState(false) // State to manage modal visibility
+  const [rideChoices,setRideChoices] = useState(false)
 
   const handleChoice = (path) => {
     setShowChoices(false) // Close modal
@@ -82,10 +83,70 @@ const Hero = () => {
         </div>
       )}
     
-              <button className="bg-white text-orange-500 font-bold py-3 px-8 w-64 h-16 rounded-full text-lg inline-flex items-center justify-center text-center transition duration-300 ease-in-out hover:bg-gray-100 hover:scale-105 transform">
-                Join a Ride
+
+
+
+
+   
+
+
+
+
+              <button 
+               onClick={() => setRideChoices(true)}
+              className="bg-white text-orange-500 font-bold py-3 px-8 w-64 h-16 rounded-full text-lg inline-flex items-center justify-center text-center transition duration-300 ease-in-out hover:bg-gray-100 hover:scale-105 transform">
+                Share a Ride
                 <Car className="ml-2" size={24} />
               </button>
+
+              {rideChoices && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-8 text-center w-96">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">
+              What would you like to do?
+            </h3>
+            <div className="space-y-4">
+              <button
+                onClick={() => handleChoice('/request-delivery')}
+                className="bg-orange-500 text-white font-bold py-3 px-8 w-full rounded-full transition duration-300 ease-in-out hover:bg-orange-600"
+              >
+                Make a ride
+              </button>
+              <button
+                onClick={() => handleChoice('/deliverysearch')}
+                className="bg-gray-300 text-gray-800 font-bold py-3 px-8 w-full rounded-full transition duration-300 ease-in-out hover:bg-gray-400"
+              >
+                  Join a ride
+              </button>
+            </div>
+            <button
+              onClick={() => setRideChoices(false)} // Close the modal
+              className="mt-6 text-gray-500 hover:text-gray-800 underline"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             </div>
             ):(
 
