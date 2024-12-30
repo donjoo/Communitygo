@@ -5,7 +5,7 @@ import api from '../api'
 import { setAuthData } from '../redux/auth/authSlice'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
-
+import { GoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
 
@@ -22,9 +22,9 @@ const Login = () => {
 
   const user = useSelector((state) => state.auth.user);
 
-
+  console.log(user)
   useEffect(() => {
-    if (user) {
+    if (user && user.phone_number) {
       navigate('/')
     }
   },[user,navigate])
@@ -52,16 +52,39 @@ const Login = () => {
 
 
 
-
-  
+const GoogleAuthLogin = async (user_detail) => {
+  const formData = {
+    client_id:user_detail,
+  };
+  await api
+  .post("authgoogle/",formData)
+  .then((response) => {
+    const {user,token} = response.data;
+    console.log(user.phone_number,'phonenumber')
+    localStorage.setItem('user',JSON.stringify(user));
+    localStorage.setItem('ACCESS_TOKEN',token);
+    dispatch(setAuthData(response.data));
+    if (user && !user.phone_number) {
+      console.log('ITESS HEREEE')
+      navigate('/phonenumberinput');
+    } else {
+    navigate('/',{replace:true})
+    }
+  })
+  .catch((err) => {
+    console.log(err);
+  })
+}
+console.log(user)
 return (
   <div className="flex justify-center items-center min-h-screen bg-gray-100">
     <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 rounded-full bg-blue-500 flex justify-center items-center text-white text-xl">
-                <h2>User Login</h2>
-            </div>
-        </div>
+    <div className="flex flex-col justify-center items-center mb-6">
+        <h2 className="text-2xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-4 rounded-full shadow-lg">
+          User Login
+        </h2>
+    </div>
+
         <form onSubmit={handleLogin}>
             <div className="mb-4">
                 <input 
@@ -95,7 +118,22 @@ return (
             >
                 LOGIN
             </button>
+
+
         </form>
+
+        <div className='flex px-5 justify-center w-auto py-3'>
+          <GoogleLogin 
+            onSuccess={(credentialResponse) => {
+              GoogleAuthLogin(credentialResponse.credential); 
+            }}
+            onError={() => {
+            console.log("Login Failed");
+            }}
+          />
+        </div>
+
+
         {error && <div className="mt-4 text-red-500 text-center">{error}</div>}
         <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">

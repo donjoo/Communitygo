@@ -24,7 +24,9 @@ import Dropofflocation from "./pages/Delivery/Courier/Dropofflocation";
 import CourierCompleted from "./pages/Delivery/Courier/Delivery_complete";
 import AdminDeliveryDetails from "./pages/Admin/AdminDeliverydetails";
 import VerifyOtp from "./pages/User/VerifyOtp";
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import {google_id} from "./constants/constants"
+import PhoneNumberInput from "./pages/User/PhoneNumber";
 
 function Signin(){
   // localStorage.clear()
@@ -39,6 +41,7 @@ function RegisterAndLogout()  {
 function App() {
   return (
     <BrowserRouter>
+     <GoogleOAuthProvider clientId={google_id}>
       <Routes>
 
 
@@ -50,9 +53,12 @@ function App() {
           </ProtectedRoute>
         }
         /> */}
+       
 
-        <Route path="/login" element={<Signin />} />
-        <Route path="/register" element={<RegisterAndLogout />} />
+                <Route path="/login" element={<Signin />} />
+                <Route path="/register" element={<RegisterAndLogout />} />
+        
+        
         <Route path='/verifyotp' element={< VerifyOtp />} />
         <Route path="/" element={<Home />}/>
         <Route path="/logout" element={<Logout />} /> {/* Redirects and clears localStorage */}     
@@ -60,6 +66,7 @@ function App() {
         <Route path="/deliverylist" element={< DeliveryList />} />
         <Route path="/deliverysearch" element = {< DeliverySearch />} />
         <Route path='/admin/login' element={< AdminLogin />} />
+        <Route path='/phonenumberinput' element={<PhoneNumberInput />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/usermanagement' element={<Usermanagement />} />
         <Route path='/deliverymanagement' element={< DeliveryManagement/>} />
@@ -74,6 +81,8 @@ function App() {
         <Route path='/otp/:deliveryId/:method' element={<OtpCard />} />
         <Route path='/couriercompleted/:deliveryId' element={<CourierCompleted />} />
          </Routes>
+         </GoogleOAuthProvider>
+
     </BrowserRouter>
   );
 }

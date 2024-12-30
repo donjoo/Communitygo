@@ -20,6 +20,9 @@ from .task import sent_otp
 from datetime import datetime,timedelta
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
+from google.oauth2 import id_token
+from google.auth.transport import requests
+from rest_framework.exceptions import AuthenticationFailed, ParseError
 
 User = get_user_model()
 
@@ -142,6 +145,7 @@ class LoginView(APIView):
                         'last_name': user.last_name,
                         'username': user.username,
                         'email': user.email,
+                        'phone_number':user.phone_number,
                     },
                     'token': str(refresh.access_token)
                 })
@@ -150,6 +154,103 @@ class LoginView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
        
+
+
+        #  google authentication
+
+class UserGoogleAuth(APIView):
+    def post(self, request):
+        accountExist = True 
+        GOOGLE_AUTH_API = '110059188917-861ffc7h1nuv0kpi425hh4dgc5lgt65n.apps.googleusercontent.com'
+
+        try:
+            google_request = requests.Request()
+            id_info = id_token.verify_oauth2_token(
+                request.data['client_id'], google_request, GOOGLE_AUTH_API)
+            email = id_info['email']
+            print('here is your email from google',email,id_info)
+
+
+        
+        except KeyError:
+            raise ParseError('Check credential')
+        
+        print('doneee')
+        if not User.objects.filter(email=email).exists():
+            accountExist = False 
+
+            user = User.objects.create(
+            username=id_info['name'],
+            first_name =id_info['given_name'],
+            last_name =id_info['family_name'],
+            email =email,
+            email_verified=True,
+
+            )
+
+            UserProfile.objects.create(user=user)
+        
+        print('herrre doneee')
+       
+        user = User.objects.filter(email=email).first()
+        print(user)
+        print('user not exisrtsss')
+        print('not doneee')
+        if not user.is_active:
+            return Response({'error':'Your account has been blocked.'}, status=status.HTTP_403_FORBIDDEN)
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'user': {
+                        'id': user.id,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'username': user.username,
+                        'email': user.email,
+                        'phone_number':user.phone_number,
+                    },
+                    'token': str(refresh.access_token)
+        })
+
+
+
+class AddPhoneNumberView(APIView):
+    def post(self, request):
+        try:
+            email = request.data.get('email')
+            phone_number = request.data.get('phone_number')
+            print(email)
+            print(phone_number)
+
+            if not email or not phone_number:
+                return Response(
+                    {"message": "Email and phone number are required."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            try:
+                # Fetch the user with the provided email
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return Response(
+                    {"message": "User not found."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Update the user's phone number
+            user.phone_number = phone_number
+            user.save()
+
+            return Response(
+                {"message": "Phone number updated successfully.", "status": 200},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {"message": "An error occurred.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
 
 class UserProfileView(APIView):
 

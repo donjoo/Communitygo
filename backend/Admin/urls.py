@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AdminTokenObtainView,AdminDashboardView,UserList,toggle_user_status,DeliveryList,UpdateDeliveryStatusView,delete_user,user_detail,Create_user,DeliveryDetailView
+from .views import AdminTokenObtainView,AdminDashboardView,UserList,toggle_user_status,DeliveryList,UpdateDeliveryStatusView,delete_user,user_detail,Create_user,DeliveryDetailView,AdminGoogleAuth
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -8,6 +8,7 @@ app_name='Admin'
 
 urlpatterns = [
     path('admin/token/',AdminTokenObtainView.as_view(),name='admin_token'),
+    path('authgoogleadmin/',AdminGoogleAuth.as_view(),name='admin_google_auth'),
     path('admin/dashboard/',AdminDashboardView.as_view(),name='admin_dashboard'),
     path('admin/userlist/',UserList.as_view(),name='userlist'),
     # path('admin/users/<int:userId>/toggle_status/', toggle_user_status, name='toggle_user_status'),

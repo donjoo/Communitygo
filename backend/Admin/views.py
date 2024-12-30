@@ -13,7 +13,10 @@ from Delivery.models import Delivery,Courier
 from Delivery.serializers import DeliverySerializers, CourierSerializer
 from users.models import CustomUser,UserProfile
 from django.shortcuts import get_object_or_404
-
+from google.oauth2 import id_token
+from google.auth.transport import requests
+from rest_framework.exceptions import AuthenticationFailed, ParseError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 User = CustomUser
 
@@ -32,6 +35,59 @@ class AdminTokenObtainView(TokenObtainPairView):
             return response
         return Response({"detail": "Only superuser are allowed."}, status= status.HTTP_403_FORBIDDEN)
    
+
+
+
+
+class AdminGoogleAuth(APIView):
+    def post(self, request):
+        accountExist = True 
+        GOOGLE_AUTH_API = '110059188917-861ffc7h1nuv0kpi425hh4dgc5lgt65n.apps.googleusercontent.com'
+
+        try:
+            google_request = requests.Request()
+            id_info = id_token.verify_oauth2_token(
+                request.data['client_id'], google_request, GOOGLE_AUTH_API)
+            email = id_info['email']
+            print('here is your email from google',email,id_info)
+
+
+        
+        except KeyError:
+            raise ParseError('Check credential')
+        
+        if not User.objects.filter(email=email).exists():
+            return Response({'error':'account desnot exist'},status=status.HTTP_403_FORBIDDEN)
+        
+       
+        user = User.objects.filter(email=email).first()
+    
+        if getattr(user, 'is_superadmin', False):
+
+            # Generate JWT tokens
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                'user': {
+                    'email': user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'username': user.username,
+                },
+                'admin_token': str(refresh.access_token)
+            })
+        return Response({"error": "Only superuser are allowed."}, status= status.HTTP_403_FORBIDDEN)
+
+
+
+
+
+
+
+
+
+
 class AdminDashboardView(APIView):
     permission_classes = [IsAuthenticated, IsAdminUser]
 

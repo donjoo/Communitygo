@@ -5,6 +5,7 @@ import { useNavigate , Link} from 'react-router-dom';
 import api from '../api';
 import { useSelector } from 'react-redux';
 import { Button } from "../component/ui/button"
+import { GoogleLogin } from "@react-oauth/google";
 
 // import { Button } from "@material-tailwind/react";
 
@@ -142,10 +143,12 @@ const Register = () => {
     <div className='flex justify-center items-center min-h-screen bg-gray-100'>
       <div className='w-full max-w-md bg-white rounded-lg shadow-lg p-6'>
         <div className='text-center mb-6'>
-          <div className='flex justify-center items-center w-16 h-16 bg-blue-500 text-white rounded-full mx-auto'>
-            <h2 className='text-xl font-bold'>UR</h2>
-          </div>
-          <h2 className='text-2xl font-semibold text-gray-700 mt-4'>User Register</h2>
+
+        <div className="flex flex-col justify-center items-center mb-6">
+          <h2 className="text-2xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-4 rounded-full shadow-lg">
+              User Register
+          </h2>
+        </div>
         </div>
         <form onSubmit={handleSignup}>
           <div className='mb-4'>

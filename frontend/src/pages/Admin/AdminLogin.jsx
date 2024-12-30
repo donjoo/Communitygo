@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { setAuthData } from "../../redux/auth/authSlice"
 import adminAxiosInstance from "../../adminaxiosconfig"
 import { Link } from "react-router-dom"
+import { GoogleLogin } from '@react-oauth/google';
 
 
 const AdminLogin = () => {
@@ -48,16 +49,36 @@ const AdminLogin = () => {
     };
 
 
+const GoogleAuthLogin = async (user_detail) => {
+    const formData = {
+        client_id:user_detail,
+    };
+    await adminAxiosInstance
+    .post("authgoogleadmin/",formData)
+    .then((response) => {
+        localStorage.setItem('adminToken',response.data.admin_token);
+        localStorage.setItem('adminData', JSON.stringify(response.data));
+        dispatch(setAuthData(response.data));
+        navigate('/dashboard',{replace:true});
+       
+    })
+    .catch((err) => {
+        console.error('Admin login failed:',error)
+        console.log(err);
+    })
+    }
+
+
     return(
 
 
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-            <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 rounded-full bg-blue-500 flex justify-center items-center text-white text-xl">
-                    <h2>Admin Login</h2>
-                </div>
-            </div>
+        <div className="flex flex-col justify-center items-center mb-6">
+            <h2 className="text-2xl font-bold text-white bg-gradient-to-r from-blue-500 to-purple-500 px-6 py-4 rounded-full shadow-lg">
+                Admin Login
+            </h2>
+        </div>
             <form onSubmit={handleAdminLogin}>
                 <div className="mb-4">
                     <input 
@@ -92,6 +113,18 @@ const AdminLogin = () => {
                     LOGIN
                 </button>
             </form>
+
+
+            <div className='flex px-5 justify-center w-auto py-3'>
+          <GoogleLogin 
+            onSuccess={(credentialResponse) => {
+              GoogleAuthLogin(credentialResponse.credential); 
+            }}
+            onError={() => {
+            console.log("Login Failed");
+            }}
+          />
+        </div>
             {error && <div className="mt-4 text-red-500 text-center">{error}</div>}
             <div className="mt-6 text-center">
                 <p className="text-sm text-gray-600">
