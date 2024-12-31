@@ -107,7 +107,7 @@ const Hero = () => {
             </h3>
             <div className="space-y-4">
               <button
-                onClick={() => handleChoice('/request-delivery')}
+                onClick={() => handleChoice('/make_a_ride')}
                 className="bg-orange-500 text-white font-bold py-3 px-8 w-full rounded-full transition duration-300 ease-in-out hover:bg-orange-600"
               >
                 Make a ride

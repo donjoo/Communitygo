@@ -1,33 +1,156 @@
-import React from 'react'
+import React, { useState } from 'react'
+import MapComponent from '../../../components/map/MapComponent'
+import Footer from '../../../components/Footer'
+import Navbar from '../../../components/Navbar'
+import { MapPin,Car, Package, User } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import api from '../../../api';
+import RideMapComponent from '../../../components/Ride/map/makeride_map';
 
 function Make_a_ride() {
 
+    const user = useSelector((state) => state.auth.user);
+    const [errors, setErrors] = useState({});
+    const navigate = useNavigate();
 
 
+    const [selectingStartpoint,setSelectingStartpoint]  = useState(true);
+    const [startCoordinates,setStartCoordinates] = useState(null)
+    const [endCoordinates,setEndCoordinates] = useState(null)
+
+
+
+    const [formData,setFormData] = useState({
+        from:'',
+        to:'',
+        vehicle:'',
+        available_seats:'',
+        date:'',
+        time:'',
+
+
+    });
+
+
+    const handleInputChange = (e) => {
+        const {name , value} = e.target;
+        setFormData({ ...formData,[name]:value});
+    };
+
+    const validate = () => {
+        let tempErrors = {};
+
+        if (!formData.from.trim()){
+            tempErrors.from = "from is required";
+        } else if (formData.from.includes('.')){
+            tempErrors.from = "addres cannot contail a dot (.)";
+        }
+
+
+
+        if (!formData.to.trim()){
+            tempErrors.to = "destination address is requied";
+        } else if (formData.to.includes('.')){
+            tempErrors.to = "adress cannot contain a dot (.)";
+        }
+
+
+
+        if (!formData.vehicle.trim()){
+            tempErrors.vehicle = "vechile is required";
+        } else if (formData.vehicle.includes('.')){
+            tempErrors.vehicle = "vehicle cannot contain a dot (.)";
+        }
+
+
+        if (!formData.available_seats.trim()){
+            tempErrors.available_seats = " no.of seats should be mentioned"
+        } else if (formData.available_seats.includes('.')){
+            tempErrors.available_seats = "available seats cannot contain a dot"
+        }
+
+        if (!formData.date.trim()){
+            tempErrors.date = "date is required"
+        }
+
+        if (!formData.time.trim()){
+            tempErrors.time = "time of ride is required"
+        }
+
+        if (!startCoordinates){
+            tempErrors.startCoordinates = "select ride start location"
+        }
+
+        if (!endCoordinates){
+            tempErrors.endCoordinates = 'select ride destination'
+        }
+
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log(user.username)
+        console.log(`start ${startCoordinates.latitude},${ startCoordinates.longitude},${endCoordinates.latitude},${endCoordinates.longitude}`)
+        if (validate()) {
+
+            const rideData = {
+                user: user.id,
+                route: {
+                    starting_point: formData.from,
+                    endpoint: formData.to,
+                    start_latitude: startCoordinates.latitude,
+                    start_longitude: startCoordinates.longitude,
+                    end_latitude: endCoordinates.latitude,
+                    end_longitude: endCoordinates.longitude
+                },
+                vehicle: formData.vehicle,
+                available_seats: formData.available_seats,
+                date: formData.date,
+                starting_time: formData.time
+            };
+            
+            try{
+                const response = await api.post('make_a_ride/',rideData);
+
+                if (response.status >= 200 && response.status < 300) {
+                    console.log(response.data.ride_Id,'ride_Id');
+                }
+            } catch (error){
+                console.error("Error submitting make a ride", error.response.data);
+            }
+
+
+        }
+        
+    }
 
   return (
+    <>
      <div className="flex flex-col min-h-screen">
         < Navbar />
         <div className=" mt- flex flex-1 overflow-hidden">
           <div className="flex-1 p-6 bg-white overflow-y-auto">
             <main className="container mx-auto px-6 py-20">
-              <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">Create a Delivery Request</h1>
+              <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">Make a Ride</h1>
               <div className="bg-white shadow-lg rounded-lg p-8 max-w-3xl mx-auto">
 
                 <form onSubmit={handleSubmit}>
                   {/* From Address */}
                   <div className="mb-6">
-                    <label htmlFor="from_address" className="block text-gray-800 font-semibold mb-2">From Address</label>
+                    <label htmlFor="from" className="block text-gray-800 font-semibold mb-2">Starting from</label>
                     <input
                       type="text"
-                      id="from_address"
-                      name="from_address"
-                      placeholder="Enter pickup address"
-                      value={formData.from_address}
+                      id="from"
+                      name="from"
+                      placeholder="Enter ride starting address"
+                      value={formData.from}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
-                    {errors.from_address && <span className='text-red-500 text-sm'>{errors.from_address}</span>}
+                    {errors.from && <span className='text-red-500 text-sm'>{errors.from}</span>}
 
                   </div>
 
@@ -36,63 +159,63 @@ function Make_a_ride() {
 
                   {/* From City */}
                   <div className="mb-6">
-                    <label htmlFor="from_city" className="block text-gray-800 font-semibold mb-2">From City</label>
+                    <label htmlFor="from_city" className="block text-gray-800 font-semibold mb-2">Destination</label>
                     <input
                       type="text"
-                      id="from_city"
-                      name="from_city"
-                      placeholder="Enter city"
-                      value={formData.from_city}
+                      id="to"
+                      name="to"
+                      placeholder="Enter ride ending poin"
+                      value={formData.to}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
-                    {errors.from_city && <span className='text-red-500 text-sm'>{errors.from_city}</span>}
+                    {errors.to && <span className='text-red-500 text-sm'>{errors.to}</span>}
 
                   </div>
 
                   {/* From Postal Code */}
                   <div className="mb-6">
-                    <label htmlFor="from_postal_code" className="block text-gray-800 font-semibold mb-2">From Postal Code</label>
+                    <label htmlFor="from_postal_code" className="block text-gray-800 font-semibold mb-2">Vehicle</label>
                     <input
                       type="text"
-                      id="from_postal_code"
-                      name="from_postal_code"
-                      placeholder="Enter postal code"
-                      value={formData.from_postal_code}
+                      id="vehicle"
+                      name="vehicle"
+                      placeholder="vehicle"
+                      value={formData.vehicle}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
-                    {errors.from_postal_code && <span className='text-red-500 text-sm'>{errors.from_postal_code}</span>}
+                    {errors.vehicle && <span className='text-red-500 text-sm'>{errors.vehicle}</span>}
                   </div>
 
                   <div className="mb-6">
-                    <label htmlFor="from_State" className="block text-gray-800 font-semibold mb-2">From State</label>
+                    <label htmlFor="from_State" className="block text-gray-800 font-semibold mb-2">Number of available Seats</label>
                     <input
                       type="text"
-                      id="from_state"
-                      name="from_state"
-                      placeholder="Enter State"
-                      value={formData.from_state}
+                      id="available_seats"
+                      name="available_seats"
+                      placeholder="Enter available seats"
+                      value={formData.available_seats}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
-                    {errors.from_state && <span className='text-red-500 text-sm'>{errors.from_state}</span>}
+                    {errors.available_seats && <span className='text-red-500 text-sm'>{errors.available_seats}</span>}
 
                   </div>
 
                   {/* To Address */}
                   <div className="mb-6">
-                    <label htmlFor="to_address" className="block text-gray-800 font-semibold mb-2">To Address</label>
+                    <label htmlFor="to_address" className="block text-gray-800 font-semibold mb-2">Date</label>
                     <input
-                      type="text"
-                      id="to_address"
-                      name="to_address"
-                      placeholder="Enter drop-off address"
-                      value={formData.to_address}
+                      type="date"
+                      id="date"
+                      name="date"
+                      placeholder="Date of ride"
+                      value={formData.date}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
-                    {errors.to_address && <span className='text-red-500 text-sm'>{errors.to_address}</span>}
+                    {errors.date && <span className='text-red-500 text-sm'>{errors.date}</span>}
 
                   </div>
 
@@ -100,175 +223,29 @@ function Make_a_ride() {
 
                   {/* To City */}
                   <div className="mb-6">
-                    <label htmlFor="to_city" className="block text-gray-800 font-semibold mb-2">To City</label>
+                    <label htmlFor="to_city" className="block text-gray-800 font-semibold mb-2">Starting time</label>
                     <input
-                      type="text"
-                      id="to_city"
-                      name="to_city"
-                      placeholder="Enter city"
-                      value={formData.to_city}
+                      type="time"
+                      id="time"
+                      name="time"
+                      placeholder="ride starting time"
+                      value={formData.time}
                       onChange={handleInputChange}
                       className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
-                    {errors.to_city && <span className='text-red-500 text-sm'>{errors.to_city}</span>}
+                    {errors.time && <span className='text-red-500 text-sm'>{errors.time}</span>}
 
                   </div>
-
-                  {/* To Postal Code */}
-                  <div className="mb-6">
-                    <label htmlFor="to_postal_code" className="block text-gray-800 font-semibold mb-2">To Postal Code</label>
-                    <input
-                      type="text"
-                      id="to_postal_code"
-                      name="to_postal_code"
-                      placeholder="Enter postal code"
-                      value={formData.to_postal_code}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    />
-                    {errors.to_postal_code && <span className='text-red-500 text-sm'>{errors.to_postal_code}</span>}
-
+<div className='mb-6'>
+                  {errors.startCoordinates && <span className='text-red-500 text-sm'>{errors.startCoordinates}</span>}
+                  {errors.endCoordinates && <span className='text-red-500 text-sm'>{errors.endCoordinates}</span>}
                   </div>
-
-                  <div className="mb-6">
-                    <label htmlFor="to_state" className="block text-gray-800 font-semibold mb-2">To State</label>
-                    <input
-                      type="text"
-                      id="to_state"
-                      name="to_state"
-                      placeholder="Enter State"
-                      value={formData.to_state}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    />
-                    {errors.to_state && <span className='text-red-500 text-sm'>{errors.to_state}</span>}
-
-                  </div>
-
-
-
-
-
-
-                  {/* Other Fields */}
-                  <div className="mb-6">
-                    <label htmlFor="package_size" className="block text-gray-800 font-semibold mb-2">Package Size</label>
-                    <select
-                      id="package_size"
-                      name="package_size"
-                      value={formData.package_size}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    >
-                      {packageSizes.map((size) => (
-                        <option key={size.value} value={size.value}>{size.label}</option>
-                      ))}
-                    </select>
-                  </div>
-
-
-
-                  <div className="mb-6">
-                    <label htmlFor="length" className="block text-gray-800 font-semibold mb-2">Length</label>
-                    <input
-                      type="text"
-                      id="length"
-                      name="length"
-                      placeholder="Enter State"
-                      value={formData.length}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    />
-                    {errors.length && <span className='text-red-500 text-sm'>{errors.length}</span>}
-
-                  </div>
-
-
-                  <div className="mb-6">
-                    <label htmlFor="width" className="block text-gray-800 font-semibold mb-2">Width</label>
-                    <input
-                      type="text"
-                      id="width"
-                      name="width"
-                      placeholder=" Enter width"
-                      value={formData.width}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    />
-                    {errors.width && <span className='text-red-500 text-sm'>{errors.width}</span>}
-
-                  </div>
-
-
-
-                  <div className="mb-6">
-                    <label htmlFor="height" className="block text-gray-800 font-semibold mb-2"> Height</label>
-                    <input
-                      type="text"
-                      id="height"
-                      name="height"
-                      placeholder="Enter height"
-                      value={formData.height}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    />
-                    {errors.height && <span className='text-red-500 text-sm'>{errors.height}</span>}
-
-                  </div>
-
-
-
-                  <div className="mb-6">
-                    <label htmlFor="to_state" className="block text-gray-800 font-semibold mb-2">Weight</label>
-                    <input
-                      type="text"
-                      id="weight"
-                      name="weight"
-                      placeholder="Enter weight"
-                      value={formData.weight}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    />
-                    {errors.weight && <span className='text-red-500 text-sm'>{errors.weight}</span>}
-
-                  </div>
-
-
-                  <div>
-                    {image && <img src={URL.createObjectURL(image)} alt="Preview" width="200" />}
-                  </div>
-                  <div className="mb-6">
-                    <label className="block text-gray-800 font-semibold mb-2">
-                      Upload Image:
-                    </label>
-                    <input type="file" id="image-upload" accept="image/*" />
-
-
-                  </div>
-
-
-
-                  <div className="mb-6">
-                    <label htmlFor="details" className="block text-gray-800 font-semibold mb-2">Additional Details (Optional)</label>
-                    <textarea
-                      id="details"
-                      name="details"
-                      rows="4"
-                      placeholder="Enter additional instructions"
-                      value={formData.details}
-                      onChange={handleInputChange}
-                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    ></textarea>
-                  </div>
-                  {errors.pick_error && <span className='text-red-500 text-sm'>{errors.pick_error}</span>}
-                  {errors.drop_error && <span className='text-red-500 text-sm'>{errors.drop_error}</span>}
-
                   <button
                     type="submit"
                     className="bg-orange-500 text-white font-bold py-3 px-8 rounded-full text-lg inline-flex items-center transition duration-300 ease-in-out hover:bg-orange-600 hover:scale-105 transform"
                   >
-                    Submit Request
-                    <Package className="ml-2" size={24} />
+                    Submit Ride
+                    <Car className="ml-2" size={24} />
                   </button>
                 </form>
               </div>
@@ -282,22 +259,23 @@ function Make_a_ride() {
           <div className="mt-30 mr-6 flex-1 bg-gray-100">
             <div className=" mt-5 flex justify-center space-x-4 mb-6">
               <button
-                onClick={() => setSelectingPickup(true)}
+                onClick={() => setSelectingStartpoint(true)}
                 className="bg-orange-500 text-white font-bold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
               >
                 Select Pickup Location
               </button>
               <button
-                onClick={() => setSelectingPickup(false)}
+                onClick={() => setSelectingStartpoint(false)}
                 className="bg-orange-500 text-white font-bold py-2 px-4 rounded hover:bg-orange-600 transition duration-300"
               >
                 Select Dropoff Location
               </button>
             </div>
 
-            <MapComponent selectingPickup={selectingPickup}
-              onPickupSelect={(coords) => setPickupCoordinates(coords)}
-              onDropoffSelect={(coords) => setDropoffCoordinates(coords)}
+            <RideMapComponent
+             selectingStartpoint={selectingStartpoint}
+             onStartSelect={(coords) => setStartCoordinates(coords)}
+             onEndSelect={(coords) => setEndCoordinates(coords)}
             />
           </div>
 

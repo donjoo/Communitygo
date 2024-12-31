@@ -12,8 +12,12 @@ from users.models import CustomUser
 class RideRoute(models.Model):
     starting_point = models.CharField(max_length=225)
     endpoint = models.CharField(max_length=225)
-    latitude = models.FloatField(null=True,blank=True)
-    longitude = models.FloatField(null=True,blank=True)
+    start_latitude = models.FloatField(null=True, blank=True)
+    start_longitude = models.FloatField(null=True, blank=True)
+    
+    # Coordinates for the endpoint
+    end_latitude = models.FloatField(null=True, blank=True)
+    end_longitude = models.FloatField(null=True, blank=True)
 
     
     def __str__(self):
@@ -33,7 +37,7 @@ class Ride(models.Model):
     vehicle = models.CharField(max_length=225)
     available_seats = models.PositiveIntegerField()
     date = models.DateField(null=True,blank=True)
-    starting_time = models.DateTimeField(null=True,blank=True)
+    starting_time = models.TimeField(null=True,blank=True)
     status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='pending')    
     created_at = models.DateTimeField(auto_now_add=True)
     is_completed = models.BooleanField(default=False)

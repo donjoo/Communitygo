@@ -1,28 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import Map from "react-map-gl";
-
-// const MapboxAccessToken = "pk.eyJ1IjoiZG9uam8iLCJhIjoiY200NHRxeGp3MG4zNDJqcjQ1dGxpNWo1MSJ9.77K2myuETuMW-S-KQf7Akw"; // Replace with your token
-
-// const MapComponent = () => {
-//   const [viewport, setViewport] = useState({
-//     latitude:10.024760, // Default location (San Francisco)
-//     longitude: 76.307768,
-//     zoom: 12,
-//   });
-
-//   return (
-//     <Map
-//       initialViewState={viewport}
-//       style={{ width: "100%", height: "500px" }}
-//       mapStyle="mapbox://styles/mapbox/streets-v12" // Replace with your Mapbox style URL
-//       mapboxAccessToken={MapboxAccessToken}
-//       onViewportChange={(newViewport) => setViewport(newViewport)}
-//     />
-//   );
-// };
-
-// export default MapComponent;
-
 import React, { useState } from "react";
 import Map, { Marker } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css"; // Ensure Mapbox styles are imported

@@ -27,6 +27,9 @@ import VerifyOtp from "./pages/User/VerifyOtp";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import {google_id} from "./constants/constants"
 import PhoneNumberInput from "./pages/User/PhoneNumber";
+import Make_a_ride from "./pages/RideShare/Rider/Make_a_ride";
+import { Router } from "lucide-react";
+import JoinRequests from "./pages/RideShare/Rider/JoinRequests";
 
 function Signin(){
   // localStorage.clear()
@@ -80,6 +83,18 @@ function App() {
         <Route path='/courierdetail/:deliveryId' element={<Courier_details />} />
         <Route path='/otp/:deliveryId/:method' element={<OtpCard />} />
         <Route path='/couriercompleted/:deliveryId' element={<CourierCompleted />} />
+
+
+
+
+
+
+
+
+         {/* RideSharing */}
+
+         <Route path='/make_a_ride' element={<Make_a_ride />} />
+         <Route path='/joinrequests' element={<JoinRequests />} />
          </Routes>
          </GoogleOAuthProvider>
 
