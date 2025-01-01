@@ -54,8 +54,8 @@ class RidePartner(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='ride_joined')
     pickup = models.CharField(max_length=225)
     dropoff = models.CharField(max_length=225)
-    latitude = models.FloatField(null=True,blank=True)
-    longitude = models.FloatField(null=True,blank=True)
+    pickup_latitude = models.FloatField(null=True,blank=True)
+    pickup_longitude = models.FloatField(null=True,blank=True)
     is_pickedup = models.BooleanField(default=False)
 
 

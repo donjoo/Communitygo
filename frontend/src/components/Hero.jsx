@@ -113,7 +113,7 @@ const Hero = () => {
                 Make a ride
               </button>
               <button
-                onClick={() => handleChoice('/deliverysearch')}
+                onClick={() => handleChoice('/join_a_ride')}
                 className="bg-gray-300 text-gray-800 font-bold py-3 px-8 w-full rounded-full transition duration-300 ease-in-out hover:bg-gray-400"
               >
                   Join a ride

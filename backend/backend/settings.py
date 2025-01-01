@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.gis',
     'django_celery_results',
+    'django_filters',
     # 'sslserver',
 
 ]
@@ -174,7 +175,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+    ],
 }
 
 

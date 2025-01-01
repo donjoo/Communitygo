@@ -3,16 +3,19 @@ import MapComponent from '../../../components/map/MapComponent'
 import Footer from '../../../components/Footer'
 import Navbar from '../../../components/Navbar'
 import { MapPin,Car, Package, User } from 'lucide-react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../api';
 import RideMapComponent from '../../../components/Ride/map/makeride_map';
+import { setRideData } from '../../../redux/ride/rideslice';
+
 
 function Make_a_ride() {
 
     const user = useSelector((state) => state.auth.user);
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
 
     const [selectingStartpoint,setSelectingStartpoint]  = useState(true);
@@ -117,6 +120,12 @@ function Make_a_ride() {
 
                 if (response.status >= 200 && response.status < 300) {
                     console.log(response.data.ride_Id,'ride_Id');
+                    const ridedata = {
+                      'id': ride_Id,
+                    }
+                    dispatch(setRideData(ridedata));
+                    navigate('/joinrequests')
+                    
                 }
             } catch (error){
                 console.error("Error submitting make a ride", error.response.data);

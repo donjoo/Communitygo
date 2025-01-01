@@ -1,24 +1,28 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../../../components/Navbar'
+import { useSelector } from 'react-redux'
+import api from '../../../api'
 
 function JoinRequests() {
 
+    const ride_Id  = useSelector((state) => state.ride.id)
+    const [ride,setRide] = useState(null);
 
+    useEffect(() => {
+        const fetchJoinRequests = async () => {
+            try {
+                const rid = 1
+                const response = await api.get(`${rid}/make_a_ride`);
+                console.log(response.data)
+                setRide(response.data);
+            } catch (errors){
 
-    const rideDetails = {
-        startingPoint: "Vytila",
-        endpoint: "Edappally",
-        date: "2025-01-01",
-        startingTime: "04:46",
-        vehicle: "Car",
-        availableSeats: 4,
-    };
+            }
+        }
 
-    const requestsToJoin = [
-        { id: 1, user: "John Doe", requestedSeats: 2, status: "Pending" },
-        { id: 2, user: "Jane Smith", requestedSeats: 1, status: "Accepted" },
-        { id: 3, user: "Alice Johnson", requestedSeats: 3, status: "Pending" },
-    ];
+        fetchJoinRequests()
+    },[ride_Id])
+
 
 
 
@@ -32,12 +36,12 @@ function JoinRequests() {
             {/* Upper Section - Ride Details */}
             <div className="bg-white shadow-md rounded-lg p-6 mb-6">
                 <h2 className="text-2xl font-semibold mb-4">Ride Details</h2>
-                <p><strong>Starting Point:</strong> {rideDetails.startingPoint}</p>
-                <p><strong>Endpoint:</strong> {rideDetails.endpoint}</p>
-                <p><strong>Date:</strong> {rideDetails.date}</p>
-                <p><strong>Starting Time:</strong> {rideDetails.startingTime}</p>
-                <p><strong>Vehicle:</strong> {rideDetails.vehicle}</p>
-                <p><strong>Available Seats:</strong> {rideDetails.availableSeats}</p>
+                <p><strong>Starting Point:</strong> {ride.route.starting_point}</p>
+                <p><strong>Endpoint:</strong> {ride.route.endpoint}</p>
+                <p><strong>Date:</strong> {ride.date}</p>
+                <p><strong>Starting Time:</strong> {ride.starting_time}</p>
+                <p><strong>Vehicle:</strong> {ride.vehicle}</p>
+                <p><strong>Available Seats:</strong> {ride.available_seats}</p>
             </div>
 
             {/* Lower Section - Requests to Join */}
@@ -52,13 +56,13 @@ function JoinRequests() {
                         </tr>
                     </thead>
                     <tbody>
-                        {requestsToJoin.map(request => (
+                        {/* {requestsToJoin.map(request => (
                             <tr key={request.id} className="hover:bg-gray-100">
                                 <td className="py-2 px-4 border-b">{request.user}</td>
                                 <td className="py-2 px-4 border-b">{request.requestedSeats}</td>
                                 <td className="py-2 px-4 border-b">{request.status}</td>
                             </tr>
-                        ))}
+                        ))} */}
                     </tbody>
                 </table>
             </div>

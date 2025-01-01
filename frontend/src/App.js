@@ -30,6 +30,8 @@ import PhoneNumberInput from "./pages/User/PhoneNumber";
 import Make_a_ride from "./pages/RideShare/Rider/Make_a_ride";
 import { Router } from "lucide-react";
 import JoinRequests from "./pages/RideShare/Rider/JoinRequests";
+import Join_a_ride from "./pages/RideShare/RidePartner/Join_a_ride";
+import RideJoin from "./pages/RideShare/RidePartner/RideJoin";
 
 function Signin(){
   // localStorage.clear()
@@ -95,6 +97,8 @@ function App() {
 
          <Route path='/make_a_ride' element={<Make_a_ride />} />
          <Route path='/joinrequests' element={<JoinRequests />} />
+         <Route path="/join_a_ride" element={<Join_a_ride />} />
+         <Route path='/ridejoin/:ride_id' element = {<RideJoin />} />
          </Routes>
          </GoogleOAuthProvider>
 
