@@ -34,21 +34,31 @@ class MakeRide(APIView):
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
-    def get(self,request,ride_id):
+    def get(self, request, ride_id):
+        ride = get_object_or_404(Ride, id=ride_id)
 
+        # Retrieve all ride partners for this ride
+        ride_partners = RidePartner.objects.filter(ride=ride)
 
-            ride = get_object_or_404(Ride,id=ride_id)
-            rideserializer = RideSerializer(ride)
+        # Filter partners into pending and accepted categories
+        pending = ride_partners.filter(status="pending")
+        accepted = ride_partners.exclude(status__in=["pending", "rejected"])
+        # Serialize the ride and partners
+        ride_serializer = RideSerializer(ride)
+        pending_serializer = RidePartnerSerializer(pending, many=True)  # Use many=True for multiple objects
+        accepted_serializer = RidePartnerSerializer(accepted, many=True)  # Use many=True for multiple objects
 
+        # Construct the response data
+        data = {
+            'ride': ride_serializer.data,
+            'pending': pending_serializer.data,
+            'partners': accepted_serializer.data,
+        }
 
-            # data = {
-            #     ride:rideserializer.data,
-            # }
-            print(rideserializer.data)
+        return Response(data, status=status.HTTP_200_OK)
+            
 
-            return Response(rideserializer.data,status=status.HTTP_200_OK)
-       
-     
+  
 class RideSearch(generics.ListAPIView):
     serializer_class = RideSerializer
     permission_classes = [IsEmailVerified]  # Ensure only authenticated users can access this view
@@ -108,23 +118,22 @@ class JoinRideView(APIView):
 
 
 
+class AcceptRidePartnerView(APIView):
+    def post(self, request, partner_id):
+        try:
+            ride_partner = RidePartner.objects.get(id=partner_id)
+            ride_partner.status = 'accepted'  # Update status to accepted
+            ride_partner.save()
+            return Response(RidePartnerSerializer(ride_partner).data, status=status.HTTP_200_OK)
+        except RidePartner.DoesNotExist:
+            return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
 
-# # Assuming you have a view for the rider to manage requests
-# def manage_requests(request, ride_id):
-#     ride = Ride.objects.get(id=ride_id)
-#     pending_requests = ride.partners.filter(status='pending')
-
-#     if request.method == 'POST':
-#         # Logic to accept or reject requests based on user input
-#         for partner in pending_requests:
-#             if request.POST.get(f'accept_{partner.id}'):
-#                 partner.status = 'accepted'
-#                 partner.save()
-#                 # Update available seats in the ride if needed
-#                 ride.available_seats -= partner.seats
-#                 ride.save()
-#             elif request.POST.get(f'reject_{partner.id}'):
-#                 partner.status = 'rejected'
-#                 partner.save()
-
-#     return render(request, 'manage_requests.html', {'pending_requests': pending_requests})
+class DeclineRidePartnerView(APIView):
+    def post(self, request, partner_id):
+        try:
+            ride_partner = RidePartner.objects.get(id=partner_id)
+            ride_partner.status = 'rejected'  # Update status to rejected
+            ride_partner.save()
+            return Response(RidePartnerSerializer(ride_partner).data, status=status.HTTP_200_OK)
+        except RidePartner.DoesNotExist:
+            return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
