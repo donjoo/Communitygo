@@ -35,12 +35,14 @@ class Ride(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='rides')
     route = models.ForeignKey(RideRoute, on_delete=models.CASCADE,related_name='ride')
     vehicle = models.CharField(max_length=225)
-    available_seats = models.PositiveIntegerField()
+    total_seats = models.PositiveIntegerField(null=True,blank=True)
+    available_seats = models.PositiveIntegerField(null=True,blank=True)
     date = models.DateField(null=True,blank=True)
     starting_time = models.TimeField(null=True,blank=True)
     status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='pending')    
     created_at = models.DateTimeField(auto_now_add=True)
     is_completed = models.BooleanField(default=False)
+
 
 
 
@@ -50,13 +52,25 @@ class Ride(models.Model):
 
 
 class RidePartner(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+        ('pickedup','Pickedup'),
+        ('dropedoff','Dropedoff'),
+    ]
+     
     ride = models.ForeignKey(Ride,on_delete=models.CASCADE, related_name='partners')
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='ride_joined')
+    seats = models.PositiveIntegerField(null=True,blank=True)
     pickup = models.CharField(max_length=225)
     dropoff = models.CharField(max_length=225)
     pickup_latitude = models.FloatField(null=True,blank=True)
     pickup_longitude = models.FloatField(null=True,blank=True)
+    dropoff_latitude = models.FloatField(null=True,blank=True)
+    dropoff_longitude = models.FloatField(null=True,blank=True)
     is_pickedup = models.BooleanField(default=False)
+    status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='pending')
 
 
     def __str__(self):

@@ -23,6 +23,8 @@ from django.utils import timezone
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from rest_framework.exceptions import AuthenticationFailed, ParseError
+from RideShare.models import Ride
+from RideShare.serializers import RideSerializer
 
 User = get_user_model()
 
@@ -264,16 +266,19 @@ class UserProfileView(APIView):
             user = User.objects.get(id=request.user.id)
             deliveries = Delivery.objects.filter(user=user).order_by('-created_at') 
             couriers = Courier.objects.filter(user=user).order_by('-id') 
+            rides = Ride.objects.filter(user=user).order_by('-id')
 
             serializer = UserSerializer(user)
             deliveryserializer = DeliverySerializers(deliveries,many=True)
             courierserializer = CourierSerializer(couriers, many=True)
+            rideserializer = RideSerializer(rides,many=True) 
             print(user)
             print(courierserializer.data)
             data = {
                 'user': serializer.data,
                 'deliveries':deliveryserializer.data,
-                'couriers':courierserializer.data
+                'couriers':courierserializer.data,
+                'rides':rideserializer.data,
             } 
             # print(data)
             return Response(data,status= status.HTTP_200_OK)
