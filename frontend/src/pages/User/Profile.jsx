@@ -6,6 +6,7 @@ import Deliverylist from '../../components/common/Deliverylist';
 import Navbar from '../../components/Navbar';
 import Courierlist from '../../components/common/Courierlist';
 import Footer from '../../components/Footer'
+import Ridelist from '../../components/common/Ridelist';
 
 
 export default function Profile() {
@@ -14,6 +15,7 @@ export default function Profile() {
   const [error, setError] = useState();
   const [deliveries, setDeliveries] = useState(null)
   const [couriers,setCouriers] = useState(null)
+  const [rides,setRides] = useState(null)
   const navigate = useNavigate()
   
   useEffect(() => {
@@ -34,6 +36,7 @@ export default function Profile() {
           setUser(response.data.user)
           setDeliveries(response.data.deliveries)
           setCouriers(response.data.couriers)
+          setRides(response.data.rides)
           console.log(user)
         } else {
           setError('error occured while fetching user profile')
@@ -117,7 +120,7 @@ export default function Profile() {
     <div className="p-4">
     
             <Deliverylist deliveries={deliveries} />
-         
+           
     </div>
     </div>
     </>
@@ -151,7 +154,31 @@ export default function Profile() {
     )}
  
 </section>
+<section className="mt-10">
+{rides.length > 0 ? (
+      <>
+  <div className="bg-white shadow-md rounded-lg">
+    {/* Heading */}
 
+   
+    <h1 className="text-2xl font-semibold text-white bg-orange-600 rounded-t-lg px-6 py-4">
+      My Rides
+    </h1>
+
+    {/* Table */}
+    <div className="p-4">
+    
+            <Ridelist rides={rides} />
+           
+    </div>
+    </div>
+    </>
+     ) : (
+      <p className="text-center text-gray-600 font-semibold py-4">You haven't had any rides yet.</p>
+    )}
+ 
+  
+</section>
 <Footer />
         </>
 

@@ -96,7 +96,7 @@ function App() {
          {/* RideSharing */}
 
          <Route path='/make_a_ride' element={<Make_a_ride />} />
-         <Route path='/joinrequests' element={<JoinRequests />} />
+         <Route path='/joinrequests/:ride_id' element={<JoinRequests />} />
          <Route path="/join_a_ride" element={<Join_a_ride />} />
          <Route path='/ridejoin/:ride_id' element = {<RideJoin />} />
          </Routes>
