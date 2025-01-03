@@ -111,6 +111,7 @@ function Make_a_ride() {
                 },
                 vehicle: formData.vehicle,
                 available_seats: formData.available_seats,
+                total_seats: formData.available_seats,
                 date: formData.date,
                 starting_time: formData.time
             };
@@ -119,9 +120,9 @@ function Make_a_ride() {
                 const response = await api.post('make_a_ride/',rideData);
 
                 if (response.status >= 200 && response.status < 300) {
-                    console.log(response.data.ride_Id,'ride_Id');
+                    console.log(response.data,'ride_Id');
                     const ridedata = {
-                      'id': ride_Id,
+                      'id': response.data.ride_id,
                     }
                     dispatch(setRideData(ridedata));
                     navigate('/joinrequests')

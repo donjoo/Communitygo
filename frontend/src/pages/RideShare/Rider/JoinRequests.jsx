@@ -13,6 +13,7 @@ import {
 } from "../../../component/ui/table"
 import Navigation from '../../../components/map/Navigation'
 import Partnerlist from '../../../components/common/Ride/Partnerlist'
+import { useNavigate } from 'react-router-dom'
 
 
 function JoinRequests() {
@@ -23,12 +24,12 @@ function JoinRequests() {
     const [partners, setPartners] = useState([])
     const [start,setStart] = useState(null);
     const [end,setEnd] = useState(null);
-
+    const navigate = useNavigate()
 
     const fetchJoinRequests = async () => {
         try {
-            const rid = 1
-            const response = await api.get(`${rid}/make_a_ride`);
+       
+            const response = await api.get(`${ride_Id}/make_a_ride/`);
             console.log(response.data)
             setRide(response.data.ride);
             setPendings(response.data.pending || [])
@@ -80,6 +81,18 @@ function JoinRequests() {
     };
 
 
+    const startRide = async () => {
+        try {
+            const respponse = await api.post(`ride/${ride_Id}/start/`)
+            console.log('ride started')
+            fetchJoinRequests()
+        } catch (error) {
+
+            console.log('error starting ride',error)
+        }
+
+    }
+
     const [currentPage, setCurrentPage] = useState(1);
     const pendingsPerPage = 6; // Number of deliveries per page
     const totalPages = Math.ceil(pendings.length / pendingsPerPage);
@@ -94,10 +107,10 @@ function JoinRequests() {
 
 
     useEffect(() => {
-        console.log('loadinggggggggggggggggggggggggg')
-        if (ride_Id) {
+        console.log('loadinggggggggggggggggggggggggg',ride_Id)
+        // if (ride_Id) {
             fetchJoinRequests();
-        }
+        // }
     }, [ride_Id]);
 
 
@@ -115,13 +128,37 @@ function JoinRequests() {
             {/* Upper Section - Ride Details and Your Ride Partners */}
             <div className="bg-white shadow-md rounded-lg p-6 mb-6">
                 <h2 className="text-2xl font-semibold mb-4">Ride Details</h2>
-                <p><strong>Starting Point:</strong> {ride.route.starting_point}</p>
-                <p><strong>Endpoint:</strong> {ride.route.endpoint}</p>
-                <p><strong>Date:</strong> {ride.date}</p>
-                <p><strong>Starting Time:</strong> {ride.starting_time}</p>
-                <p><strong>Vehicle:</strong> {ride.vehicle}</p>
-                <p><strong>Available Seats:</strong> {ride.available_seats}</p>
+                <div className="flex justify-between items-center mb-4">
+                        <div>
+                            <p><strong>Starting Point:</strong> {ride.route.starting_point}</p>
+                            <p><strong>Endpoint:</strong> {ride.route.endpoint}</p>
+                            <p><strong>Date:</strong> {ride.date}</p>
+                            <p><strong>Starting Time:</strong> {ride.starting_time}</p>
+                            <p><strong>Vehicle:</strong> {ride.vehicle}</p>
+                            <p><strong>Available Seats:</strong> {ride.available_seats}</p>
+                            <p><strong>Status:</strong> {ride.status}</p>
+                        </div>
+                        {/* Start Ride Button */}
+
+                        {ride.status == 'pending' ? (
+                        <button 
+                            onClick={startRide}
+                            className="ml-4 py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                            Start Ride
+                        </button>
+                        ):(
+                        
+                            <button 
+                            onClick={() => navigate(`/rideroute`)}
+                            className="ml-4 py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                             Show Route
+                       </button>
+                            )}
+                    </div>
                 
+
                 {/* Your Ride Partners */}
                 <h3 className="text-xl font-semibold mt-4">Your Ride Partners</h3>
                 <Partnerlist partners={partners} />

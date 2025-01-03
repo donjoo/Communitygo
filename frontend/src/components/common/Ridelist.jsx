@@ -39,7 +39,7 @@ function Ridelist({ rides }) {
             'id':rideId,
         }
         dispatch(setRideData(ridedata))
-        navigate(`/joinrequests/${rideId}`);
+        navigate(`/joinrequests`);
     };
 
     return (

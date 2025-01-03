@@ -6,10 +6,9 @@ import api from '../../../api';
 import Navigation from '../../../components/map/Navigation';
 import { useSelector } from 'react-redux';
 
-function PartnerDetails() {
+function RideRoute() {
 
   const ride_id = useSelector((state) => state.ride.id)
-  const {partnerId} = useParams();
   const [ride,setRide] = useState();
   const [partner,setPartner] = useState(); 
   const [error,setError] = useState(null);
@@ -22,53 +21,41 @@ function PartnerDetails() {
 
       
 
-
-    const PartnerDetail = async () => {
-     try {
-         const response = await api.get(`${partnerId}/partnerdetail`);
-         setPartner(response.data.partner);
-         setUser(response.data.user)
-         setRide(response.data.ride)
-          
-         console.log(response.data.partner.pickup_longitude,'jj')
-         console.log(response.data.ride.route.start_longitude)
-
-         setEnd([response.data.partner.pickup_longitude,response.data.partner.pickup_latitude])
-         setStart([response.data.ride.route.start_longitude,response.data.ride.route.start_latitude])
-
-     } catch (error) {
-         console.error("Error fetching partner details:",error);
-         setError("Failed to Fetch partner details.");
-    } finally {
-         setLoading(false);
-    }
-    };
-
-    PartnerDetail();
-
-
-
     useEffect(() => {
-        PartnerDetail();
-    },[partnerId])
+      const PartnerDetail = async () => {
+        try {
+          const response = await api.get(`ride/${ride_id}/route`);
+          setPartner(response.data.partner);
+          setUser(response.data.user)
+          setRide(response.data.ride)
+          
+          console.log(response.data.partner.pickup_longitude,'jj')
+          console.log(response.data.ride.route.start_longitude)
+
+          setEnd([response.data.ride.route.end_longitude,response.data.ride.route.end_latitude])
+          setStart([response.data.ride.route.start_longitude,response.data.ride.route.start_latitude])
+
+        } catch (error) {
+          console.error("Error fetching partner details:",error);
+          setError("Failed to Fetch partner details.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      PartnerDetail();
+    },[ride_id]);
+
     
  
 
 
-    const Pickedup = async () => {
-      const response = await api.post(`partner/${partnerId}/pickup/`);
+    const ridecomplete = async () => {
+      const response = await api.post(`ride/${ride_id}/complete/`);
       if (response.status === 200){
-        console.log('partner droped off')
-        PartnerDetail()
+        navigate(`/ridedetails/${ride_id}`)
       }
     };
-
-    const Dropedoff = async () => {
-        const response = await api.post(`partner/${partnerId}/dropoff/`);
-        if (response.status === 200){
-          navigate(`/joinrequests`)
-        }
-      };
 
 if (!user) {
     return (
@@ -87,7 +74,7 @@ if (!user) {
         <div className="flex-1 p-6 bg-white overflow-y-auto">
 
           <div className="border border-gray-300 rounded-lg shadow-md p-6 bg-gray-50">
-          <h2 className="text-xl font-bold text-gray-700 mb-4">Pickup Partner</h2>
+          <h2 className="text-xl font-bold text-gray-700 mb-4">your Ride Details</h2>
           
           {/* From Address */}
         
@@ -100,27 +87,24 @@ if (!user) {
           <span className="text-gray-800">{user?.first_name} {partner.user?.last_name}</span>
           </div>
          
-          <div className="mb-2">
-          <span className="font-medium text-gray-600">PhoneNumber :</span>
-            <span className="text-gray-800">{user?.phone_number}</span>
-          </div>
+        
         
             <h3 className="text-lg font-bold text-gray-700 mt-4">Details</h3>
            <div className="mb-2">
             <span className="font-medium text-gray-600">Pickup location : </span>
-            <span className="text-gray-800">{partner?.pickup || 'N/A'}</span>
+            <span className="text-gray-800">{ride?.route.starting_point || 'N/A'}</span>
           </div>
           <div className="mb-2">
             <span className="font-medium text-gray-600">Dropoff location : </span>
-            <span className="text-gray-800">{partner.dropoff || 'N/A'}</span>
+            <span className="text-gray-800">{ride.route.endpoint || 'N/A'}</span>
           </div>
           <div className="mb-2">
             <span className="font-medium text-gray-600">Seats : </span>
-            <span className="text-gray-800">{ partner.seats || 'N/A'}</span>
+            <span className="text-gray-800">{ ride.total_seats || 'N/A'}</span>
           </div>
           <div className="mb-2">
             <span className="font-medium text-gray-600">Status : </span>
-            <span className="text-gray-800">{ partner.status|| 'N/A'}</span>
+            <span className="text-gray-800">{ ride.status|| 'N/A'}</span>
           </div>
          
             
@@ -129,25 +113,18 @@ if (!user) {
           
 
           <div className="mt-6">
-  {partner.status === "dropedoff" ? (
-    <p className="font-medium text-red-600">Partner Dropped Off</p>
-  ) : partner.is_pickedup ? (
-    <button
-      onClick={Dropedoff}
-      className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-    >
-      Dropped Off
-    </button>
-  ) : (
-    <button
-      onClick={Pickedup}
-      className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-    >
-      Picked Up
-    </button>
-  )}
-</div>
 
+            {ride.is_completed ? (
+                <p><span className="font-medium text-green-600">Ride Completed</span></p>
+            ):(
+          <button
+            onClick={ridecomplete} 
+            className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            Destination reached
+          </button>
+        )}
+        </div>
 
         </div>
     
@@ -171,4 +148,4 @@ if (!user) {
   );
 }
 
-export default PartnerDetails;
+export default RideRoute;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import api from '../../../api';
 import { useSelector } from 'react-redux';
 import Navbar from '../../../components/Navbar';
@@ -16,7 +16,7 @@ function RideJoin() {
     const user = useSelector((state) => state.auth.user)
     const [ride, setRide] = useState(null);
     const [selectedSeats, setSelectedSeats] = useState(1); // State for selected seats
-
+    const navigate   = useNavigate()
 
     const [showDirection,setShowDirection] = useState(true)
     const [start,setStart] = useState(null)
@@ -63,6 +63,11 @@ function RideJoin() {
         e.preventDefault();
         console.log('data submiteddddddd')
 
+        if (!pickup || !dropoff || !startCoordinates || !endCoordinates || selectedSeats <= 0) {
+            alert("Please fill in all required fields and select at least one seat.");
+            return; // Exit the function if validation fails
+        }
+
         const rideData = {
             user: user.id,
             ride: ride_id,
@@ -79,10 +84,11 @@ function RideJoin() {
             const response = await api.post('joinride/', rideData)
 
             if (response.status >= 200 && response.status < 300) {
-                console.log(response.data.patner.id)
+                // console.log(response.data.patner.id)
+                navigate(`/partner/ridedetail/${ride_id}`)
             }
         } catch (error) {
-            console.log(error.response.data);
+            console.log(error.response);
         }
     }
 

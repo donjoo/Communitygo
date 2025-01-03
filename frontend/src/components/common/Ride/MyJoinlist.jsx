@@ -9,22 +9,21 @@ import {
     TableHeader,
     TableRow,
 } from "../../../component/ui/table"
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setRideData } from '../../../redux/ride/rideslice';
 
 
-function Partnerlist({ partners }) {
-   
+function MyJoinlist({ joins }) {
     const [currentPage, setCurrentPage] = useState(1);
-    const partnersPerPage = 6; // Number of deliveries per page
+    const joinsPerPage = 6; // Number of deliveries per page
     const dispatch = useDispatch();
     const navigate = useNavigate();
     // Calculate total pages
-    const totalPages = Math.ceil(partners.length / partnersPerPage);
+    const totalPages = Math.ceil(joins.length /joinsPerPage);
 
     // Get the current page's deliveries
-    const startIndex = (currentPage - 1) * partnersPerPage;
-    const currentpartners = partners.slice(startIndex, startIndex + partnersPerPage);
+    const startIndex = (currentPage - 1) * joinsPerPage;
+    const currentjoins = joins.slice(startIndex, startIndex + joinsPerPage);
 
     // Handle page change
     const handlePageChange = (page) => {
@@ -34,13 +33,13 @@ function Partnerlist({ partners }) {
     };
 
 
-    const handleViewDetails = (partnerId) => {
-        console.log(`Navigating to ride details for ride ID: ${partnerId}`);
-        // const ridedata = {
-        //     'id':rideId,
-        // }
-        // dispatch(setRideData(ridedata))
-        navigate(`/partnerdetail/${partnerId}`);
+
+
+    const handleViewDetails = (rideId) => {
+        console.log(`Navigating to ride details for ride ID: ${rideId}`);
+      
+        
+        navigate(`/partner/ridedetail/${rideId}`)
     };
 
     return (
@@ -53,40 +52,37 @@ function Partnerlist({ partners }) {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[150px] p-4 text-left">-</TableHead>
-                            <TableHead className="w-[150px] p-4 text-left">pickup</TableHead>
+                            <TableHead className="w-[150px] p-4 text-left">From</TableHead>
                             <TableHead className="w-[150px] p-4 text-left">To</TableHead>
-                            <TableHead className="w-[150px] p-4 text-left">seats</TableHead>
+                            <TableHead className="w-[150px] p-4 text-left">seat shared</TableHead>
                             <TableHead className="w-[150px] p-4 text-left">Status</TableHead>
-                            <TableHead className=" w-[150px] p-4 text-left">more</TableHead>
+                            <TableHead className=" w-[150px] p-4 text-left">Details</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {currentpartners.map((partner, index) => (
+                        {currentjoins.map((ride, index) => (
 
-                            <TableRow key={partner.id}>
+                            <TableRow key={ride.id}>
                                 <TableCell className=" p-4 font-medium">{startIndex + index + 1}</TableCell>
-                                <TableCell className="p-4">{partner.pickup}, </TableCell>
-                                <TableCell className="p-4">{partner.dropoff}</TableCell>
-                                <TableCell className="p-4">{partner.seats}</TableCell>
-                                <TableCell className="p-4">{partner.status}</TableCell>
+                                <TableCell className="p-4">{ride.pickup}, </TableCell>
+                                <TableCell className="p-4">{ride.dropoff}</TableCell>
+                                <TableCell className="p-4">{ride.seats}</TableCell>
+                                <TableCell className="p-4">{ride.status}</TableCell>
 
 
 
                                 <TableCell className="">
                                         <span
                                             className="text-blue-500 hover:underline cursor-pointer"
-                                            onClick={() => handleViewDetails(partner.id)}
+                                            onClick={() => handleViewDetails(ride.ride)}
                                         >
-                                            More
+                                            View Details
                                         </span>
                                     </TableCell>;
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-
-
-  
             </div>
 
             {/* Pagination Controls */}
@@ -119,4 +115,4 @@ function Partnerlist({ partners }) {
     );
 }
 
-export default Partnerlist;
+export default MyJoinlist;

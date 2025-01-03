@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from rest_framework import status ,generics, filters
 from django.shortcuts import get_object_or_404
 from .models import Ride,RideRoute,RidePartner
-
+from users.models import CustomUser
+from users.serializers import UserSerializer
 # Create your views here.
 
 class IsEmailVerified(BasePermission):
@@ -137,3 +138,112 @@ class DeclineRidePartnerView(APIView):
             return Response(RidePartnerSerializer(ride_partner).data, status=status.HTTP_200_OK)
         except RidePartner.DoesNotExist:
             return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+class PartnerDetailView(APIView):
+    def get(self, request, partner_id):
+        try:
+            # Retrieve the ride partner by ID
+            partner = RidePartner.objects.get(id=partner_id)
+            user = CustomUser.objects.get(id=partner.user.id)  # Assuming RidePartner has a ForeignKey to CustomUser
+            ride = Ride.objects.get(id=partner.ride.id)
+            # Serialize the partner and user data
+            partner_serializer = RidePartnerSerializer(partner)
+            user_serializer = UserSerializer(user)
+            ride_serializer = RideSerializer(ride)
+
+            # Construct response data
+            response_data = {
+                'partner': partner_serializer.data,
+                'user': user_serializer.data,
+                'ride':ride_serializer.data,
+            }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+        except RidePartner.DoesNotExist:
+            return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+
+class PickupPartner(APIView):
+    def post(self, request, partner_id):
+        try:
+            # Retrieve the ride partner by ID
+            ride_partner = RidePartner.objects.get(id=partner_id)
+            
+            # Update the status to 'picked_up' (or however you define it)
+            ride_partner.status = 'pickedup'
+            ride_partner.is_pickedup = True
+            ride_partner.save()
+            
+            return Response({'message': 'Partner picked up successfully.'}, status=status.HTTP_200_OK)
+        except RidePartner.DoesNotExist:
+            return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+
+class DropoffPartner(APIView):
+     def post(self, request, partner_id):
+        try:
+            # Retrieve the ride partner by ID
+            ride_partner = RidePartner.objects.get(id=partner_id)
+            
+            # Update the status to 'picked_up' (or however you define it)
+            ride_partner.status = 'dropedoff'
+            ride_partner.save()
+            
+            return Response({'message': 'Partner picked up successfully.'}, status=status.HTTP_200_OK)
+        except RidePartner.DoesNotExist:
+            return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class RideStart(APIView):
+    def post(self,request,ride_id):
+        try:
+            ride = Ride.objects.get(id= ride_id)
+            ride.status = 'ongoing'
+            ride.save()
+
+            return Response({'mesasage':'Ride started'},status=status.HTTP_200_OK)
+        except Ride.DoesNotExist:
+            return Response({'error':"ride not found"},status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+class RideRoute(APIView):
+    def get(self, request, ride_id):
+        try:
+            # Retrieve the ride partner by ID
+            ride = Ride.objects.get(id=ride_id)
+            ride_partners = RidePartner.objects.filter(ride_id=ride_id)  # Replace 'ride_id' with the actual ID of the ride
+            user = CustomUser.objects.get(id=ride.user.id)  # Assuming RidePartner has a ForeignKey to CustomUser
+            # Serialize the partner and user data
+            partner_serializer = RidePartnerSerializer(ride_partners,many=True)
+            user_serializer = UserSerializer(user)
+            ride_serializer = RideSerializer(ride)
+
+            # Construct response data
+            response_data = {
+                'partner': partner_serializer.data,
+                'user': user_serializer.data,
+                'ride':ride_serializer.data,
+            }
+
+            return Response(response_data, status=status.HTTP_200_OK)
+        except RidePartner.DoesNotExist:
+            return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+class  RideCompleted(APIView):
+    def post(self, request, ride_id):
+        try :
+            ride = Ride.objects.get(id=ride_id)
+            ride.status = 'completed'
+            ride.is_completed = True
+            ride.save()
+            return Response({'message':'ride completed'},status=status.HTTP_200_OK)
+        except RidePartner.DoesNotExist:
+            return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+

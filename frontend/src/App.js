@@ -32,6 +32,10 @@ import { Router } from "lucide-react";
 import JoinRequests from "./pages/RideShare/Rider/JoinRequests";
 import Join_a_ride from "./pages/RideShare/RidePartner/Join_a_ride";
 import RideJoin from "./pages/RideShare/RidePartner/RideJoin";
+import PartnerDetails from "./pages/RideShare/Rider/Partner";
+import RideRoute from "./pages/RideShare/Rider/Route";
+import RideDetails from "./pages/RideShare/Rider/RideDetails";
+import RideDetail from "./pages/RideShare/RidePartner/Ridedetail";
 
 function Signin(){
   // localStorage.clear()
@@ -96,9 +100,13 @@ function App() {
          {/* RideSharing */}
 
          <Route path='/make_a_ride' element={<Make_a_ride />} />
-         <Route path='/joinrequests/:ride_id' element={<JoinRequests />} />
+         <Route path='/joinrequests/' element={<JoinRequests />} />
          <Route path="/join_a_ride" element={<Join_a_ride />} />
          <Route path='/ridejoin/:ride_id' element = {<RideJoin />} />
+         <Route path='/partnerdetail/:partnerId' element={<PartnerDetails />} /> 
+         <Route path="/rideroute" element={<RideRoute />} />
+         < Route path="/ridedetails/:ride_id" element={<RideDetails />} />
+         <Route path="/partner/ridedetail/:ride_id" element={<RideDetail />}/>
          </Routes>
          </GoogleOAuthProvider>
 
