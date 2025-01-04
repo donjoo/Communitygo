@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import MakeRide,RideSearch,JoinRideView,AcceptRidePartnerView,DeclineRidePartnerView,PartnerDetailView,PickupPartner,RideStart,RideRoute,RideCompleted,DropoffPartner
+from .views import MakeRide,RideSearch,JoinRideView,AcceptRidePartnerView,DeclineRidePartnerView,PartnerDetailView,PickupPartner,RideStart,RideRoute,RideCompleted,DropoffPartner,RideDetail,CancleRide
 
 app_name='RideShare'
 
@@ -17,4 +17,7 @@ urlpatterns = [
     path('ride/<int:ride_id>/start/',RideStart.as_view(),name='ride_start'),
     path('ride/<int:ride_id>/route/',RideRoute.as_view(),name="ride_route"),
     path('ride/<int:ride_id>/complete/',RideCompleted.as_view(),name='ride_completed'),
+    path('partner/<int:partner_id>/ridedetail/',RideDetail.as_view(),name='ride_detail_partner'),
+    path('partner/<int:partner_id>/cancel/',CancleRide.as_view(),name='cancel_join'),
+
 ]

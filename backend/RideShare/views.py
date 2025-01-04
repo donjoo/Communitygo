@@ -43,7 +43,7 @@ class MakeRide(APIView):
 
         # Filter partners into pending and accepted categories
         pending = ride_partners.filter(status="pending")
-        accepted = ride_partners.exclude(status__in=["pending", "rejected"])
+        accepted = ride_partners.exclude(status__in=["pending", "rejected",'cancled'])
         # Serialize the ride and partners
         ride_serializer = RideSerializer(ride)
         pending_serializer = RidePartnerSerializer(pending, many=True)  # Use many=True for multiple objects
@@ -63,6 +63,7 @@ class MakeRide(APIView):
 class RideSearch(generics.ListAPIView):
     serializer_class = RideSerializer
     permission_classes = [IsEmailVerified]  # Ensure only authenticated users can access this view
+
 
     def get_queryset(self):
         # Start with all rides that are pending
@@ -85,7 +86,13 @@ class RideSearch(generics.ListAPIView):
 
         return queryset
     
+        #  date_param = self.request.query_params.get('date', None)
 
+        # if date_param:
+        #     try:
+        #         # Convert the string to a date object for filtering
+        #         ride_date = datetime.strptime(date_param, '%Y-%m-%d').date()
+        #         queryset = queryset.filter(date=ride_date)
 
 
 class JoinRideView(APIView):
@@ -123,11 +130,20 @@ class AcceptRidePartnerView(APIView):
     def post(self, request, partner_id):
         try:
             ride_partner = RidePartner.objects.get(id=partner_id)
+            ride = get_object_or_404(Ride,id = ride_partner.ride)
+
+
             ride_partner.status = 'accepted'  # Update status to accepted
             ride_partner.save()
+
+            ride.available_seats -= ride_partner.seats
+            ride.save()
+
+
             return Response(RidePartnerSerializer(ride_partner).data, status=status.HTTP_200_OK)
         except RidePartner.DoesNotExist:
             return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
 
 class DeclineRidePartnerView(APIView):
     def post(self, request, partner_id):
@@ -242,8 +258,57 @@ class  RideCompleted(APIView):
             ride.status = 'completed'
             ride.is_completed = True
             ride.save()
+
+            try:
+                partners = RidePartner.objects.filter(ride=ride)
+                filteredpartners = partners.filter(status="pickedup")
+                
+                for partner in filteredpartners:
+                    partner.status = 'dropedoff'
+                    partner.save()
+                    
+            except RidePartner.DoesNotExist:
+                pass
+
             return Response({'message':'ride completed'},status=status.HTTP_200_OK)
         except RidePartner.DoesNotExist:
             return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
 
+
+
+
+class RideDetail(APIView):
+    def get(self,request,partner_id):
+        partner = get_object_or_404(RidePartner,id = partner_id)
+        ride = get_object_or_404(Ride,id = partner.ride.id)
+
+
+        ride_serializer = RideSerializer(ride)
+        partner_serializer = RidePartnerSerializer(partner)
+
+        data = {
+
+            'ride':ride_serializer.data,
+            'partner':partner_serializer.data,
+
+        }
+
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class CancleRide(APIView):
+    def post(self,request,partner_id):
+    
+            partner = get_object_or_404(RidePartner,id = partner_id)
+            ride = get_object_or_404(Ride,id = partner.ride.id)
+
+            partner.status = 'cancled'
+            ride.total_seats += partner.seats
+            ride.available_seats += partner.seats
+            
+            partner.save()
+            ride.save()
+            return Response({'message':'Cancellation succefull'},status=status.HTTP_200_OK)
+       
 

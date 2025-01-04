@@ -58,6 +58,7 @@ class RidePartner(models.Model):
         ('rejected', 'Rejected'),
         ('pickedup','Pickedup'),
         ('dropedoff','Dropedoff'),
+        ('cancled','Cancled'),
     ]
      
     ride = models.ForeignKey(Ride,on_delete=models.CASCADE, related_name='partners')
