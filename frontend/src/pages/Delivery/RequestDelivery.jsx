@@ -40,7 +40,7 @@ export default function DeliveryPage() {
     length:'',
     width:'',
     height:'',
-    weigth:'', // Default package size
+    weight:'', // Default package size
     details: '', // Optional details
   });
 
@@ -48,7 +48,7 @@ export default function DeliveryPage() {
 
 
   const packageSizes = [
-    { value: 'SM', label: 'Small :  30x20x10 cm, up to 1 kg' },
+    { value: 'SM', label: 'Small'},
     { value: 'MD', label: 'Medium' },
     { value: 'LG', label: 'Large' },
   ];
@@ -144,9 +144,25 @@ export default function DeliveryPage() {
     }
 
 
+    if (formData.length && (isNaN(formData.length)|| formData.length <= 0 )) {
+      tempErrors.lemgth = "Length must be a positive number";
+    }
 
 
 
+    if (formData.width && (isNaN(formData.width) || formData.width <= 0)){
+      tempErrors.width = "width must be a positive number";
+    }
+
+    
+    if (formData.height && (isNaN(formData.height) || formData.height <= 0)) {
+      tempErrors.height = "Height must be a positive number";
+    }
+
+
+    if (formData.weight && (isNaN(formData.weight) || formData.weight <= 0)) {
+      tempErrors.weight = "Weight must be a positive number";
+    }
 
 
     setErrors(tempErrors);
@@ -163,70 +179,74 @@ export default function DeliveryPage() {
 
 
 
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user.username, 'user iddd')
+    console.log(user.username, 'user iddd');
 
     if (validate()) {
-      console.log('Submitting:', formData);
-      const payload = {
-        user: user.id,
-        from_address: {
+        console.log('Submitting:', formData);
+        
+        // Create FormData object
+        const formDataa = new FormData();
+        formDataa.append('user', user.id);
+        const fromAddressData = {
           address_line_1: formData.from_address,
           city: formData.from_city,
           postal_code: formData.from_postal_code,
           state: formData.from_state,
           latitude: pickupCoordinates.latitude,
-          longitude: pickupCoordinates.longitude,
-        },
-        to_address: {
+          longitude: pickupCoordinates.longitude
+      };
+      formDataa.append('from_address', JSON.stringify(fromAddressData));
+
+      // Create nested to_address object
+      const toAddressData = {
           address_line_1: formData.to_address,
           city: formData.to_city,
           postal_code: formData.to_postal_code,
           state: formData.to_state,
           latitude: dropoffCoordinates.latitude,
-          longitude: dropoffCoordinates.longitude,
-        },
-        package_size: formData.package_size,
-        details: formData.details,
-        courier: formData.courier,
-        status: formData.status || 'PENDING', // Set default if needed
+          longitude: dropoffCoordinates.longitude
       };
+      formDataa.append('to_address', JSON.stringify(toAddressData));
+        // Append other fields
+        formDataa.append('package_size', formData.package_size);
+        formDataa.append('details', formData.details);
 
 
-      try {
-        const response = await api.post('request_delivery/', payload,
-        );
+        const courierId = formData.courier === 'undefined' ? null : formData.courier;
+        if (courierId) {
+            formData.append('courier', courierId);
+        };
 
-        if (response.status >= 200 && response.status < 300) {
-          setDelivery_id(response.data.delivery_id)
-          console.log(response.data.delivery_id, 'responseeeeeeee')
-          console.log(delivery_id, 'deliveryiddd')
-          alert('Delivery request submitted successfully!');
-          setFormData({
-            from_address: '',
-            from_city: '',
-            from_postal_code: '',
-            from_state: '',
-            to_address: '',
-            to_city: '',
-            to_postal_code: '',
-            to_state: '',
-            package_size: 'SM',
-            details: '',
-          });
-        } else {
-          alert('Failed to submit delivery request. Please try again.');
+        formDataa.append('status', formData.status || 'PENDING');
+        formDataa.append('height', formData.height);
+        formDataa.append('length', formData.length);
+        formDataa.append('width', formData.width);
+        formDataa.append('weight', formData.weight);
+
+        // Append the image file
+        const imageFile = document.getElementById("image-upload").files[0]; // Assuming you have an input with id "image-upload"
+        if (imageFile) {
+            formDataa.append('image', imageFile); // Append the image file
         }
-      } catch (error) {
-        console.error('Error submitting form:', error);
-        alert('An error occurred. Please try again later.');
-      }
-    }
-  };
 
+        try {
+            const response = await api.post('request_delivery/', formDataa, {
+                headers: {
+                    'Content-Type': 'multipart/form-data' // Important for file uploads
+                }
+            });
+
+            if (response.status >= 200 && response.status < 300) {
+                setDelivery_id(response.data.delivery_id);
+                console.log(response.data.delivery_id, 'Delivery ID');
+            }
+        } catch (error) {
+            console.error("Error submitting delivery request:", error.response.data);
+        }
+    }
+};
 
   useEffect(() => {
     if (delivery_id) {
@@ -403,6 +423,76 @@ export default function DeliveryPage() {
                   </div>
 
 
+
+                  <div className="mb-6">
+                    <label htmlFor="length" className="block text-gray-800 font-semibold mb-2">Length</label>
+                    <input
+                      type="text"
+                      id="length"
+                      name="length"
+                      placeholder="Enter State"
+                      value={formData.length}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                    {errors.length && <span className='text-red-500 text-sm'>{errors.length}</span>}
+
+                  </div>
+
+
+                  <div className="mb-6">
+                    <label htmlFor="width" className="block text-gray-800 font-semibold mb-2">Width</label>
+                    <input
+                      type="text"
+                      id="width"
+                      name="width"
+                      placeholder=" Enter width"
+                      value={formData.width}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                    {errors.width && <span className='text-red-500 text-sm'>{errors.width}</span>}
+
+                  </div>
+
+
+
+                  <div className="mb-6">
+                    <label htmlFor="height" className="block text-gray-800 font-semibold mb-2"> Height</label>
+                    <input
+                      type="text"
+                      id="height"
+                      name="height"
+                      placeholder="Enter height"
+                      value={formData.height}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                    {errors.height && <span className='text-red-500 text-sm'>{errors.height}</span>}
+
+                  </div>
+
+
+
+
+                  <div className="mb-6">
+                    <label htmlFor="height" className="block text-gray-800 font-semibold mb-2"> weight</label>
+                    <input
+                      type="text"
+                      id="weight"
+                      name="weight"
+                      placeholder="Enter height"
+                      value={formData.weight}
+                      onChange={handleInputChange}
+                      className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
+                    {errors.weight && <span className='text-red-500 text-sm'>{errors.weight}</span>}
+
+                  </div>
+
+
+
+                  
                   <div>
                     {image && <img src={URL.createObjectURL(image)} alt="Preview" width="200" />}
                   </div>
@@ -410,7 +500,7 @@ export default function DeliveryPage() {
                     <label className="block text-gray-800 font-semibold mb-2">
                       Upload Image:
                     </label>
-                    <input type="file" onChange={handleImageChange} className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500" />
+                    <input type="file"  id="image-upload"  onChange={handleImageChange} className="w-full border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-orange-500" />
 
                   </div>
 
@@ -481,9 +571,5 @@ export default function DeliveryPage() {
 
   );
 }
-
-
-
-
 
 
