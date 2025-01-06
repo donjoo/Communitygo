@@ -266,7 +266,7 @@ class  RideCompleted(APIView):
                 for partner in filteredpartners:
                     partner.status = 'dropedoff'
                     partner.save()
-                    
+
             except RidePartner.DoesNotExist:
                 pass
 
@@ -281,15 +281,18 @@ class RideDetail(APIView):
     def get(self,request,partner_id):
         partner = get_object_or_404(RidePartner,id = partner_id)
         ride = get_object_or_404(Ride,id = partner.ride.id)
+        user = get_object_or_404(CustomUser,id = ride.user.id)
 
 
         ride_serializer = RideSerializer(ride)
         partner_serializer = RidePartnerSerializer(partner)
+        user_serializer = UserSerializer(user)
 
         data = {
 
             'ride':ride_serializer.data,
             'partner':partner_serializer.data,
+            'user':user_serializer.data,
 
         }
 

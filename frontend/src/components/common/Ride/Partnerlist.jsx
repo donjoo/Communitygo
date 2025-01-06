@@ -79,7 +79,7 @@ function Partnerlist({ partners }) {
                                         >
                                             More
                                         </span>
-                                    </TableCell>;
+                                    </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

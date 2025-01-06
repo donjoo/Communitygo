@@ -59,17 +59,19 @@ GDAL_LIBRARY_PATH = os.getenv('GDAL_LIBRARY_PATH', '/usr/lib/libgdal.so')
 
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+    'channels',
     'Admin',
     'users',
     'Delivery',
     'RideShare',
+    'Chat',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
@@ -110,7 +112,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
+ASGI_APPLICATION = 'backend.asgi.application'
 
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
@@ -126,6 +138,11 @@ DATABASES = {
     }
 }
 
+
+AUTHENTICATION_BACKENDS = [
+    'users.authentication_backends.EmailBackend',  # Replace 'myapp' with your app name
+    'django.contrib.auth.backends.ModelBackend',  # Keep the default backend for other authentication methods
+]
 
 
 # Password validation

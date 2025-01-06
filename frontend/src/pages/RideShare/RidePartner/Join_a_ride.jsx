@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Footer from '../../../components/Footer'
 import Navbar from '../../../components/Navbar'
 import MapComponent from '../../../components/map/MapComponent'
@@ -27,8 +27,11 @@ function Join_a_ride() {
     const [end,setEnd] = useState(null);
     const navigate = useNavigate();
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
+
+
+
+
+    const handleSearch = async () => {
         setError('');
         setRides([]);
 
@@ -48,6 +51,11 @@ function Join_a_ride() {
             setError('An error occurred while fetching data.');
         }
     };
+
+
+    useEffect(() => {
+      handleSearch()
+    },[])
 
    
     const handleroute = (ride_id) => {

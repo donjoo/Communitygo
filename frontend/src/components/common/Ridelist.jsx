@@ -39,7 +39,12 @@ function Ridelist({ rides }) {
             'id':rideId,
         }
         dispatch(setRideData(ridedata))
+        const selectedRide = rides.find((ride) => ride.id === rideId);
+        if (selectedRide.status === 'completed'){
+            navigate(`/ridedetails`);
+        } else{
         navigate(`/joinrequests`);
+    }
     };
 
     return (
@@ -78,7 +83,7 @@ function Ridelist({ rides }) {
                                         >
                                             View Details
                                         </span>
-                                    </TableCell>;
+                                    </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

@@ -15,6 +15,7 @@ import Navigation from '../../../components/map/Navigation'
 import Partnerlist from '../../../components/common/Ride/Partnerlist'
 import { useNavigate } from 'react-router-dom'
 import Footer from '../../../components/Footer'
+import ChatRoom from '../../Chat/ChatRoom'
 
 function RideDetails() {
 
@@ -26,8 +27,7 @@ function RideDetails() {
 
     const fetchRideDetails = async () => {
         try {
-            const rid = 1
-            const response = await api.get(`${rid}/make_a_ride`);
+            const response = await api.get(`${ride_Id}/make_a_ride`);
             console.log(response.data)
             setRide(response.data.ride);
             setPendings(response.data.pending || [])
@@ -67,12 +67,14 @@ function RideDetails() {
                             <p><strong>Date:</strong> {ride.date}</p>
                             <p><strong>Starting Time:</strong> {ride.starting_time}</p>
                             <p><strong>Vehicle:</strong> {ride.vehicle}</p>
+                            <p><strong>Total Seats:</strong> {ride.total_seats}</p>
                             <p><strong>Available Seats:</strong> {ride.available_seats}</p>
                             <p><strong>Status:</strong> {ride.status}</p>
                         </div>
 
                     </div>
 
+                    
 
                     {/* Your Ride Partners */}
                     <h3 className="text-xl font-semibold mt-4">Your Ride Partners</h3>

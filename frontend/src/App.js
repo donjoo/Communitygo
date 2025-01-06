@@ -105,8 +105,8 @@ function App() {
          <Route path='/ridejoin/:ride_id' element = {<RideJoin />} />
          <Route path='/partnerdetail/:partnerId' element={<PartnerDetails />} /> 
          <Route path="/rideroute" element={<RideRoute />} />
-         < Route path="/ridedetails/:ride_id" element={<RideDetails />} />
-         <Route path="/partner/ridedetail/:ride_id" element={<RideDetail />}/>
+         < Route path="/ridedetails" element={<RideDetails />} />
+         <Route path="/partner/ridedetail/:partner_id" element={<RideDetail />}/>
          </Routes>
          </GoogleOAuthProvider>
 

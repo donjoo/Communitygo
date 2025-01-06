@@ -25,6 +25,7 @@ from google.auth.transport import requests
 from rest_framework.exceptions import AuthenticationFailed, ParseError
 from RideShare.models import Ride,RidePartner
 from RideShare.serializers import RideSerializer,RidePartnerSerializer
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 User = get_user_model()
 
@@ -136,6 +137,7 @@ class LoginView(APIView):
         password = data.get('password')
         try:
             user = User.objects.get(email=email)
+            user = authenticate(request, email=email, password=password)
             if user.check_password(password):
                 if not user.is_active:
                     return Response({'error':'Your account has been blocked.'}, status=status.HTTP_403_FORBIDDEN)
@@ -258,7 +260,10 @@ class UserProfileView(APIView):
 
     permission_classes = [IsAuthenticated]
 
+    
     def get(self, request, *args,**kwargs):
+
+     
         try:
 
    
@@ -277,6 +282,7 @@ class UserProfileView(APIView):
 
 
             print(user)
+            print(user.is_authenticated,'yhyyyyy')
             print(courierserializer.data)
             data = {
                 'user': serializer.data,

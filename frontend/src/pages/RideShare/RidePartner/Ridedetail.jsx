@@ -6,36 +6,57 @@ import Navigation from '../../../components/map/Navigation'
 import Partnerlist from '../../../components/common/Ride/Partnerlist'
 import { useNavigate, useParams } from 'react-router-dom'
 import Footer from '../../../components/Footer'
+import ChatRoom from '../../Chat/ChatRoom'
 
 function RideDetail() {
 
-    const {ride_id} = useParams()
+    const { partner_id } = useParams();
     const [ride, setRide] = useState(null);
     const [pendings, setPendings] = useState([])
-    const [partners, setPartners] = useState([])
+    const [partner, setPartner] = useState()
+    const [user,setUser] = useState()
+    const [start,setStart] = useState(null);
+    const [end,setEnd] = useState(null);
     const navigate = useNavigate()
 
     const fetchRideDetails = async () => {
         try {
-            const response = await api.get(`${ride_id}/make_a_ride`);
+            const response = await api.get(`partner/${partner_id}/ridedetail/`);
             console.log(response.data)
+            setPartner(response.data.partner)
             setRide(response.data.ride);
-            setPendings(response.data.pending || [])
-            setPartners(response.data.partners)
+            setUser(response.data.user)
+            
+            setEnd([response.data.partner.dropoff_longitude,response.data.partner.dropoff_latitude])
+            setStart([response.data.partner.pickup_longitude,response.data.partner.pickup_latitude])
+        
         } catch (errors) {
 
         }
     }
+
+const handleCancel = async() => {
+    try {
+        const response = await api.post(`partner/${partner_id}/cancel/`)
+        console.log('Cancled',response.data)
+        fetchRideDetails()
+    } catch (error) {
+        console.error('Error accepting request:',error);
+    }
+}
+
+
+
 
 
 
 
     useEffect(() => {
         console.log('loadinggggggggggggggggggggggggg')
-        if (ride_id) {
+        if (partner_id) {
             fetchRideDetails();
         }
-    }, [ride_id]);
+    }, [partner_id]);
 
 
 
@@ -45,33 +66,62 @@ function RideDetail() {
 
     
     return (
-        <>  <Navbar />
-            <div className="container mx-auto p-6 flex flex-col">
-                {/* Upper Section - Ride Details and Your Ride Partners */}
-                <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-                    <h2 className="text-2xl font-semibold mb-4">Ride Details</h2>
-                    <div className="flex justify-between items-center mb-4">
-                        <div>
-                            <p><strong>Starting Point:</strong> {ride.route.starting_point}</p>
-                            <p><strong>Endpoint:</strong> {ride.route.endpoint}</p>
-                            <p><strong>Date:</strong> {ride.date}</p>
-                            <p><strong>Starting Time:</strong> {ride.starting_time}</p>
-                            <p><strong>Vehicle:</strong> {ride.vehicle}</p>
-                            <p><strong>Available Seats:</strong> {ride.available_seats}</p>
-                            <p><strong>Status:</strong> {ride.status}</p>
-                        </div>
+        <> 
+        <Navbar />
+        <div className="container mx-auto p-6 flex flex-col md:flex-row">
+            {/* Left Section - Ride Details */}
+            <div className="flex-1 bg-white shadow-md rounded-lg p-6 mb-6 md:mr-4">
+                <h2 className="text-2xl font-semibold mb-4">Ride Details</h2>
+                <div className="flex flex-col mb-4">
+                    <p><strong>Starting Point:</strong> {ride.route.starting_point}</p>
+                    <p><strong>Endpoint:</strong> {ride.route.endpoint}</p>
+                    <p><strong>Date:</strong> {ride.date}</p>
+                    <p><strong>Starting Time:</strong> {ride.starting_time}</p>
+                    <p><strong>Vehicle:</strong> {ride.vehicle}</p>
+                    <p><strong>Total Seats:</strong> {ride.total_seats}</p>
+                    <p><strong>Available Seats:</strong> {ride.available_seats}</p>
+                    <p><strong>Status:</strong> {ride.status}</p>
+                </div>
+                <h2 className="text-2xl font-semibold mb-4">Your Pickup Details</h2>
+                <div className="flex flex-col mb-4">
+                    <p><strong>Pickup Point:</strong> {partner.pickup}</p>
+                    <p><strong>Dropoff Point:</strong> {partner.dropoff}</p>
+                    <p><strong>seats:</strong> {partner.seats}</p>
+                    <p><strong>Status:</strong> {partner.status}</p>
+                    <p><strong>Status:</strong> {user.username}</p>
 
-                    </div>
-
-
-                    {/* Your Ride Partners */}
-                   
                 </div>
 
-                {/* Lower Section - Requests to Join and Map */}
-
+                {/* Conditional Cancel Button */}
+                {(partner.status === 'pending' || partner.status === 'accepted') && (
+                    <button 
+                        onClick={handleCancel} 
+                        className="mt-4 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300"
+                    >
+                        Cancel
+                    </button>
+                )}
             </div>
-        </>
+
+            <ChatRoom receiverUsername={user?.username} />
+
+
+            {/* Right Section - Map Display */}
+            <div className="flex-1 bg-gray-100 rounded-lg shadow-md p-4">
+                {start && end ? (
+                    <Navigation startlocation={start} endlocation={end} />
+                ) : (
+                    <div className="bg-gray-200 h-full rounded-lg shadow-md flex items-center justify-center">
+                        <h3>Loading map...</h3>
+                    </div>
+                )}
+            </div>
+        </div>
+
+        {/* Optional Footer */}
+        {/* Uncomment if you want to include the footer */}
+        <Footer />
+    </>
     )
 }
 

@@ -108,9 +108,9 @@ function JoinRequests() {
 
     useEffect(() => {
         console.log('loadinggggggggggggggggggggggggg',ride_Id)
-        // if (ride_Id) {
+        if (ride_Id) {
             fetchJoinRequests();
-        // }
+        }
     }, [ride_Id]);
 
 
@@ -135,6 +135,7 @@ function JoinRequests() {
                             <p><strong>Date:</strong> {ride.date}</p>
                             <p><strong>Starting Time:</strong> {ride.starting_time}</p>
                             <p><strong>Vehicle:</strong> {ride.vehicle}</p>
+                            <p><strong>Total Seats:</strong> {ride.total_seats}</p>
                             <p><strong>Available Seats:</strong> {ride.available_seats}</p>
                             <p><strong>Status:</strong> {ride.status}</p>
                         </div>

@@ -35,11 +35,11 @@ function MyJoinlist({ joins }) {
 
 
 
-    const handleViewDetails = (rideId) => {
-        console.log(`Navigating to ride details for ride ID: ${rideId}`);
+    const handleViewDetails = (partnerId) => {
+        console.log(`Navigating to ride details for ride ID: ${partnerId}`);
       
         
-        navigate(`/partner/ridedetail/${rideId}`)
+        navigate(`/partner/ridedetail/${partnerId}`)
     };
 
     return (
@@ -74,11 +74,11 @@ function MyJoinlist({ joins }) {
                                 <TableCell className="">
                                         <span
                                             className="text-blue-500 hover:underline cursor-pointer"
-                                            onClick={() => handleViewDetails(ride.ride)}
+                                            onClick={() => handleViewDetails(ride.id)}
                                         >
                                             View Details
                                         </span>
-                                    </TableCell>;
+                                    </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

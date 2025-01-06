@@ -124,6 +124,16 @@ function Make_a_ride() {
                     const ridedata = {
                       'id': response.data.ride_id,
                     }
+                    
+                    setFormData({
+                      from:'',
+                      to:'',
+                      vehicle:'',
+                      available_seats:'',
+                      date:'',
+                      time:'',
+                    })
+                    
                     dispatch(setRideData(ridedata));
                     navigate('/joinrequests')
                     
