@@ -4,6 +4,8 @@ import api from "../../../api"; // Replace with your API configuration file
 import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
 import { FaStar } from "react-icons/fa"; // For star icons
+import { Button } from "../../../component/ui/button";
+import ChatRoom from "../../Chat/ChatRoom";
 
 function CourierDetails() {
   const { deliveryId } = useParams(); // Get the delivery ID from the URL
@@ -16,6 +18,8 @@ function CourierDetails() {
   const [pickupTime, setPickupTime] = useState('');
   const [dropoffTime,setDropoffTime] = useState('');
   const [showForm, setShowForm] = useState(false);  // State to toggle the form visibility
+  const [showChat, setShowChat] = useState(false);
+
   const baseURL = "http://localhost:8000"; // Replace with your actual base URL if different
 
 
@@ -232,6 +236,18 @@ function CourierDetails() {
         </div>
 
         <Footer />
+        <Button
+      className="fixed bottom-4 right-4 z-50"
+      onClick={() => setShowChat(!showChat)}
+    >
+      {showChat ? 'Close Chat' : 'Open Chat'}
+    </Button>
+
+    {showChat && (
+      <div className="fixed bottom-16 right-4 z-50 w-96 h-[calc(100vh-6rem)] max-h-[32rem] bg-white shadow-lg rounded-lg overflow-hidden">
+        <ChatRoom receiverUsername={user.username} />
+      </div>
+    )}
       </div>
     </>
   );
