@@ -12,6 +12,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <>
   <script src="https://apis.google.com/js/platform.js" async defer></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <Provider store={store}>
       {/* <ThemeProvider> */}

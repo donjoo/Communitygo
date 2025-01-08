@@ -36,6 +36,7 @@ import PartnerDetails from "./pages/RideShare/Rider/Partner";
 import RideRoute from "./pages/RideShare/Rider/Route";
 import RideDetails from "./pages/RideShare/Rider/RideDetails";
 import RideDetail from "./pages/RideShare/RidePartner/Ridedetail";
+import DeliveryPayment from "./pages/Delivery/Payment/Payment";
 
 function Signin(){
   // localStorage.clear()
@@ -72,6 +73,7 @@ function App() {
         <Route path="/" element={<Home />}/>
         <Route path="/logout" element={<Logout />} /> {/* Redirects and clears localStorage */}     
         <Route path="/request-delivery" element={<RequestDelivery />} />
+        <Route path="/delivery/payment/:deliveryId" element={<DeliveryPayment />} />
         <Route path="/deliverylist" element={< DeliveryList />} />
         <Route path="/deliverysearch" element = {< DeliverySearch />} />
         <Route path='/admin/login' element={< AdminLogin />} />

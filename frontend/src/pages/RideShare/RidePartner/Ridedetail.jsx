@@ -7,6 +7,7 @@ import Partnerlist from '../../../components/common/Ride/Partnerlist'
 import { useNavigate, useParams } from 'react-router-dom'
 import Footer from '../../../components/Footer'
 import ChatRoom from '../../Chat/ChatRoom'
+import { Button } from '../../../component/ui/button';
 
 function RideDetail() {
 
@@ -18,6 +19,8 @@ function RideDetail() {
     const [start,setStart] = useState(null);
     const [end,setEnd] = useState(null);
     const navigate = useNavigate()
+    const [showChat, setShowChat] = useState(false);
+    
 
     const fetchRideDetails = async () => {
         try {
@@ -103,7 +106,6 @@ const handleCancel = async() => {
                 )}
             </div>
 
-            <ChatRoom receiverUsername={user?.username} />
 
 
             {/* Right Section - Map Display */}
@@ -121,6 +123,18 @@ const handleCancel = async() => {
         {/* Optional Footer */}
         {/* Uncomment if you want to include the footer */}
         <Footer />
+        <Button
+      className="fixed bottom-4 right-4 z-50"
+      onClick={() => setShowChat(!showChat)}
+    >
+      {showChat ? 'Close Chat' : 'Open Chat'}
+    </Button>
+
+    {showChat && (
+      <div className="fixed bottom-16 right-4 z-50 w-96 h-[calc(100vh-6rem)] max-h-[32rem] bg-white shadow-lg rounded-lg overflow-hidden">
+        <ChatRoom receiverUsername={user.username} />
+      </div>
+    )}
     </>
     )
 }

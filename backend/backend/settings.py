@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'Delivery',
     'RideShare',
     'Chat',
+    'Payment',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
@@ -279,3 +280,13 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TIMEZONE = 'Asia/Kolkata'
+
+
+
+
+
+# Razorpay
+
+
+razor_pay_id = 'rzp_test_UJIjsxqMCJLNyo'
+key_secret = '0trQimRk8SzQpzgLmYMh0BVY'

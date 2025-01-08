@@ -269,11 +269,15 @@ class DeliveryDetailView(APIView):
                 courierser = CourierSerializer(courier)
                 courier_data = courierser.data  # If courier exists, add the serialized data
 
+             
                 courier_user = User.objects.get(email = courier.user)
                 courier_userser = UserSerializer(courier_user)
                 courier_userdata = courier_userser.data
+            
+
             except Courier.DoesNotExist:
                 courier_data = None  # No courier assigned
+                courier_userdata = None
             user = User.objects.get(email = delivery.user)
             
             userser = UserSerializer(user)

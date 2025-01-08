@@ -130,7 +130,7 @@ class AcceptRidePartnerView(APIView):
     def post(self, request, partner_id):
         try:
             ride_partner = RidePartner.objects.get(id=partner_id)
-            ride = get_object_or_404(Ride,id = ride_partner.ride)
+            ride = get_object_or_404(Ride,id = ride_partner.ride.id)
 
 
             ride_partner.status = 'accepted'  # Update status to accepted

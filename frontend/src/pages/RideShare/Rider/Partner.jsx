@@ -6,6 +6,7 @@ import api from '../../../api';
 import Navigation from '../../../components/map/Navigation';
 import { useSelector } from 'react-redux';
 import ChatRoom from '../../Chat/ChatRoom';
+import { Button } from '../../../component/ui/button';
 
 function PartnerDetails() {
   const ride_id = useSelector((state) => state.ride.id);
@@ -18,6 +19,8 @@ function PartnerDetails() {
   const [end, setEnd] = useState(null);
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const [showChat, setShowChat] = useState(false);
+  
 
   // Define PartnerDetail inside the component
   const PartnerDetail = async () => {
@@ -109,10 +112,7 @@ function PartnerDetails() {
               <span className="text-gray-800">{partner?.status || 'N/A'}</span>
             </div>
 
-            {/* Chat Room Component */}
-            {user && (
-              <ChatRoom receiverUsername={user.username} />
-            )}
+            
 
             {/* Pickup/Dropoff Buttons */}
             <div className="mt-6">
@@ -148,6 +148,18 @@ function PartnerDetails() {
         </div>
       </div>
       <Footer />
+      <Button
+      className="fixed bottom-4 right-4 z-50"
+      onClick={() => setShowChat(!showChat)}
+    >
+      {showChat ? 'Close Chat' : 'Open Chat'}
+    </Button>
+
+    {showChat && (
+      <div className="fixed bottom-16 right-4 z-50 w-96 h-[calc(100vh-6rem)] max-h-[32rem] bg-white shadow-lg rounded-lg overflow-hidden">
+        <ChatRoom receiverUsername={user.username} />
+      </div>
+    )}
     </div>
   );
 }

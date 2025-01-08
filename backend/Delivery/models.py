@@ -27,13 +27,6 @@ class Addresses(gis_models.Model):
     def __str__(self):
         return f"{self.address_line_1}, {self.city}, {self.state} - {self.postal_code}"
     
-# class Courier(models.Model):
-#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='courier_deliveries')
-#     # other courier-specific fields
-
-#     def __str__(self):
-#         return f"Courier: {self.user.username}"
-
 
 class Delivery(models.Model):
 

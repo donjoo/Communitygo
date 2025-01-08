@@ -4,6 +4,8 @@ import Navbar from '../../../components/Navbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../../api';
 import Navigation from '../../../components/map/Navigation';
+import { Button } from '../../../component/ui/button';
+import ChatRoom from '../../Chat/ChatRoom';
 
 function Dropofflocation() {
   const {deliveryId} = useParams();
@@ -14,6 +16,7 @@ function Dropofflocation() {
   const [end,setEnd] = useState(null);
   const [user,setUser] = useState(null);
   const navigate = useNavigate()
+  const [showChat, setShowChat] = useState(false);
 
    
 
@@ -138,7 +141,22 @@ function Dropofflocation() {
         </div>
       </div>
       <Footer />
+
+      <Button
+      className="fixed bottom-4 right-4 z-50"
+      onClick={() => setShowChat(!showChat)}
+    >
+      {showChat ? 'Close Chat' : 'Open Chat'}
+    </Button>
+
+    {showChat && (
+      <div className="fixed bottom-16 right-4 z-50 w-96 h-[calc(100vh-6rem)] max-h-[32rem] bg-white shadow-lg rounded-lg overflow-hidden">
+        <ChatRoom receiverUsername={user.username} />
+      </div>
+    )}
+    
     </div>
+
   );
 }
 
