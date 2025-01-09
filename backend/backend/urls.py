@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/',include('Delivery.urls')),
     path('api/',include('RideShare.urls')),
     path('api/',include('Chat.urls')),
+    path('api/payments/',include('Payment.urls')),
     path('admin/',include('Admin.urls'))
 ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
 

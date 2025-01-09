@@ -3,7 +3,7 @@ import { usePayment } from '../../hooks/usePayment';
 
 export const PaymentButton = ({
   amount,
-  providerId,
+  // providerId,
   serviceType,
   serviceId,
   onSuccess,
@@ -16,7 +16,7 @@ export const PaymentButton = ({
   const handleClick = () => {
     initiatePayment({
       amount,
-      providerId,
+      // providerId,
       serviceType,
       serviceId,
       onSuccess,

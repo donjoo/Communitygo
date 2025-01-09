@@ -12,9 +12,11 @@ function DeliveryPayment() {
   const [delivery, setDelivery] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const amount = 100
 
   const fetchDeliveryDetails = async () => {
     try {
+
       const response = await api.get(`${deliveryId}/deliverydetail`);
       setDelivery(response.data.delivery);
     } catch (err) {
@@ -111,8 +113,8 @@ function DeliveryPayment() {
               <p>Click the button below to proceed with the payment.</p>
             </div>
             <PaymentButton
-        amount={delivery.amount}
-        providerId={delivery.courier_id}
+        amount={amount}
+        // providerId={delivery.courier_id}
         serviceType="delivery"
         serviceId={delivery.id}
         onSuccess={handleSuccess}

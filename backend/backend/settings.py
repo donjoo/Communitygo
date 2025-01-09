@@ -288,5 +288,5 @@ CELERY_TIMEZONE = 'Asia/Kolkata'
 # Razorpay
 
 
-razor_pay_id = 'rzp_test_UJIjsxqMCJLNyo'
-key_secret = '0trQimRk8SzQpzgLmYMh0BVY'
+RAZORPAY_KEY_ID = 'rzp_test_UJIjsxqMCJLNyo'
+RAZORPAY_KEY_SECRET = '0trQimRk8SzQpzgLmYMh0BVY'

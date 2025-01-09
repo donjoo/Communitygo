@@ -7,7 +7,7 @@ export const usePayment = () => {
 
   const initiatePayment = async ({
     amount,
-    providerId,
+    // providerId,
     serviceType,
     serviceId,
     onSuccess,
@@ -20,7 +20,7 @@ export const usePayment = () => {
       // Create order
       const order = await paymentApi.createOrder({
         amount,
-        provider_id: providerId,
+        // provider_id: providerId,
         service_type: serviceType,
         service_id: serviceId
       });

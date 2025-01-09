@@ -27,32 +27,45 @@ class PaymentViewSet(viewsets.ViewSet):
     @action(detail=False,methods=['post'])
     def create_order(self,request):
         try :
+            required_fields = ['amount', 'service_type', 'service_id']
+            for field in required_fields:
+                if field not in request.data:
+                    raise ValueError(f"Missing required field: {field}")
+        
+            if not request.data['amount']:
+                raise ValueError("Amount cannot be empty")
             amount = int(float(request.data['amount'])* 100)
             commission, provider_amount = self.calculate_commision(amount/100)
 
-
+            print('22')
             razorpay_order = self.razorpay_client.order.create({
                 'amount':amount,
                 'currency':'INR',
                 'payment_capture':1,
                 'notes':{
                     'service_type': request.data['service_type'],
-                    'sedrvice_id':request.data['service_id']
+                    'service_id':request.data['service_id']
                 }
             })
 
 
+            print(amount,provider_amount,commission)
+            print(request.user)
+            print( razorpay_order['id'],request.data['service_type'],request.data['service_id'])
+            print('33')
             transaction = Transaction.objects.create(
                 order_id = razorpay_order['id'],
                 amount = amount/100,
-                platform_commision = commission,
+                platform_commisson = commission,
                 provider_amount = provider_amount,
                 from_user = request.user,
-                to_user = request.data['provider_id'],
+                # to_user = request.data['provider_id'],
                 service_type = request.data['service_type'],
                 service_id = request.data['service_id']
             )
 
+            print('44')
+            print(settings.RAZORPAY_KEY_ID,'5')
             return Response({
                 'id':razorpay_order['id'],
                 'amount':amount,
@@ -84,6 +97,7 @@ class PaymentViewSet(viewsets.ViewSet):
 
             return Response({'status': 'Payment verified successfully'})
         except Exception as e:
+            print(e)
             return Response({
                 'error': str(e)
             }, status=status.HTTP_400_BAD_REQUEST)
