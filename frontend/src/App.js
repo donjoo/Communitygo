@@ -74,6 +74,8 @@ function App() {
         <Route path="/logout" element={<Logout />} /> {/* Redirects and clears localStorage */}     
         <Route path="/request-delivery" element={<RequestDelivery />} />
         <Route path="/delivery/payment/:deliveryId" element={<DeliveryPayment />} />
+        <Route path='/deliverydetail/:deliveryId' element = {< DeliveryDetails />} />
+
         <Route path="/deliverylist" element={< DeliveryList />} />
         <Route path="/deliverysearch" element = {< DeliverySearch />} />
         <Route path='/admin/login' element={< AdminLogin />} />
@@ -83,7 +85,6 @@ function App() {
         <Route path='/deliverymanagement' element={< DeliveryManagement/>} />
         <Route path='/profile' element={< Profile />} />
         <Route path ='/user/:id' element={< UserDetail />} />
-        <Route path='/deliverydetail/:deliveryId' element = {< DeliveryDetails />} />
         <Route path='/admindeliverydetail/:deliveryId' element = {< AdminDeliveryDetails />} />
         <Route path='/courier_currlocation/:deliveryId' element = {< Currentlocation />} />
         <Route path='/pickuplocation/:deliveryId' element={<Pickuplocation />}/>

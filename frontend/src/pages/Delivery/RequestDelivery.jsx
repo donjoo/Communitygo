@@ -21,6 +21,7 @@ export default function DeliveryPage() {
   const [pickupCoordinates, setPickupCoordinates] = useState(null);
   const [dropoffCoordinates, setDropoffCoordinates] = useState(null);
   const [image, setImage] = useState(null);
+  const [routeDistance, setRouteDistance] = useState(null);
 
 
   // console.log(pickupCoordinates,dropoffCoordinates)
@@ -45,6 +46,9 @@ export default function DeliveryPage() {
   });
 
 
+  useEffect(() => {
+    console.log('distance:',routeDistance)
+  },[routeDistance])
 
 
   const packageSizes = [
@@ -212,7 +216,7 @@ export default function DeliveryPage() {
         // Append other fields
         formDataa.append('package_size', formData.package_size);
         formDataa.append('details', formData.details);
-
+        formDataa.append('distance', routeDistance);
 
         const courierId = formData.courier === 'undefined' ? null : formData.courier;
         if (courierId) {
@@ -250,7 +254,7 @@ export default function DeliveryPage() {
 
   useEffect(() => {
     if (delivery_id) {
-      navigate(`/deliverydetail/${delivery_id}`);
+      navigate(`/delivery/payment/${delivery_id}`);
     }
   }, [delivery_id, navigate]);
 
@@ -556,6 +560,7 @@ export default function DeliveryPage() {
             <MapComponent selectingPickup={selectingPickup}
               onPickupSelect={(coords) => setPickupCoordinates(coords)}
               onDropoffSelect={(coords) => setDropoffCoordinates(coords)}
+              onRouteDistance={(distance) => setRouteDistance(distance / 1000)}
             />
           </div>
 

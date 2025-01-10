@@ -22,6 +22,7 @@ const Navigation = ({ startlocation, endlocation }) => {
           `${directionsUrl}${startlocation[0]},${startlocation[1]};${endlocation[0]},${endlocation[1]}?access_token=${mapboxToken}&geometries=geojson`
         );
         const data = await response.json();
+        console.log(data,'this is data of map api return')
         setRoute(data.routes[0].geometry); // Set the route geometry for the map
 
         // Adjust viewport based on the route

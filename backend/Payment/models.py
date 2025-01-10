@@ -7,14 +7,16 @@ from decimal import Decimal
 
 
 
-class Wallet(models.Model):
+class MyEarnings(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    total_earnings = models.DecimalField(max_digits=10, decimal_places=2,default=0) # total earned amount in this app
+    earnings = models.DecimalField(max_digits=10, decimal_places=2, default=0) # Withdrawable amount
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def credit(self, amount):
-        self.balance += Decimal(amount)
+        self.earnings += Decimal(amount)
+        self.total_earnings += Decimal(amount)
         self.save()
 
     def debit(self, amount):
@@ -23,6 +25,11 @@ class Wallet(models.Model):
             self.save()
             return True
         return False
+
+
+    def __str__(self):
+        return f"{self.action} of {self.amount} on {self.timestamp}"
+    
 
 
 class PlatformSettings(models.Model):
@@ -61,3 +68,12 @@ class Transaction(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+
+
+class EarningsTransactionLog(models.Model):
+    earnings = models.ForeignKey(MyEarnings, on_delete=models.CASCADE)
+    action = models.CharField(max_length=10)  # e.g., 'credit' or 'debit'
+    service = models.CharField(max_length=10) # delivery or ride
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE, null=True, blank=True)

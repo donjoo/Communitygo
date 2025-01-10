@@ -1,5 +1,7 @@
 from django.db import models
 from users.models import CustomUser
+from Payment.models import Transaction
+
 # Create your models here.
 
 
@@ -72,6 +74,8 @@ class RidePartner(models.Model):
     dropoff_longitude = models.FloatField(null=True,blank=True)
     is_pickedup = models.BooleanField(default=False)
     status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='pending')
+    transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE, null=True, blank=True)
+
 
 
     def __str__(self):

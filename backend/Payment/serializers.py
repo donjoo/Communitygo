@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Transaction,Wallet
+from .models import Transaction,MyEarnings
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -9,7 +9,7 @@ class TransactionSerializer(serializers.ModelSerializer):
 
 
 
-class WalletSerializer(serializers.ModelSerializer):
+class MyEarningsSerializer(serializers.ModelSerializer):
     class Mera:
-        model = Wallet
+        model = MyEarnings
         fields = ['balance','created_at','updated_at']

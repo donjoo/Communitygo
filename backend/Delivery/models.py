@@ -2,6 +2,7 @@ from django.db import models
 from users.models import CustomUser
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import Point
+from Payment.models import Transaction
 
 
 
@@ -65,6 +66,10 @@ class Delivery(models.Model):
     weight = models.FloatField(null=True, blank=True)  # Weight in kg
     est_pickup = models.DateTimeField(null=True,blank=True)
     est_dropoff = models.DateTimeField(null=True,blank=True)
+    transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE, null=True, blank=True)
+    distance = models.FloatField(null=True, blank=True) 
+    amount = models.DecimalField(max_digits=10,decimal_places=2,null=True)
+
     
 
 

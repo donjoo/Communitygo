@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import DeliverySerializers, CourierSerializer,UpdateDeliveryTimeSerializer,DeliveryViewSerializer
+from .serializers import DeliverySerializers, CourierSerializer, UpdateDeliveryTimeSerializer, DeliveryViewSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,7 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 import secrets
 import string
-from  django.core.exceptions  import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.decorators import api_view
 from users.serializers import UserSerializer
 from django.utils.timezone import now
@@ -20,8 +20,8 @@ import json
 from rest_framework.permissions import BasePermission
 from rest_framework.exceptions import PermissionDenied
 from datetime import datetime
-
-
+from Payment.models import Transaction
+from Payment.views import transfer_to_provider
 User = get_user_model()
 
 
@@ -34,37 +34,42 @@ class IsEmailVerified(BasePermission):
         return True
 
 
-
-
 class RequestDelivery(APIView):
     permission_classes = [IsEmailVerified]
 
-    def post(self,request):
+    def post(self, request):
         data = request.data
         print(data)
-        serializer = DeliverySerializers(data =data, context={'request': request})
+        serializer = DeliverySerializers(
+            data=data, context={'request': request})
         if serializer.is_valid():
             print('delivery valid')
-            data = serializer.save()
+            distance_km = float(serializer.validated_data.get('distance', 0))
+
+            # Calculate amount based on distance
+            amount_per_km = 10
+            total_amount = distance_km * amount_per_km
+            data = serializer.save(distance=distance_km, amount=total_amount)
+            # data = serializer.save()
             delivery_id = data.id
-            print(data.id,'deliveryy idddddddddddddddddd')
-            return Response({"delivery_id":delivery_id},status=status.HTTP_200_OK)
+            print(data.id, 'deliveryy idddddddddddddddddd')
+            return Response({"delivery_id": delivery_id}, status=status.HTTP_200_OK)
         print(serializer.errors)
-    
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # class RequestDelivery(APIView):
 #     def post(self, request):
 #         data = request.data
 #         print("Incoming data:", data)
 #         serializer = DeliverySerializers(data=data, context={'request': request})
-        
+
 #         if serializer.is_valid():
 #             print('Delivery valid')
 #             delivery_instance = serializer.save()
 #             return Response({"delivery_id": delivery_instance.id}, status=status.HTTP_200_OK)
-        
+
 #         print(serializer.errors)
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -81,27 +86,27 @@ class UpdateTime(APIView):
         except Exception as e:
             return Response({'error': 'Invalid time format'}, status=status.HTTP_400_BAD_REQUEST)
         serializer = UpdateDeliveryTimeSerializer(data=data)
-        
+
         if serializer.is_valid():
             try:
 
-                
                 # Retrieve the delivery object using the provided deliveryId
-                delivery = Delivery.objects.get(id=serializer.validated_data['deliveryId'])
-                
+                delivery = Delivery.objects.get(
+                    id=serializer.validated_data['deliveryId'])
+
                 # Update the estimated pickup and dropoff times
                 delivery.est_pickup = serializer.validated_data['est_pickup']
                 delivery.est_dropoff = serializer.validated_data['est_dropoff']
-                
+
                 # Save the updated delivery object
                 delivery.save()
-                
+
                 # Return a success response
                 return Response({"message": "Estimated times updated successfully."}, status=status.HTTP_200_OK)
-            
+
             except Delivery.DoesNotExist:
                 return Response({"error": "Delivery not found."}, status=status.HTTP_404_NOT_FOUND)
-        
+
         # Return validation errors if the serializer is not valid
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -110,79 +115,88 @@ class UpdateTime(APIView):
 class DeliveryList(APIView):
     def get(self, request):
         print('helloooo')
-        user_id = request.GET.get('user')  # Get the user ID from the query parameters
+        # Get the user ID from the query parameters
+        user_id = request.GET.get('user')
 
         if not user_id:
             return Response({"message": "User ID is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = User.objects.get(id=user_id)  # Assuming you have a User model
+            # Assuming you have a User model
+            user = User.objects.get(id=user_id)
             deliveries = Delivery.objects.filter(user=user)
 
             if deliveries.exists():
-                serializer = DeliveryViewSerializer(deliveries, many=True, context={'request': request})
+                serializer = DeliveryViewSerializer(
+                    deliveries, many=True, context={'request': request})
                 return Response(serializer.data, status=status.HTTP_200_OK)
             else:
                 return Response({"message": "No deliveries found."}, status=status.HTTP_404_NOT_FOUND)
-        
+
         except User.DoesNotExist:
             return Response({"message": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 class DeliverySearch(APIView):
     permission_classes = [IsEmailVerified]
 
-    def get(self,request):
-        deliveries = Delivery.objects.filter(status = 'PENDING').exclude(user=request.user)
+    def get(self, request):
+        deliveries = Delivery.objects.filter(
+            status='PENDING').exclude(user=request.user)
         if deliveries.exists():
             serializer = DeliveryViewSerializer(deliveries, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response({"message":"No available deliveries found"})
+            return Response({"message": "No available deliveries found"})
 
 
-    
 def generate_otp():
     otp = ''.join(secrets.choice(string.digits) for _ in range(4))
     return otp
 
+
 class AcceptDelivery(APIView):
-    permission_classes = [IsAuthenticated,IsEmailVerified]
+    permission_classes = [IsAuthenticated, IsEmailVerified]
 
     def post(self, request, delivery_id):
-        print(delivery_id,'dleiveryyryyryr')
-        print('hellooo')
+       
         delivery = get_object_or_404(Delivery, id=delivery_id)
-        print('herererererer')
         if delivery.status != 'PENDING':
-            return Response({"message":"This delivery is not available for acceptance."},status = status.HTTP_400_BAD_REQUEST)
-        print('111111111herererererer')
+            return Response({"message": "This delivery is not available for acceptance."}, status=status.HTTP_400_BAD_REQUEST)
+
         generate_otp()
         Courier.objects.create(user=request.user,
-                               delivery=delivery)
+                                delivery=delivery)
         delivery.status = 'ASSIGNED'
         delivery.pickup_otp = generate_otp()
         delivery.courier = request.user
+        print(delivery.transaction)
+        transaction = get_object_or_404(Transaction,id = delivery.transaction.id)
+        transaction.to_user = request.user
         delivery.save()
+        transaction.save()
         return Response(status=status.HTTP_200_OK)
+
 
 @api_view(['POST'])
 def courier_currlocation(request, delivery_id):
     try:
+        print('lokingggggggggggggggggggggggggggggggggggggggggggg')
         deliveryId = delivery_id
-        delivery = Delivery.objects.get(id = deliveryId)
-        courier = Courier.objects.get(delivery = delivery)
+        delivery = Delivery.objects.get(id=deliveryId)
+        courier = Courier.objects.get(delivery=delivery)
         courier.latitude = request.data['latitude']
         courier.longitude = request.data['longitude']
         courier.save()
         return Response(status=status.HTTP_200_OK)
     except Courier.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    
+
 
 @api_view(['POST'])
-def Pickedup_StatusUpdate(request,delivery_id):
+def Pickedup_StatusUpdate(request, delivery_id):
     try:
-        delivery = Delivery.objects.get(id = delivery_id)
+        delivery = Delivery.objects.get(id=delivery_id)
         delivery.picked_upat = now()
         delivery.is_pickedup = True
         delivery.dropoff_otp = generate_otp()
@@ -194,9 +208,9 @@ def Pickedup_StatusUpdate(request,delivery_id):
 
 
 @api_view(['POST'])
-def verify_otp(request,delivery_id):
+def verify_otp(request, delivery_id):
     try:
-        delivery = Delivery.objects.get(id = delivery_id)
+        delivery = Delivery.objects.get(id=delivery_id)
         otp = request.data.get('otp')
         method = request.data.get('method')
         print(otp)
@@ -208,58 +222,61 @@ def verify_otp(request,delivery_id):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             if delivery.dropoff_otp == otp:
-                 return Response(status=status.HTTP_200_OK)
+                return Response(status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
     except Delivery.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    
 
 
 @api_view(['POST'])
-def Courier_completed(request,delivery_id):
+def Courier_completed(request, delivery_id):
     try:
-        delivery = Delivery.objects.get(id = delivery_id)
+        delivery = Delivery.objects.get(id=delivery_id)
         print(delivery)
         delivery.is_completed = True
         delivery.delivered_at = now()
         delivery.status = 'DELIVERED'
         delivery.save()
+        
+        service_type = 'delivery'
+        service_id = delivery.id
+
+       
+        transfer_to_provider(service_type, service_id)
+
         return Response(status=status.HTTP_200_OK)
     except Delivery.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+
 @api_view(['POST'])
-def Rate_courier(request,courier_id):
-    try: 
+def Rate_courier(request, courier_id):
+    try:
         courier = Courier.objects.get(id=courier_id)
         rating = request.data.get('rating')
         feedback = request.data.get('feedback')
 
         if rating is None:
-            return  Response({"error":"Rating is required."},status = status.HTTP_400_BAD_REQUEST)
-        
+            return Response({"error": "Rating is required."}, status=status.HTTP_400_BAD_REQUEST)
+
         courier.rating = rating
         courier.feedback = feedback
         courier.save()
-        return Response({"message":"Rating submited successfully!"}, status=status.HTTP_200_OK)
-    
+        return Response({"message": "Rating submited successfully!"}, status=status.HTTP_200_OK)
+
     except Courier.DoesNotExist:
-        return Response({"error":"Courier not found"}, status = status.HTTP_404_NOT_FOUND)
+        return Response({"error": "Courier not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
-        return Response({"error":str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
-
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class DeliveryDetailView(APIView):
     def get(self, request, delivery_id):
         try:
             # delivery = Delivery.objects.get(id=delivery_id)
-            delivery = get_object_or_404(Delivery.objects.select_related('courier'), id=delivery_id)
+            delivery = get_object_or_404(
+                Delivery.objects.select_related('courier'), id=delivery_id)
             serializer = DeliveryViewSerializer(delivery)
 
             courier_data = None
@@ -269,54 +286,50 @@ class DeliveryDetailView(APIView):
                 courierser = CourierSerializer(courier)
                 courier_data = courierser.data  # If courier exists, add the serialized data
 
-             
-                courier_user = User.objects.get(email = courier.user)
+                courier_user = User.objects.get(email=courier.user)
                 courier_userser = UserSerializer(courier_user)
                 courier_userdata = courier_userser.data
-            
 
             except Courier.DoesNotExist:
                 courier_data = None  # No courier assigned
                 courier_userdata = None
-            user = User.objects.get(email = delivery.user)
-            
+            user = User.objects.get(email=delivery.user)
+
             userser = UserSerializer(user)
 
-            data =  {
-                "delivery":serializer.data,
-                "courier":courier_data,
-                "courier_user":courier_userdata,
-                'user':userser.data,
+            data = {
+                "delivery": serializer.data,
+                "courier": courier_data,
+                "courier_user": courier_userdata,
+                'user': userser.data,
             }
-         
+
             return Response(data, status=status.HTTP_200_OK)
         except Delivery.DoesNotExist:
             return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
 
 
-
-
 class Courier_details(APIView):
-    def get(self,request, delivery_id):
+    def get(self, request, delivery_id):
         try:
             delivery = get_object_or_404(Delivery, id=delivery_id)
 
-            delivery = get_object_or_404(Delivery.objects.select_related('courier'), id=delivery_id)
+            delivery = get_object_or_404(
+                Delivery.objects.select_related('courier'), id=delivery_id)
             serializer = DeliveryViewSerializer(delivery)
 
-            courier = Courier.objects.get(delivery = delivery)
-            user = User.objects.get(email = delivery.user)
+            courier = Courier.objects.get(delivery=delivery)
+            user = User.objects.get(email=delivery.user)
             courierser = CourierSerializer(courier)
             userser = UserSerializer(user)
 
-            data =  {
-                "delivery":serializer.data,
-                "courier":courierser.data,
-                'user':userser.data,
+            data = {
+                "delivery": serializer.data,
+                "courier": courierser.data,
+                'user': userser.data,
             }
 
-
             return Response(data)
-        
+
         except Exception as e:
             return Response({"error": "Failed to fetch delivery details", "message": str(e)}, status=400)

@@ -1,76 +1,100 @@
 from django.shortcuts import render
-from django.db import transaction,models
+from django.db import transaction, models
 # Create your views here.
 from rest_framework import viewsets, status
 from decimal import Decimal
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.conf import settings
-from .models import PlatformSettings,Transaction,Wallet
+from .models import PlatformSettings, Transaction, MyEarnings,EarningsTransactionLog
 import razorpay
 from .serializers import TransactionSerializer
+from Delivery.models import Delivery
+from RideShare.models import Ride
+
 
 class PaymentViewSet(viewsets.ViewSet):
     razorpay_client = razorpay.Client(
-        auth = (settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET)
+        auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
 
     )
 
-    def calculate_commision(self,amount):
+    def calculate_commision(self, amount):
         platform_settings = PlatformSettings.objects.first()
         commission_rate = platform_settings.commission_percentage / 100
         commission = Decimal(amount) * commission_rate
         provider_amount = Decimal(amount) - commission
         return commission, provider_amount
-    
 
-    @action(detail=False,methods=['post'])
-    def create_order(self,request):
-        try :
+    @action(detail=False, methods=['post'])
+    def create_order(self, request):
+        try:
+            print('heloooooo payemtn')
             required_fields = ['amount', 'service_type', 'service_id']
             for field in required_fields:
                 if field not in request.data:
                     raise ValueError(f"Missing required field: {field}")
-        
+
             if not request.data['amount']:
+                print('amount missing',request.data['amount'])
                 raise ValueError("Amount cannot be empty")
-            amount = int(float(request.data['amount'])* 100)
+            amount = int(float(request.data['amount']) * 100)
             commission, provider_amount = self.calculate_commision(amount/100)
 
             print('22')
             razorpay_order = self.razorpay_client.order.create({
-                'amount':amount,
-                'currency':'INR',
-                'payment_capture':1,
-                'notes':{
+                'amount': amount,
+                'currency': 'INR',
+                'payment_capture': 1,
+                'notes': {
                     'service_type': request.data['service_type'],
-                    'service_id':request.data['service_id']
+                    'service_id': request.data['service_id']
                 }
             })
 
-
-            print(amount,provider_amount,commission)
+            print(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+            print(amount, provider_amount, commission)
             print(request.user)
-            print( razorpay_order['id'],request.data['service_type'],request.data['service_id'])
+            print(
+                razorpay_order['id'], request.data['service_type'], request.data['service_id'])
             print('33')
             transaction = Transaction.objects.create(
-                order_id = razorpay_order['id'],
-                amount = amount/100,
-                platform_commisson = commission,
-                provider_amount = provider_amount,
-                from_user = request.user,
+                order_id=razorpay_order['id'],
+                amount=amount/100,
+                platform_commisson=commission,
+                provider_amount=provider_amount,
+                from_user=request.user,
                 # to_user = request.data['provider_id'],
-                service_type = request.data['service_type'],
-                service_id = request.data['service_id']
+                service_type=request.data['service_type'],
+                service_id=request.data['service_id']
             )
 
+            service = request.data['service_type']
+            service_id = request.data['service_id']
+            try:
+                if service == 'delivery':
+                    delivery = Delivery.objects.get(id=service_id)
+                    delivery.transaction = transaction
+                    delivery.save()
+                elif service == 'ride':
+
+                    ride = Ride.objects.get(id=service_id)
+                    ride.transaction = transaction
+                    ride.save()
+                else:
+                    raise ValueError("Invalid service type provided.")
+            except (Delivery.DoesNotExist, Ride.DoesNotExist) as e:
+                print(f"Service with ID {service_id} does not exist: {e}")
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
             print('44')
-            print(settings.RAZORPAY_KEY_ID,'5')
+            print(settings.RAZORPAY_KEY_ID, '5')
             return Response({
-                'id':razorpay_order['id'],
-                'amount':amount,
-                'currency':'INR',
-                'key':settings.RAZORPAY_KEY_ID
+                'id': razorpay_order['id'],
+                'amount': amount,
+                'currency': 'INR',
+                'key': settings.RAZORPAY_KEY_ID
             })
         except Exception as e:
             return Response({
@@ -85,12 +109,13 @@ class PaymentViewSet(viewsets.ViewSet):
                 'razorpay_order_id': request.data['order_id'],
                 'razorpay_signature': request.data['signature']
             }
-            
+
             # Verify signature
             self.razorpay_client.utility.verify_payment_signature(params_dict)
-            
+
             # Update transaction
-            transaction = Transaction.objects.get(order_id=request.data['order_id'])
+            transaction = Transaction.objects.get(
+                order_id=request.data['order_id'])
             transaction.payment_id = request.data['payment_id']
             transaction.status = Transaction.COMPLETED
             transaction.save()
@@ -102,59 +127,64 @@ class PaymentViewSet(viewsets.ViewSet):
                 'error': str(e)
             }, status=status.HTTP_400_BAD_REQUEST)
 
+@action(detail=False, methods=['post'])
+def transfer_to_provider(service_type=None, service_id=None):
+    with transaction.atomic():
+        print('transferinggg to walletttttt')
+        try:
+            print('1')
+            print(service_id,service_type)
+            payment = Transaction.objects.get(
+                service_type=service_type,
+                service_id=service_id,
+                status=Transaction.COMPLETED
+            )
+            print('2')
+            my_earnings, _ = MyEarnings.objects.get_or_create(
+                user=payment.to_user
+            )
+            print('3')
+            my_earnings.credit(payment.provider_amount)
+            print('4')
+            payment.status = Transaction.TRANSFERRED
+            payment.save()
 
-    @action(detail=False, methods=['post'])
-    def transfer_to_provider(self,request):
-        with transaction.atomic():
-            try:
-                payment = Transaction.objects.get(
-                    service_type = request.data['service_type'],
-                    service_id = request.data['service_id'],
-                    status = Transaction.COMPLETED
-                )
+            EarningsTransactionLog.objects.create(
+                earnings=my_earnings,
+                action='credit',
+                amount=payment.provider_amount
+            )
 
+            print('5')
+            return Response({
+                'status': 'success',
+                'message': 'Payment transfered to provider wallet',
+                'amount': payment.provider_amount,
+            })
 
-                provider_wallet, _ = Wallet.objects.get_or_create(
-                    user = payment.to_user
-                )
+        except Transaction.DoesNotExist:
+            print('transaction erororororooorororor')
+            return Response({
+                'status': 'error',
+                'message': 'No completed payment found for this service'
+            }, status=400)
 
+        except Exception as e:
+            print(e,'erororrororororor')
+            return Response({
+                'status': 'error',
+                'message': str(e)
+            }, status=400)
 
-                provider_wallet.credit(payment.provider_amount)
+@action(detail=False, methods=['get'])
+def transaction_history():
+    transactions = Transaction.objects.filter(
+        models.Q(from_user=request.user) |
+        models.Q(to_user=request.user)
+    ).order_by('-created_at')
 
-                payment.status = Transaction.TRANSFERRED
-                payment.save()
-
-
-
-                return Response({
-                    'status':'success',
-                    'message':'Payment transfered to provider wallet',
-                    'amount':payment.provider_amount,
-                })
-            
-            except Transaction.DoesNotExist:
-                return Response({
-                    'status':'error',
-                    'message':'No completed payment found for this service'
-                },status=400)
-            
-            except Exception as e:
-                return Response({
-                    'status':'error',
-                    'message':str(e)
-                },status = 400)
-            
-    @action(detail=False, methods=['get'])
-    def transaction_history(self, request):
-        transactions = Transaction.objects.filter(
-            models.Q(from_user=request.user) | 
-            models.Q(to_user=request.user)
-        ).order_by('-created_at')
-        
-        serializer = TransactionSerializer(transactions, many=True)
-        return Response(serializer.data)
-            
-
+    serializer = TransactionSerializer(transactions, many=True)
+    return Response(serializer.data)
 
 
 # For delivery completion
@@ -162,13 +192,13 @@ class PaymentViewSet(viewsets.ViewSet):
 def complete_delivery(self, request):
     """Called when delivery is completed"""
     delivery_id = request.data['delivery_id']
-    
+
     try:
         # Verify delivery completion logic here
-        
+
         # Transfer payment to courier's wallet
         return self.transfer_to_provider(request)
-    
+
     except Exception as e:
         return Response({
             'status': 'error',
@@ -176,19 +206,41 @@ def complete_delivery(self, request):
         }, status=400)
 
 # For ride completion
+
+
 @action(detail=False, methods=['post'])
 def complete_ride(self, request):
     """Called when ride is completed"""
     ride_id = request.data['ride_id']
-    
+
     try:
         # Verify ride completion logic here
-        
+
         # Transfer payment to driver's wallet
         return self.transfer_to_provider(request)
-    
+
     except Exception as e:
         return Response({
             'status': 'error',
             'message': str(e)
         }, status=400)
+
+
+
+
+
+@login_required
+def earnings_view(request):
+    try:
+        earnings = MyEarnings.objects.get(user=request.user)
+    except MyEarnings.DoesNotExist:
+        earnings = None
+
+    transactions = Transaction.objects.filter(from_user=request.user).order_by('-created_at')
+
+    context = {
+        'earnings': earnings,
+        'transactions': transactions,
+    }
+
+    return render(request, 'earnings.html', context)
