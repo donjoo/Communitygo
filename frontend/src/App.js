@@ -37,6 +37,8 @@ import RideRoute from "./pages/RideShare/Rider/Route";
 import RideDetails from "./pages/RideShare/Rider/RideDetails";
 import RideDetail from "./pages/RideShare/RidePartner/Ridedetail";
 import DeliveryPayment from "./pages/Delivery/Payment/Payment";
+import Earnings from "./pages/User/MyEarnings";
+import PaymentPage from "./pages/RideShare/RidePartner/payment";
 
 function Signin(){
   // localStorage.clear()
@@ -95,7 +97,7 @@ function App() {
 
 
 
-
+        <Route path='/my_earnings' element={<Earnings />} />
 
 
 
@@ -105,6 +107,8 @@ function App() {
          <Route path='/make_a_ride' element={<Make_a_ride />} />
          <Route path='/joinrequests/' element={<JoinRequests />} />
          <Route path="/join_a_ride" element={<Join_a_ride />} />
+         <Route path="/ride/payment/:partnerId" element={<PaymentPage />} />
+
          <Route path='/ridejoin/:ride_id' element = {<RideJoin />} />
          <Route path='/partnerdetail/:partnerId' element={<PartnerDetails />} /> 
          <Route path="/rideroute" element={<RideRoute />} />

@@ -4,7 +4,8 @@ import Navbar from '../../../components/Navbar';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../../../api';
 import Navigation from '../../../components/map/Navigation';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { setRideData } from '../../../redux/ride/rideslice';
 
 function RideRoute() {
 
@@ -17,6 +18,7 @@ function RideRoute() {
   const [end,setEnd] = useState(null);
   const [user,setUser] = useState(null);
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
 
       
@@ -53,7 +55,11 @@ function RideRoute() {
     const ridecomplete = async () => {
       const response = await api.post(`ride/${ride_id}/complete/`);
       if (response.status === 200){
-        navigate(`/ridedetails/${ride_id}`)
+        const ridedata = {
+                    'id':ride_id,
+                }
+        dispatch(setRideData(ridedata))
+        navigate(`/ridedetails`)
       }
     };
 

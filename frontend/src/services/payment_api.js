@@ -1,23 +1,7 @@
-// import axios from 'axios';
 import api from '../api';
 
 
 
-// const api = axios.create({
-//   baseURL: 'http://localhost:8000/api/',
-//   headers: {
-//     'Content-Type': 'application/json'
-//   }
-// });
-
-// // Add auth token to requests
-// api.interceptors.request.use((config) => {
-//   const token = localStorage.getItem('token');
-//   if (token) {
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return config;
-// });
 
 export const paymentApi = {
   createOrder: async (data) => {

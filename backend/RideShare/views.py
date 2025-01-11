@@ -100,6 +100,7 @@ class JoinRideView(APIView):
     
     def post(self, request):
         serializer = RidePartnerSerializer(data=request.data)
+        print(request.data)
         
         if serializer.is_valid():
             # Check if there are enough available seats (you may need to implement this logic)

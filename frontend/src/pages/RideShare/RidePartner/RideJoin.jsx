@@ -27,7 +27,8 @@ function RideJoin() {
     const [startCoordinates, setStartCoordinates] = useState(null)
     const [endCoordinates, setEndCoordinates] = useState(null)
     const [error, setError] = useState();
-
+    const [routeDistance, setRouteDistance] = useState(null);
+    
 
 
     useEffect(() => {
@@ -77,15 +78,22 @@ function RideJoin() {
             pickup_longitude: startCoordinates.longitude,
             dropoff_latitude: endCoordinates.latitude,
             dropoff_longitude: endCoordinates.longitude,
-            seats: selectedSeats // Include selected seats in the request
+            seats: selectedSeats, // Include selected seats in the request
+            distance: routeDistance
 
         }
         try {
+            console.log(routeDistance,'distanceeeeeeeeeeeee')
             const response = await api.post('joinride/', rideData)
 
             if (response.status >= 200 && response.status < 300) {
+                const partner_id = response.data.partner.id
+                console.log(response.data)
+                console.log(partner_id)
                 // console.log(response.data.patner.id)
-                navigate(`/partner/ridedetail/${ride_id}`)
+                navigate(`/ride/payment/${partner_id}`)
+
+                // navigate(`/partner/ridedetail/${ride_id}`)
             }
         } catch (error) {
             console.log(error.response);
@@ -237,6 +245,7 @@ function RideJoin() {
                                     selectingStartpoint={selectingStartpoint}
                                     onStartSelect={(coords) => setStartCoordinates(coords)}
                                     onEndSelect={(coords) => setEndCoordinates(coords)}
+                                    onRouteDistance={(distance) => setRouteDistance(distance / 1000)}
                                 />
                         )}
 

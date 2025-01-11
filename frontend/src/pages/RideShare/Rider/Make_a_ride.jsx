@@ -21,6 +21,8 @@ function Make_a_ride() {
     const [selectingStartpoint,setSelectingStartpoint]  = useState(true);
     const [startCoordinates,setStartCoordinates] = useState(null)
     const [endCoordinates,setEndCoordinates] = useState(null)
+    const [routeDistance, setRouteDistance] = useState(null);
+    
 
 
 
@@ -122,7 +124,7 @@ function Make_a_ride() {
                 if (response.status >= 200 && response.status < 300) {
                     console.log(response.data,'ride_Id');
                     const ridedata = {
-                      'id': response.data.ride_id,
+                      'id': response.data.ride.id,
                     }
                     
                     setFormData({
@@ -296,6 +298,7 @@ function Make_a_ride() {
              selectingStartpoint={selectingStartpoint}
              onStartSelect={(coords) => setStartCoordinates(coords)}
              onEndSelect={(coords) => setEndCoordinates(coords)}
+             onRouteDistance={(distance) => setRouteDistance(distance / 1000)}
             />
           </div>
 
