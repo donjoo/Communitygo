@@ -207,8 +207,8 @@ const Earnings = () => {
                       {transaction.action}
                     </TableCell>
                     <TableCell className="p-4 text-gray-700">
-                      {transaction.created_at
-                        ? new Date(transaction.created_at).toLocaleDateString()
+                      {transaction.timestamp
+                        ? new Date(transaction.timestamp).toLocaleDateString()
                         : 'N/A'}
                     </TableCell>
                   </TableRow>

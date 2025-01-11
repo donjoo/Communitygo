@@ -7,6 +7,7 @@ from rest_framework import status ,generics, filters
 from django.shortcuts import get_object_or_404
 from .models import Ride,RideRoute,RidePartner
 from users.models import CustomUser
+from Payment.models import MyEarnings,TransactionLog
 from users.serializers import UserSerializer
 from Payment.views import   transfer_to_provider
 # Create your views here.
@@ -158,7 +159,21 @@ class DeclineRidePartnerView(APIView):
             ride_partner.status = 'rejected'  # Update status to rejected
             ride_partner.save()
 
-
+            my_earnings, _ = MyEarnings.objects.get_or_create(
+                user= request.user
+            )
+            print('3')
+            my_earnings.credit(ride_partner.amount)
+            print('4')
+            
+            print(my_earnings, '99')
+            TransactionLog.objects.create(
+                user=request.user,
+                earnings=my_earnings,
+                action='credit',
+                service='ride',
+                amount=ride_partner.amount
+            )
 
             return Response(RidePartnerSerializer(ride_partner).data, status=status.HTTP_200_OK)
         except RidePartner.DoesNotExist:
@@ -329,6 +344,23 @@ class CancleRide(APIView):
             
             partner.save()
             ride.save()
+
+            my_earnings, _ = MyEarnings.objects.get_or_create(
+                user= request.user
+            )
+            print('3')
+            my_earnings.credit(partner.amount)
+            print('4')
+            
+            print(my_earnings, '99')
+            TransactionLog.objects.create(
+                user=request.user,
+                earnings=my_earnings,
+                action='credit',
+                service='ride',
+                amount=partner.amount
+            )
+
             return Response({'message':'Cancellation succefull'},status=status.HTTP_200_OK)
        
 

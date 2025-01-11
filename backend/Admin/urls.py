@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AdminTokenObtainView,AdminDashboardView,UserList,toggle_user_status,DeliveryList,UpdateDeliveryStatusView,delete_user,user_detail,Create_user,DeliveryDetailView,AdminGoogleAuth
+from .views import AdminTokenObtainView,AdminDashboardView,UserList,toggle_user_status,DeliveryList,UpdateDeliveryStatusView,delete_user,user_detail,Create_user,DeliveryDetailView,AdminGoogleAuth,DashboardView
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -20,5 +20,6 @@ urlpatterns = [
     path('userdetail/<int:user_id>/', user_detail.as_view(), name='user-detail'),
     path('create_user/',Create_user.as_view(),name='create_user'),
     path('<int:delivery_id>/deliverydetail/',DeliveryDetailView.as_view(),name='delivery_detail'),
+    path('dashboard/data/',DashboardView.as_view(),name='dashboard_data'),
 
 ]

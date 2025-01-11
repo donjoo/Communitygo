@@ -2,6 +2,11 @@ import profile
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils import timezone
+import random
+from datetime import timedelta
+from django.utils.timezone import now
+
+
 # Create your models here.
 
 class MyAccountManager(BaseUserManager):
@@ -48,6 +53,7 @@ class CustomUser(AbstractBaseUser):
     is_active       = models.BooleanField(default=True)
     is_deleted      = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
+    admin_verified = models.BooleanField(default=False)
     date_joined     = models.DateTimeField(auto_now_add=True)
     last_login      = models.DateTimeField(auto_now_add=True)
     is_admin        = models.BooleanField(default=False)
@@ -90,4 +96,15 @@ class OTPRecord(models.Model):
     def is_expired(self):
         # Checks if the OTP is expired
         return self.expires_at < timezone.now()
+    
+
+    def generate_otp(self):
+        """Generate a new OTP and set its expiration time."""
+        self.otp = str(random.randint(1000, 9999))  # Generate a random 4-digit OTP
+        # self.expires_at = timezone.now() + timedelta(minutes=5)  # Set expiration time to 5 minutes
+        self.save()
+
+    def is_valid(self):
+        """Check if the OTP is still valid."""
+        return timezone.now() < self.expires_at
 

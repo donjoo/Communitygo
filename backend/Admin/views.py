@@ -17,6 +17,19 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from rest_framework.exceptions import AuthenticationFailed, ParseError
 from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import (
+    RegistrationDataSerializer,
+    DeliveryDataSerializer,
+    RideDataSerializer,
+    PackageSizeDataSerializer,
+    StatsSerializer,
+    OngoingDeliverySerializer,
+    OngoingRideSerializer,
+)
+from django.db.models import Count, Sum
+from django.utils import timezone
+from RideShare.models import Ride,RidePartner
+import calendar
 
 User = CustomUser
 
@@ -321,4 +334,106 @@ class DeliveryDetailView(APIView):
             return Response(data, status=status.HTTP_200_OK)
         except Delivery.DoesNotExist:
             return Response({"error": "Delivery not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+
+
+
+class DashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        now = timezone.now()
+        months = [calendar.month_abbr[month] for month in range(1, now.month + 1)]
+
+        # Registration data
+        registration_data = [
+            {
+                'month': month,
+                'users': CustomUser.objects.filter(date_joined__month=i + 1, date_joined__year=now.year, is_admin=False).count(),
+                'drivers': CustomUser.objects.filter(date_joined__month=i + 1, date_joined__year=now.year, rides__isnull=False).distinct().count(),
+                'couriers': CustomUser.objects.filter(date_joined__month=i + 1, date_joined__year=now.year, assigned_courier__isnull=False).distinct().count(),
+            }
+            for i, month in enumerate(months)
+        ]
+
+        # Serialize registration data
+        registration_serializer = RegistrationDataSerializer(registration_data, many=True)
+
+        # Delivery data
+        delivery_data = [
+            {
+                'month': month,
+                'completed': Delivery.objects.filter(status='DELIVERED', delivered_at__month=i + 1, delivered_at__year=now.year).count(),
+                'cancelled': Delivery.objects.filter(status='CANCELED', updated_at__month=i + 1, updated_at__year=now.year).count(),
+            }
+            for i, month in enumerate(months)
+        ]
+
+        # Serialize delivery data
+        delivery_serializer = DeliveryDataSerializer(delivery_data, many=True)
+
+        # Ride data
+        ride_data = [
+            {
+                'month': month,
+                'rides': Ride.objects.filter(status='completed', created_at__month=i + 1, created_at__year=now.year).count(),
+                'bookings': RidePartner.objects.filter(ride__created_at__month=i + 1, ride__created_at__year=now.year).count(),
+            }
+            for i, month in enumerate(months)
+        ]
+
+        # Serialize ride data
+        ride_serializer = RideDataSerializer(ride_data, many=True)
+
+        # Package size distribution
+        package_sizes = Delivery.objects.filter(created_at__year=now.year).values('package_size').annotate(count=Count('id'))
+        total_packages = sum(size['count'] for size in package_sizes)
+        
+        package_size_data = [
+            {
+                'name': dict(Delivery.PACKAGE_SIZES).get(size['package_size'], size['package_size']),
+                'value': round((size['count'] / total_packages) * 100) if total_packages > 0 else 0
+            }
+            for size in package_sizes
+        ]
+
+        # Serialize package size data
+        package_size_serializer = PackageSizeDataSerializer(package_size_data, many=True)
+
+        # Stats cards data
+        total_revenue = (
+            Delivery.objects.filter(status='DELIVERED').aggregate(Sum('amount'))['amount__sum'] or 0 +
+            Ride.objects.filter(status='completed').aggregate(Sum('amount'))['amount__sum'] or 0
+        )
+
+        stats_data = {
+            'total_users': CustomUser.objects.filter(is_admin=False).count(),
+            'active_deliveries': Delivery.objects.filter(status__in=['PENDING', 'ASSIGNED', 'PICKED_UP']).count(),
+            'active_rides': Ride.objects.filter(status='ongoing').count(),
+            'revenue': total_revenue,
+        }
+
+        # Serialize stats data
+        stats_serializer = StatsSerializer(stats_data)
+
+        # Ongoing deliveries and rides data
+        ongoing_deliveries_queryset = Delivery.objects.filter(status__in=['PENDING', 'ASSIGNED', 'PICKED_UP']).select_related('user', 'courier', 'from_address', 'to_address')[:10]
+        ongoing_rides_queryset = Ride.objects.filter(status='ongoing').select_related('user', 'route')[:10]
+
+        ongoing_deliveries_serializer = OngoingDeliverySerializer(ongoing_deliveries_queryset, many=True)
+        ongoing_rides_serializer = OngoingRideSerializer(ongoing_rides_queryset, many=True)
+
+        # Prepare the final response data
+        data = {
+            'registration_data': registration_serializer.data,
+            'delivery_data': delivery_serializer.data,
+            'ride_data': ride_serializer.data,
+            'package_size_data': package_size_serializer.data,
+            'stats': stats_serializer.data,
+            'ongoing_deliveries': ongoing_deliveries_serializer.data,
+            'ongoing_rides': ongoing_rides_serializer.data,
+        }
+
+        return Response(data,status=status.HTTP_200_OK)
 

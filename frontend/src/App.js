@@ -39,6 +39,8 @@ import RideDetail from "./pages/RideShare/RidePartner/Ridedetail";
 import DeliveryPayment from "./pages/Delivery/Payment/Payment";
 import Earnings from "./pages/User/MyEarnings";
 import PaymentPage from "./pages/RideShare/RidePartner/payment";
+import PasswordOtp from "./pages/User/PasswordOtp";
+import ChangePassword from "./pages/User/ChangePassword";
 
 function Signin(){
   // localStorage.clear()
@@ -98,6 +100,9 @@ function App() {
 
 
         <Route path='/my_earnings' element={<Earnings />} />
+        <Route path='/changepassword/send-otp' element={<PasswordOtp />} />
+        <Route path='/change-password' element={<ChangePassword />} />
+        
 
 
 

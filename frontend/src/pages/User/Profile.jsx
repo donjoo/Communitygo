@@ -13,6 +13,7 @@ import MyJoinlist from '../../components/common/Ride/MyJoinlist';
 export default function Profile() {
   // In a real application, you would fetch this data from an API or database
   const [user, setUser] = useState(null);
+  const [profile,setProfile] = useState(null)
   const [error, setError] = useState();
   const [deliveries, setDeliveries] = useState(null)
   const [couriers,setCouriers] = useState(null)
@@ -36,6 +37,7 @@ export default function Profile() {
         console.log('response',response)
         if (response.status === 200) {
           setUser(response.data.user)
+          setProfile(response.data.profile)
           setDeliveries(response.data.deliveries)
           setCouriers(response.data.couriers)
           setRides(response.data.rides)
@@ -91,7 +93,7 @@ export default function Profile() {
   return (
     <>
     <Navbar />
-        < UserProfile user={user} deliveries={deliveries}/>
+        < UserProfile user={user} profile={profile} deliveries={deliveries}/>
 
 
 {user.email_verified ? (''):(

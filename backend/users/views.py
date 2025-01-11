@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserSerializer
+from .serializers import UserSerializer,UserProfileSerializer,SendOtpSerializer,ChangePasswordSerializer
 from Delivery.serializers import DeliverySerializers,CourierSerializer
 from Delivery.models import Delivery,Courier
 from .models import UserProfile,CustomUser,OTPRecord
@@ -138,9 +138,10 @@ class LoginView(APIView):
         try:
             user = User.objects.get(email=email)
             user = authenticate(request, email=email, password=password)
-            if user.check_password(password):
+            # if user.check_password(password):
+            if user is not None:
                 if not user.is_active:
-                    return Response({'error':'Your account has been blocked.'}, status=status.HTTP_403_FORBIDDEN)
+                        return Response({'error':'Your account has been blocked.'}, status=status.HTTP_403_FORBIDDEN)
                 refresh = RefreshToken.for_user(user)
                 return Response({
                     'user': {
@@ -270,12 +271,14 @@ class UserProfileView(APIView):
             print(request.user)
             print(request.user.is_authenticated)
             user = User.objects.get(id=request.user.id)
+            profile = UserProfile.objects.get(user = user)
             deliveries = Delivery.objects.filter(user=user).order_by('-created_at') 
             couriers = Courier.objects.filter(user=user).order_by('-id') 
             rides = Ride.objects.filter(user=user).order_by('-id')
             partner = RidePartner.objects.filter(user=user).order_by('-id')
 
             serializer = UserSerializer(user)
+            profileserializer = UserProfileSerializer(profile)
             deliveryserializer = DeliverySerializers(deliveries,many=True)
             courierserializer = CourierSerializer(couriers, many=True)
             rideserializer = RideSerializer(rides,many=True) 
@@ -287,6 +290,7 @@ class UserProfileView(APIView):
             print(courierserializer.data)
             data = {
                 'user': serializer.data,
+                'profile': profileserializer.data,
                 'deliveries':deliveryserializer.data,
                 'couriers':courierserializer.data,
                 'rides':rideserializer.data,
@@ -317,14 +321,68 @@ class UserProfileView(APIView):
 #             return Response({'error':"user not found"},status=status.HTTP_404_NOT_FOUND)
 
 
+class UpdateProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        user = request.user
+        print(request.data)
+        # Update user data
+        user_serializer = UserSerializer(user, data=request.data, partial=True)
+        
+        if user_serializer.is_valid():
+            user_serializer.save()
+        
+            # Handle profile updates
+            # profile_data = request.data.get('profile', {})
+            # print(profile_data,'profile_data')
+            # if profile_data:
+            profile_picture = request.data.get('profile_picture', None)
+            if profile_picture:
+                # Get or create the UserProfile instance for the user
+                profile, created = UserProfile.objects.get_or_create(user=user)
+                
+                # Create a serializer instance with the existing profile data
+                profile_serializer = UserProfileSerializer(profile, data={'profile_picture': profile_picture}, partial=True)
+                
+                if profile_serializer.is_valid():
+                    profile_serializer.save()
+                    return Response(user_serializer.data, status=200)
+                else:
+                    return Response(profile_serializer.errors, status=400)
+
+            return Response(user_serializer.data, status=200)
+
+        return Response(user_serializer.errors, status=400)
 
 
 
 
 
 
+class SendOtpView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request):
+        serializer = SendOtpSerializer(data=request.data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "OTP sent to your email."}, status=200)
+        
+        return Response(serializer.errors, status=400)
 
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+        
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"detail": "Password changed successfully."}, status=200)
+        
+        return Response(serializer.errors, status=400)
 
 
 
