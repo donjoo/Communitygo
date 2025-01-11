@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from .models import Ride,RideRoute,RidePartner
 from users.models import CustomUser
 from users.serializers import UserSerializer
+from Payment.views import   transfer_to_provider
 # Create your views here.
 
 class IsEmailVerified(BasePermission):
@@ -115,9 +116,13 @@ class JoinRideView(APIView):
             # Save the ride partner instance
             ride_partner = serializer.save(ride=ride)
 
-            # Update available seats in the Ride instance
-            # ride.available_seats -= serializer.validated_data['seats']
-            # ride.save()
+           # Calculate amount based on distance
+            distance_km = float(serializer.validated_data.get('distance', 0))
+            amount_per_km = 10
+            total_amount = distance_km * amount_per_km
+            data = serializer.save(distance=distance_km, amount=total_amount)
+            print(data.id, 'deliveryy idddddddddddddddddd')
+
 
             return Response({"partner": {"id": ride_partner.id}}, status=status.HTTP_201_CREATED)
         
@@ -151,6 +156,9 @@ class DeclineRidePartnerView(APIView):
             ride_partner = RidePartner.objects.get(id=partner_id)
             ride_partner.status = 'rejected'  # Update status to rejected
             ride_partner.save()
+
+
+
             return Response(RidePartnerSerializer(ride_partner).data, status=status.HTTP_200_OK)
         except RidePartner.DoesNotExist:
             return Response({'error': 'Ride partner not found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -267,8 +275,16 @@ class  RideCompleted(APIView):
                     partner.status = 'dropedoff'
                     partner.save()
 
+                dropedoffpartners =  partners.filter(status="dropedoff")
+                for partner in dropedoffpartners:
+                    service_type = 'ride'       #transfering payment to Ride owner
+                    service_id = partner.id
+                    res = transfer_to_provider(service_type, service_id)
+                    print(res)
+
             except RidePartner.DoesNotExist:
                 pass
+            
 
             return Response({'message':'ride completed'},status=status.HTTP_200_OK)
         except RidePartner.DoesNotExist:

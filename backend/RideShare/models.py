@@ -44,6 +44,8 @@ class Ride(models.Model):
     status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='pending')    
     created_at = models.DateTimeField(auto_now_add=True)
     is_completed = models.BooleanField(default=False)
+    amount = models.DecimalField(max_digits=10,decimal_places=2,null=True)  # total amount from this ride.
+
 
 
 
@@ -74,7 +76,11 @@ class RidePartner(models.Model):
     dropoff_longitude = models.FloatField(null=True,blank=True)
     is_pickedup = models.BooleanField(default=False)
     status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='pending')
+    distance = models.FloatField(null=True, blank=True) 
     transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE, null=True, blank=True)
+    amount = models.DecimalField(max_digits=10,decimal_places=2,null=True)
+
+
 
 
 

@@ -6,12 +6,15 @@ from decimal import Decimal
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.conf import settings
-from .models import PlatformSettings, Transaction, MyEarnings,EarningsTransactionLog
+from .models import PlatformSettings, Transaction, MyEarnings, TransactionLog
 import razorpay
-from .serializers import TransactionSerializer
+from .serializers import TransactionSerializer,MyEarningsSerializer,TransactionLogSerializer
 from Delivery.models import Delivery
-from RideShare.models import Ride
-
+from RideShare.models import Ride,RidePartner
+from django.contrib.auth.decorators import login_required
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from users.models import CustomUser
 
 class PaymentViewSet(viewsets.ViewSet):
     razorpay_client = razorpay.Client(
@@ -36,7 +39,7 @@ class PaymentViewSet(viewsets.ViewSet):
                     raise ValueError(f"Missing required field: {field}")
 
             if not request.data['amount']:
-                print('amount missing',request.data['amount'])
+                print('amount missing', request.data['amount'])
                 raise ValueError("Amount cannot be empty")
             amount = int(float(request.data['amount']) * 100)
             commission, provider_amount = self.calculate_commision(amount/100)
@@ -69,6 +72,8 @@ class PaymentViewSet(viewsets.ViewSet):
                 service_id=request.data['service_id']
             )
 
+                
+
             service = request.data['service_type']
             service_id = request.data['service_id']
             try:
@@ -77,10 +82,23 @@ class PaymentViewSet(viewsets.ViewSet):
                     delivery.transaction = transaction
                     delivery.save()
                 elif service == 'ride':
+                    Partner = RidePartner.objects.get(id=service_id)
+                    Partner.transaction = transaction
+                    ride = Ride.objects.get(id = Partner.ride.id)
+                    touser = CustomUser.objects.get(id = ride.user.id)
+                    transaction.to_user = touser
+                    transaction.save()
+                    Partner.save()
+                    # print(request.data['provider_id'],'provider idddd')
+                    # touser = CustomUser.objects.get(id = request.data['provider_id'])
+                    # print(touser,'touserrrrr')
+                    # transaction.to_user = touser
+                    # transaction.save()
+                    # Partner = RidePartner.objects.get(id=service_id)
+                    # Partner.transaction = transaction
+                    # Partner.save()
 
-                    ride = Ride.objects.get(id=service_id)
-                    ride.transaction = transaction
-                    ride.save()
+                  
                 else:
                     raise ValueError("Invalid service type provided.")
             except (Delivery.DoesNotExist, Ride.DoesNotExist) as e:
@@ -120,6 +138,14 @@ class PaymentViewSet(viewsets.ViewSet):
             transaction.status = Transaction.COMPLETED
             transaction.save()
 
+            TransactionLog.objects.create(  # Creates log, for havig transaction history
+                user=transaction.from_user,
+                transaction=transaction,
+                action='debit',
+                service=transaction.service_type,
+                amount=transaction.provider_amount
+            )
+
             return Response({'status': 'Payment verified successfully'})
         except Exception as e:
             print(e)
@@ -127,13 +153,14 @@ class PaymentViewSet(viewsets.ViewSet):
                 'error': str(e)
             }, status=status.HTTP_400_BAD_REQUEST)
 
+
 @action(detail=False, methods=['post'])
 def transfer_to_provider(service_type=None, service_id=None):
     with transaction.atomic():
         print('transferinggg to walletttttt')
         try:
             print('1')
-            print(service_id,service_type)
+            print(service_id, service_type)
             payment = Transaction.objects.get(
                 service_type=service_type,
                 service_id=service_id,
@@ -149,42 +176,43 @@ def transfer_to_provider(service_type=None, service_id=None):
             payment.status = Transaction.TRANSFERRED
             payment.save()
 
-            EarningsTransactionLog.objects.create(
+            print(my_earnings, '99')
+            TransactionLog.objects.create(
+                user=payment.to_user,
                 earnings=my_earnings,
                 action='credit',
+                service=service_type,
                 amount=payment.provider_amount
             )
 
             print('5')
-            return Response({
-                'status': 'success',
-                'message': 'Payment transfered to provider wallet',
-                'amount': payment.provider_amount,
-            })
+            return {
+            'status': 'success',
+            'message': 'Payment transferred to provider wallet',
+            'amount': payment.provider_amount,
+        }
 
         except Transaction.DoesNotExist:
-            print('transaction erororororooorororor')
-            return Response({
+            return {
                 'status': 'error',
                 'message': 'No completed payment found for this service'
-            }, status=400)
+            }
 
         except Exception as e:
-            print(e,'erororrororororor')
-            return Response({
+            return {
                 'status': 'error',
                 'message': str(e)
-            }, status=400)
+            }
 
-@action(detail=False, methods=['get'])
-def transaction_history():
-    transactions = Transaction.objects.filter(
-        models.Q(from_user=request.user) |
-        models.Q(to_user=request.user)
-    ).order_by('-created_at')
+# @action(detail=False, methods=['get'])
+# def transaction_history():
+#     transactions = Transaction.objects.filter(
+#         models.Q(from_user=request.user) |
+#         models.Q(to_user=request.user)
+#     ).order_by('-created_at')
 
-    serializer = TransactionSerializer(transactions, many=True)
-    return Response(serializer.data)
+#     serializer = TransactionSerializer(transactions, many=True)
+#     return Response(serializer.data)
 
 
 # For delivery completion
@@ -226,21 +254,23 @@ def complete_ride(self, request):
         }, status=400)
 
 
+class Earnings(APIView):
 
+   
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        try:
+            earnings = MyEarnings.objects.get(user=request.user)
+            logs = TransactionLog.objects.filter(user = request.user).order_by('-timestamp')
+            earningsserializer = MyEarningsSerializer(earnings)
+            logserializer  = TransactionLogSerializer(logs,many=True)
+            
+            data = {
+                "earnings" :earningsserializer.data,
+                'transactions':logserializer.data
+            }
 
-@login_required
-def earnings_view(request):
-    try:
-        earnings = MyEarnings.objects.get(user=request.user)
-    except MyEarnings.DoesNotExist:
-        earnings = None
-
-    transactions = Transaction.objects.filter(from_user=request.user).order_by('-created_at')
-
-    context = {
-        'earnings': earnings,
-        'transactions': transactions,
-    }
-
-    return render(request, 'earnings.html', context)
+            return Response(data, status=200)
+        except MyEarnings.DoesNotExist:
+            return Response({"error": "Earnings data not found."}, status=404)

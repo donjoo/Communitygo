@@ -267,7 +267,8 @@ class UserProfileView(APIView):
         try:
 
    
-           
+            print(request.user)
+            print(request.user.is_authenticated)
             user = User.objects.get(id=request.user.id)
             deliveries = Delivery.objects.filter(user=user).order_by('-created_at') 
             couriers = Courier.objects.filter(user=user).order_by('-id') 

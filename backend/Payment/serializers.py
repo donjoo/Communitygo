@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Transaction,MyEarnings
+from .models import Transaction,MyEarnings,TransactionLog
 
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -8,8 +8,12 @@ class TransactionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
 class MyEarningsSerializer(serializers.ModelSerializer):
-    class Mera:
+    class Meta:
         model = MyEarnings
-        fields = ['balance','created_at','updated_at']
+        fields = ['user', 'total_earnings', 'earnings', 'created_at', 'updated_at']
+
+class TransactionLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TransactionLog
+        fields = ['user', 'earnings', 'transaction', 'action', 'service', 'amount', 'timestamp']

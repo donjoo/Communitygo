@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import PaymentViewSet
+from .views import PaymentViewSet,Earnings
 app_name='Payment'
 
 
@@ -20,4 +20,6 @@ urlpatterns = [
     path('verify_payment/', PaymentViewSet.as_view({'post': 'verify_payment'}), name='verify-payment'),
     path('complete_delivery/', views.complete_delivery, name='complete-delivery'),
     path('complete_ride/',views.complete_ride, name='complete-ride'),
+    path('my_earnings/', Earnings.as_view(), name='my_earnings'),
+
 ]

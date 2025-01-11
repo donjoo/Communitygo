@@ -9,7 +9,7 @@ class RideRouteSerializer(serializers.ModelSerializer):
 class RidePartnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = RidePartner
-        fields = ['id', 'user','ride','seats', 'pickup', 'dropoff', 'pickup_latitude', 'pickup_longitude','dropoff_latitude','dropoff_longitude', 'is_pickedup','status']
+        fields = ['id', 'user','ride','seats', 'pickup', 'dropoff', 'pickup_latitude', 'pickup_longitude','dropoff_latitude','dropoff_longitude', 'is_pickedup','status','amount',]
 
 class RideSerializer(serializers.ModelSerializer):
     route = RideRouteSerializer()  # Nested serializer for route
@@ -19,7 +19,7 @@ class RideSerializer(serializers.ModelSerializer):
         model = Ride
         fields = ['id', 'user', 'route', 'vehicle', 'available_seats', 
                   'date', 'starting_time', 'status', 
-                  'created_at', 'is_completed', 'partners',"total_seats"]
+                  'created_at', 'is_completed', 'partners',"total_seats",'amount']
 
     def create(self, validated_data):
         route_data = validated_data.pop('route')

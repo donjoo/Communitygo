@@ -20,15 +20,15 @@ class MyEarnings(models.Model):
         self.save()
 
     def debit(self, amount):
-        if self.balance >= amount:
-            self.balance -= Decimal(amount)
+        if self.earnings >= amount:
+            self.earnings -= Decimal(amount)
             self.save()
             return True
         return False
 
 
     def __str__(self):
-        return f"{self.action} of {self.amount} on {self.timestamp}"
+        return f"{self.user} of {self.earnings} on {self.updated_at}"
     
 
 
@@ -69,11 +69,13 @@ class Transaction(models.Model):
 
 
 
-
-class EarningsTransactionLog(models.Model):
-    earnings = models.ForeignKey(MyEarnings, on_delete=models.CASCADE)
+#  used for transaction history
+class TransactionLog(models.Model):
+    user = models.ForeignKey(CustomUser,related_name='user_transactions',on_delete=models.CASCADE)
+    earnings = models.ForeignKey(MyEarnings, on_delete=models.CASCADE,null=True, blank=True)
+    transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE, null=True, blank=True)
     action = models.CharField(max_length=10)  # e.g., 'credit' or 'debit'
     service = models.CharField(max_length=10) # delivery or ride
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     timestamp = models.DateTimeField(auto_now_add=True)
-    transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE, null=True, blank=True)
+   
