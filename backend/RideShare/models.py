@@ -79,6 +79,8 @@ class RidePartner(models.Model):
     distance = models.FloatField(null=True, blank=True) 
     transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE, null=True, blank=True)
     amount = models.DecimalField(max_digits=10,decimal_places=2,null=True)
+    rating = models.FloatField(default=0.0)
+    feedback = models.CharField(null=True,blank=True)
 
 
 
