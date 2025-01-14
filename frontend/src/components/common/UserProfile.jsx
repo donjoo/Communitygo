@@ -101,6 +101,10 @@ function UserProfile({ user, profile, deliveries }) {
 
               <p onClick={sendOtp}>change password</p>
             </div>
+
+            <div>
+              <p onClick={() => navigate('/my_earnings')}> my earnings</p>
+            </div>
           </div>
 
           {editing && (

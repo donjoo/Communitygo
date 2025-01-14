@@ -8,7 +8,7 @@ const RatingCard = ({ courierId, onSubmit }) => {
   const [feedback, setFeedback] = useState("");
 
   const handleSubmit = () => {
-    onSubmit(rating);  // This calls the `handleRatingSubmit` function passed from the parent
+    onSubmit(rating,feedback);  // This calls the `handleRatingSubmit` function passed from the parent
   };
 
   //     if (response.status === 200) {

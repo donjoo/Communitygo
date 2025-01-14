@@ -10,6 +10,8 @@ from users.models import CustomUser
 from Payment.models import MyEarnings,TransactionLog
 from users.serializers import UserSerializer
 from Payment.views import   transfer_to_provider
+from rest_framework.decorators import api_view
+
 # Create your views here.
 
 class IsEmailVerified(BasePermission):
@@ -363,4 +365,35 @@ class CancleRide(APIView):
 
             return Response({'message':'Cancellation succefull'},status=status.HTTP_200_OK)
        
+
+
+
+
+
+@api_view(['POST'])
+def Rate_ride(request,partner_id):
+    try:
+        print(partner_id)
+        partner = RidePartner.objects.get(id = partner_id)
+        rating = request.data.get('rating')
+        feedback = request.data.get('feedback')
+
+        if rating is None:
+            return Response({"error": "Rating is required."},status = status.HTTP_400_BAD_REQUEST)
+        
+        partner.rating = rating
+        partner.feedback = feedback
+        partner.save()
+
+        return Response({"message": "rateing submitted succcesfulty!"},status = status .HTTP_200_OK)
+
+
+    except RidePartner.DoesNotExist:
+        pass
+        return Response({"error":"Ride not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
 

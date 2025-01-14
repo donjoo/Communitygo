@@ -8,6 +8,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Footer from '../../../components/Footer'
 import ChatRoom from '../../Chat/ChatRoom'
 import { Button } from '../../../component/ui/button';
+import RatingCard from "../../../components/common/Rating";
 
 function RideDetail() {
 
@@ -50,7 +51,20 @@ const handleCancel = async() => {
 
 
 
-
+const handleRatingSubmit = async (rating,feedback) => {
+    try {
+     const response =  await api.post(`${partner_id}/rateride/`, { rating,feedback });
+     if (response.status === 200) {
+            alert("Rating submitted successfully!");
+          
+          } else {
+            alert("Failed to submit rating. Please try again.");
+          }
+     
+    } catch (error) {
+      console.error("Error submitting rating:", error);
+    }
+  };
 
 
 
@@ -104,6 +118,15 @@ const handleCancel = async() => {
                         Cancel
                     </button>
                 )}
+
+                {(!partner?.rating && partner.status === 'dropedoff') && (
+                <div className="w-full">
+                  <RatingCard partnerId={partner?.id} onSubmit={handleRatingSubmit} />
+                </div>
+              )}
+
+
+
             </div>
 
 
