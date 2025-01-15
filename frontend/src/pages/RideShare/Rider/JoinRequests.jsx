@@ -31,9 +31,13 @@ function JoinRequests() {
        
             const response = await api.get(`${ride_Id}/make_a_ride/`);
             console.log(response.data)
-            setRide(response.data.ride);
-            setPendings(response.data.pending || [])
-            setPartners(response.data.partners)
+            if (response && response.data) {
+                setRide(response.data.ride || null);
+                setPendings(response.data.pending || []);
+                setPartners(response.data.partners || []);
+            } else {
+                console.error('Unexpected response format:', response);
+            }
         } catch (errors) {
 
         }
@@ -182,7 +186,7 @@ function JoinRequests() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {pendings.map((partner, index) => (
+                                {currentpendings.map((partner, index) => (
                                     <TableRow key={partner.id} onClick={() => handleroute(partner.id)}>
                                         <TableCell className="p-4 font-medium">{index + 1}</TableCell>
                                         <TableCell className="p-4 font-medium">{partner.pickup}</TableCell>
@@ -214,6 +218,31 @@ function JoinRequests() {
                         </Table>
 
                         {/* Pagination Controls can be added here if needed */}
+                        <div className="flex justify-center mt-6 space-x-4">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className={`px-4 py-2 border rounded ${currentPage === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-white'}`}
+                >
+                    Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={`px-4 py-2 border rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-white'}`}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className={`px-4 py-2 border rounded ${currentPage === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-white'}`}
+                >
+                    Next
+                </button>
+            </div>
                     </div>
                 </div>
 

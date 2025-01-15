@@ -3,6 +3,14 @@ import api from "../../../api";
 import { PaymentButton } from "../../../components/payment/PaymentButton";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { Card, CardContent, CardHeader, CardTitle } from "../../../component/ui/card";
+import { Skeleton } from "../../../component/ui/skeleton";
+import { Alert, AlertDescription, AlertTitle } from "../../../component/ui/alert";
+import { AlertCircle, MapPin, Calendar, Car, User } from 'lucide-react';
+import Footer from "../../../components/Footer";
+import Navbar from "../../../components/Navbar";
+
+
 const PaymentPage = () => {
   const { partnerId } = useParams();
   const [ridePartner, setRidePartner] = useState(null);
@@ -44,66 +52,103 @@ const PaymentPage = () => {
     }
   }
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) {
+    return (
+      <div className="container mx-auto p-4 space-y-4">
+        <Skeleton className="h-8 w-3/4" />
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }  
+  if (error) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>{error}</AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Payment for Ride</h1>
+    <>
+    <Navbar />
+    <div className="container mx-auto p-4 space-y-6">
+    <h1 className="text-3xl font-bold text-gray-900">Payment for Ride</h1>
 
-      <h2>Ride Details</h2>
-      <p>
-        <strong>Starting Point:</strong> {ride.route.starting_point}
-      </p>
-      <p>
-        <strong>Endpoint:</strong> {ride.route.endpoint}
-      </p>
-      <p>
-        <strong>Vehicle:</strong> {ride.vehicle}
-      </p>
-      <p>
-        <strong>Date:</strong> {ride.date}
-      </p>
-      <p>
-        <strong>Status:</strong> {ride.status}
-      </p>
+    <Card>
+      <CardHeader>
+        <CardTitle>Ride Details</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <div className="flex items-center space-x-2">
+          <MapPin className="h-5 w-5 text-gray-500" />
+          <span className="font-medium">Starting Point:</span> {ride.route.starting_point}
+        </div>
+        <div className="flex items-center space-x-2">
+          <MapPin className="h-5 w-5 text-gray-500" />
+          <span className="font-medium">Endpoint:</span> {ride.route.endpoint}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Car className="h-5 w-5 text-gray-500" />
+          <span className="font-medium">Vehicle:</span> {ride.vehicle}
+        </div>
+        <div className="flex items-center space-x-2">
+          <Calendar className="h-5 w-5 text-gray-500" />
+          <span className="font-medium">Date:</span> {ride.date}
+        </div>
+        <div className="flex items-center space-x-2">
+          <AlertCircle className="h-5 w-5 text-gray-500" />
+          <span className="font-medium">Status:</span> {ride.status}
+        </div>
+      </CardContent>
+    </Card>
 
-      <h2>Partner Details</h2>
-      <p>
-        <strong>Pickup:</strong> {ridePartner?.pickup}
-      </p>
-      <p>
-        <strong>Dropoff:</strong> {ridePartner?.dropoff}
-      </p>
-      <p>
-        <strong>Seats Reserved:</strong> {ridePartner?.seats}
-      </p>
+    <Card>
+      <CardHeader>
+        <CardTitle>Partner Details</CardTitle>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        <div className="flex items-center space-x-2">
+          <MapPin className="h-5 w-5 text-gray-500" />
+          <span className="font-medium">Pickup:</span> {ridePartner?.pickup}
+        </div>
+        <div className="flex items-center space-x-2">
+          <MapPin className="h-5 w-5 text-gray-500" />
+          <span className="font-medium">Dropoff:</span> {ridePartner?.dropoff}
+        </div>
+        <div className="flex items-center space-x-2">
+          <User className="h-5 w-5 text-gray-500" />
+          <span className="font-medium">Seats Reserved:</span> {ridePartner?.seats}
+        </div>
+      </CardContent>
+    </Card>
 
-
-
-
-
-      <section className="bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-gray-700 mb-4">Payment Details</h2>
-            <div className="text-gray-700 mb-4">
-              <p>
-                <strong>Total Amount:</strong> ₹{ridePartner?.amount}
-              </p>
-              <p>Click the button below to proceed with the payment.</p>
-            </div>
-
-      <PaymentButton
-        amount={ridePartner.amount}
-        providerId={ride.user.id}
-        serviceType="ride"
-        serviceId={ridePartner.id}
-        onSuccess={handleSuccess}
-        onError={(error) => console.error('Payment failed:', error)}
-      />
- 
-
- </section>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Payment Details</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="text-2xl font-bold text-gray-900">
+          Total Amount: ₹{ridePartner?.amount}
+        </div>
+        <p className="text-gray-600">
+          Click the button below to proceed with the payment.
+        </p>
+        <PaymentButton
+          amount={ridePartner.amount}
+          providerId={ride.user.id}
+          serviceType="ride"
+          serviceId={ridePartner.id}
+          onSuccess={handleSuccess}
+          onError={(error) => console.error('Payment failed:', error)}
+        />
+      </CardContent>
+    </Card>
+  </div>
+<Footer />
+  </>
   );
 };
 

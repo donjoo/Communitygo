@@ -84,6 +84,7 @@ class PaymentViewSet(viewsets.ViewSet):
                 elif service == 'ride':
                     Partner = RidePartner.objects.get(id=service_id)
                     Partner.transaction = transaction
+                    # Partner.amount = request.data['amount']
                     ride = Ride.objects.get(id = Partner.ride.id)
                     touser = CustomUser.objects.get(id = ride.user.id)
                     transaction.to_user = touser
@@ -143,7 +144,7 @@ class PaymentViewSet(viewsets.ViewSet):
                 transaction=transaction,
                 action='debit',
                 service=transaction.service_type,
-                amount=transaction.provider_amount
+                amount=transaction.amount
             )
 
             return Response({'status': 'Payment verified successfully'})

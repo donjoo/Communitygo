@@ -124,7 +124,7 @@ function Make_a_ride() {
                 if (response.status >= 200 && response.status < 300) {
                     console.log(response.data,'ride_Id');
                     const ridedata = {
-                      'id': response.data.ride.id,
+                      'id': response.data.ride_id,
                     }
                     
                     setFormData({
@@ -141,7 +141,7 @@ function Make_a_ride() {
                     
                 }
             } catch (error){
-                console.error("Error submitting make a ride", error.response.data);
+                console.error("Error submitting make a ride",  error.response ? error.response.data : error.message);
             }
 
 

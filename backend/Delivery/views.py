@@ -58,6 +58,20 @@ class RequestDelivery(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class CancelDelivery(APIView):
+    
+    def post(self,request,delivery_id):
+
+        delivery = get_object_or_404(Delivery, id = delivery_id)
+        if delivery.status == "Pending":
+            delivery.status = "Canceled"
+            delivery.save()
+            return Response({"message":"Delivery has been succesfully cancled"},status=status.HTTP_200_OK)
+        else:
+            return Response({"message":"Delivery cannot be cancled"},status=status.HTTP_406_NOT_ACCEPTABLE)
+        
+        
+
 
 # class RequestDelivery(APIView):
 #     def post(self, request):
