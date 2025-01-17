@@ -147,6 +147,20 @@ class PaymentViewSet(viewsets.ViewSet):
                 amount=transaction.amount
             )
 
+
+            if transaction.service_type == 'delivery':
+                    delivery = Delivery.objects.get(id=transaction.service_id)
+                    delivery.payment_done = True
+                    delivery.status = 'PENDING'
+                    delivery.save()
+            elif  transaction.service_type == 'ride':
+                    partner = RidePartner.objects.get(id=transaction.service_id)
+                    partner.payment_done = True
+                    partner.status = 'pending'
+                    partner.save()
+            else:
+                pass
+
             return Response({'status': 'Payment verified successfully'})
         except Exception as e:
             print(e)

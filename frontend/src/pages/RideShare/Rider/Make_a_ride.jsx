@@ -98,7 +98,7 @@ function Make_a_ride() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(user.username)
-        console.log(`start ${startCoordinates.latitude},${ startCoordinates.longitude},${endCoordinates.latitude},${endCoordinates.longitude}`)
+         
         if (validate()) {
 
             const rideData = {

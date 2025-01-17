@@ -20,7 +20,7 @@ import json
 from rest_framework.permissions import BasePermission
 from rest_framework.exceptions import PermissionDenied
 from datetime import datetime
-from Payment.models import Transaction
+from Payment.models import Transaction, MyEarnings, TransactionLog
 from Payment.views import transfer_to_provider
 User = get_user_model()
 
@@ -49,7 +49,7 @@ class RequestDelivery(APIView):
             # Calculate amount based on distance
             amount_per_km = 10
             total_amount = distance_km * amount_per_km
-            data = serializer.save(distance=distance_km, amount=total_amount)
+            data = serializer.save(distance=distance_km, amount=total_amount,status = 'PAYMENT')
             # data = serializer.save()
             delivery_id = data.id
             print(data.id, 'deliveryy idddddddddddddddddd')
@@ -63,9 +63,27 @@ class CancelDelivery(APIView):
     def post(self,request,delivery_id):
 
         delivery = get_object_or_404(Delivery, id = delivery_id)
-        if delivery.status == "Pending":
+
+        print(delivery.status)
+        if  delivery.status == "PENDING" or delivery.status == "PAYMENT":
             delivery.status = "Canceled"
             delivery.save()
+
+            if delivery.status == "PENDING":
+
+                my_earnings, _ = MyEarnings.objects.get_or_create(
+                    user = request.user
+                )
+                my_earnings.credit(delivery.amount)
+
+                TransactionLog.objects.create(
+                    user=request.user,
+                    earnings = my_earnings,
+                    action='credit',
+                    service='delivery',
+                    amount = delivery.amount,
+                )
+
             return Response({"message":"Delivery has been succesfully cancled"},status=status.HTTP_200_OK)
         else:
             return Response({"message":"Delivery cannot be cancled"},status=status.HTTP_406_NOT_ACCEPTABLE)

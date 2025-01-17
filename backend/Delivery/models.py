@@ -32,6 +32,7 @@ class Addresses(gis_models.Model):
 class Delivery(models.Model):
 
     DELIVERY_STATUS = [
+        ('PAYMENT','Payment'),
         ('PENDING', 'Pending'),
         ('ASSIGNED','Assigned'),
         ('PICKED_UP', 'Picked Up'),
@@ -50,7 +51,7 @@ class Delivery(models.Model):
     package_size = models.CharField(max_length=12, choices=PACKAGE_SIZES)
     # courier     = models.ForeignKey(Courier, on_delete=models.SET_NULL, null=True,blank=True, related_name='assigned_deliveries')
     courier     = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True,blank=True, related_name='assigned_courier',default=None)
-    status = models.CharField(max_length=12, choices=DELIVERY_STATUS, default='PENDING')
+    status = models.CharField(max_length=12, choices=DELIVERY_STATUS, default='PAYMENT')
     image = models.ImageField(upload_to='package_images/', null=True, blank=True)
     pickup_otp = models.CharField(max_length=4,null=True, blank=True)
     dropoff_otp = models.CharField(max_length=4,null=True,blank=True)
@@ -69,6 +70,7 @@ class Delivery(models.Model):
     transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE, null=True, blank=True)
     distance = models.FloatField(null=True, blank=True) 
     amount = models.DecimalField(max_digits=10,decimal_places=2,null=True)
+    payment_done = models.BooleanField(default=False)
 
     
 

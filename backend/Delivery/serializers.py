@@ -23,12 +23,13 @@ class DeliverySerializers(serializers.ModelSerializer):
     image = serializers.ImageField(required=False, allow_null=True)  # Allow image upload
     transaction = serializers.PrimaryKeyRelatedField(queryset=Transaction.objects.all(), required=False, allow_null=True) 
 
+
     class Meta:
         model= Delivery
         fields = ['id', 'user','from_address','to_address','package_size','from_address_data','to_address_data',
                   'courier','status','delivered_at','picked_upat','created_at','updated_at','is_pickedup','pickup_otp',
                   'dropoff_otp','is_completed','length','width','height','weight', 'est_pickup', 'est_dropoff','image',
-                  'transaction','distance','amount']
+                  'transaction','distance','amount','payment_done']
 
     def create(self, validated_data):
         # Extract the nested address data
@@ -68,7 +69,7 @@ class DeliveryViewSerializer(serializers.ModelSerializer):
             'courier', 'status', 'delivered_at', 'picked_upat', 'created_at', 
             'updated_at', 'is_pickedup', 'pickup_otp', 'dropoff_otp', 
             'is_completed', 'length', 'width', 'height', 'weight', 
-            'est_pickup', 'est_dropoff', 'image','distance','amount',
+            'est_pickup', 'est_dropoff', 'image', 'transaction','distance','amount','payment_done'
         ]
 
     

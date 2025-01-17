@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../../api"; // Replace with your API configuration file
 import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
@@ -16,6 +16,8 @@ function DeliveryDetails() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showChat, setShowChat] = useState(false);
+  const [change,setChange] = useState(null);
+  const navigate = useNavigate();
 
   const baseURL = "http://localhost:8000"; // Replace with your actual base URL if different
 
@@ -36,7 +38,7 @@ function DeliveryDetails() {
     };
 
     fetchDeliveryDetails();
-  }, [deliveryId]);
+  }, [deliveryId,change]);
 
 
   const handleRatingSubmit = async (rating,feedback) => {
@@ -48,6 +50,7 @@ function DeliveryDetails() {
               ...prevCourier,
               rating: rating,
             }));
+            setChange('rating')
           } else {
             alert("Failed to submit rating. Please try again.");
           }
@@ -56,6 +59,24 @@ function DeliveryDetails() {
       console.error("Error submitting rating:", error);
     }
   };
+
+
+  const handleCancle = async() => {
+      try {
+        const response = await api.post(`delivery/${deliveryId}/cancel`);
+        setChange('cancled')
+      } catch (error){
+        alert("Failed to cancel")
+      }
+
+  }
+
+  const CompletePayment = () => {
+    navigate(`/delivery/payment/${deliveryId}`);
+  }
+
+
+
 
   // Show loading state
   if (loading) {
@@ -122,8 +143,30 @@ function DeliveryDetails() {
                     )}
                   </div>
                 ) : (
-                  <p className="text-orange-500">Waiting for a courier to accept your delivery request.</p>
+                   <div>
+                {!delivery.payment_done && delivery.status !== 'Canceled' ? (
+                  <div>
+                    <p className="text-red-600 font-semibold">
+                      Complete payment to assign a courier
+                    </p>
+                    <Button onClick={CompletePayment}>Complete Payment</Button>
+                  </div>
+                ) : delivery.payment_done && delivery.status === 'Canceled' ? (
+                  <p className="text-gray-500 font-semibold">No courier was assigned</p>
+                ) : delivery.payment_done ? (
+                  <p className="text-orange-500">
+                    Waiting for a courier to accept your delivery request.
+                  </p>
+                ) : delivery.status === 'Canceled' ? (
+                  <p className="text-gray-500 font-semibold">No courier was assigned</p>
+                ) : (
+                  <p className="text-red-600 font-semibold">Complete payment to assign courier</p>
                 )}
+              </div>
+                )
+              
+              
+              }
                 {delivery.picked_upat && (
                   <p className="mt-4"><strong>Picked Up At:</strong> {formatDate(delivery.picked_upat)}</p>
                 )}
@@ -145,6 +188,22 @@ function DeliveryDetails() {
               {delivery.image && (
                 <img src={`${baseURL}${delivery.image}`} alt={delivery.description} className="w-full max-w-xs h-auto object-cover mt-4 rounded-md shadow-md" />
               )}
+
+      <div className=" mt-5">
+      {delivery.status === 'PENDING' || delivery.status === 'PAYMENT' ? (
+                <Button onClick={handleCancle} >Cancel request</Button>
+              ):null}
+     </div>
+
+
+     <div className=" mt-5">
+              {!delivery.payment_done && delivery.status !== 'Canceled' ? (
+                <div>
+                < p className="md-3 font-semibold text-lg text-red-600">payment not done:</p>
+                <Button onClick={CompletePayment} >Complete payment</Button>
+                </div>
+              ):null}
+     </div>
             </div>
           </div>
         </section>

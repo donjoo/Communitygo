@@ -47,7 +47,7 @@ class MakeRide(APIView):
 
         # Filter partners into pending and accepted categories
         pending = ride_partners.filter(status="pending")
-        accepted = ride_partners.exclude(status__in=["pending", "rejected",'cancled'])
+        accepted = ride_partners.exclude(status__in=["pending", "rejected",'canceled','payment'])
         # Serialize the ride and partners
         ride_serializer = RideSerializer(ride)
         pending_serializer = RidePartnerSerializer(pending, many=True)  # Use many=True for multiple objects
@@ -340,7 +340,7 @@ class CancleRide(APIView):
             partner = get_object_or_404(RidePartner,id = partner_id)
             ride = get_object_or_404(Ride,id = partner.ride.id)
 
-            partner.status = 'cancled'
+            partner.status = 'canceled'
             ride.total_seats += partner.seats
             ride.available_seats += partner.seats
             

@@ -57,6 +57,7 @@ class Ride(models.Model):
 
 class RidePartner(models.Model):
     STATUS_CHOICES = [
+        ('payment','Payment'),
         ('pending', 'Pending'),
         ('accepted', 'Accepted'),
         ('rejected', 'Rejected'),
@@ -75,12 +76,13 @@ class RidePartner(models.Model):
     dropoff_latitude = models.FloatField(null=True,blank=True)
     dropoff_longitude = models.FloatField(null=True,blank=True)
     is_pickedup = models.BooleanField(default=False)
-    status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=25, choices=STATUS_CHOICES, default='payment')
     distance = models.FloatField(null=True, blank=True) 
     transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE, null=True, blank=True)
     amount = models.DecimalField(max_digits=10,decimal_places=2,null=True)
     rating = models.FloatField(default=0.0)
     feedback = models.CharField(null=True,blank=True)
+    payment_done = models.BooleanField(default=False)
 
 
 

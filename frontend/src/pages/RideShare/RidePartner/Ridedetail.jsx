@@ -50,6 +50,10 @@ const handleCancel = async() => {
 }
 
 
+const CompletePayment = () => {
+    navigate(`/ride/payment/${partner_id}`)
+}
+
 
 const handleRatingSubmit = async (rating,feedback) => {
     try {
@@ -125,7 +129,14 @@ const handleRatingSubmit = async (rating,feedback) => {
                 </div>
               )}
 
-
+                 <div className=" mt-5">
+              {!partner.payment_done && partner.status !== 'canceled' ? (
+                <div>
+                < p className="md-3 font-semibold text-lg text-red-600">payment not done:</p>
+                <Button onClick={CompletePayment} >Complete payment</Button>
+                </div>
+              ):null}
+             </div>
 
             </div>
 
