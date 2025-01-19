@@ -41,6 +41,8 @@ import Earnings from "./pages/User/MyEarnings";
 import PaymentPage from "./pages/RideShare/RidePartner/payment";
 import PasswordOtp from "./pages/User/PasswordOtp";
 import ChangePassword from "./pages/User/ChangePassword";
+import DashboardPage from "./pages/Admin/dashboard/page";
+import {DashboardLayout} from "./pages/Admin/dashboard/layout";
 
 function Signin(){
   // localStorage.clear()
@@ -84,8 +86,8 @@ function App() {
         <Route path="/deliverysearch" element = {< DeliverySearch />} />
         <Route path='/admin/login' element={< AdminLogin />} />
         <Route path='/phonenumberinput' element={<PhoneNumberInput />} />
-        <Route path='/dashboard' element={<Dashboard />} />
-        <Route path='/usermanagement' element={<Usermanagement />} />
+        <Route path='/dashboard' element={<DashboardLayout > <DashboardPage /> </DashboardLayout>} />
+        <Route path='/usermanagement' element={<DashboardLayout > <Usermanagement /> </DashboardLayout>} />
         <Route path='/deliverymanagement' element={< DeliveryManagement/>} />
         <Route path='/profile' element={< Profile />} />
         <Route path ='/user/:id' element={< UserDetail />} />
