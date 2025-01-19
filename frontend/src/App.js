@@ -88,7 +88,7 @@ function App() {
         <Route path='/phonenumberinput' element={<PhoneNumberInput />} />
         <Route path='/dashboard' element={<DashboardLayout > <DashboardPage /> </DashboardLayout>} />
         <Route path='/usermanagement' element={<DashboardLayout > <Usermanagement /> </DashboardLayout>} />
-        <Route path='/deliverymanagement' element={< DeliveryManagement/>} />
+        <Route path='/deliverymanagement' element={ <DashboardLayout >< DeliveryManagement/> </DashboardLayout>} />
         <Route path='/profile' element={< Profile />} />
         <Route path ='/user/:id' element={< UserDetail />} />
         <Route path='/admindeliverydetail/:deliveryId' element = {< AdminDeliveryDetails />} />

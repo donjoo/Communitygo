@@ -22,18 +22,18 @@ const navItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Users",
-    href: "/dashboard/users",
+    title: "User managment",
+    href: "/usermanagement",
     icon: Users,
   },
   {
-    title: "Deliveries",
-    href: "/dashboard/deliveries",
+    title: "Delivery management",
+    href: "/deliverymanagement",
     icon: ShoppingCart,
   },
   {
     title: "Rides",
-    href: "/dashboard/rides",
+    href: "ridemanagment",
     icon: Car,
   },
   {

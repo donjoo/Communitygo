@@ -137,8 +137,8 @@ function DeliveryManagement() {
           {currentDeliveries.map((delivery) => (
             <tr key={user.id}>
               <td className="px-6 py-4 whitespace-nowrap">{delivery.created_at}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{delivery.from_address.address_line_1}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{delivery.to_address.address_line_1}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{delivery.from_address?.address_line_1}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{delivery.to_address?.address_line_1}</td>
               <td className="px-6 py-4 whitespace-nowrap">{delivery.status}</td>
               <td className="px-6 py-4">
                     <select

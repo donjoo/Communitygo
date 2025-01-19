@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.permissions import IsAuthenticated
 from users.serializers import UserSerializer
 from Delivery.models import Delivery,Courier
-from Delivery.serializers import DeliverySerializers, CourierSerializer
+from Delivery.serializers import DeliverySerializers, CourierSerializer,DeliveryViewSerializer
 from users.models import CustomUser,UserProfile
 from django.shortcuts import get_object_or_404
 from google.oauth2 import id_token
@@ -30,7 +30,8 @@ from django.db.models import Count, Sum
 from django.utils import timezone
 from RideShare.models import Ride,RidePartner
 import calendar
-
+from django.http import JsonResponse
+from Payment.models import Transaction
 User = CustomUser
 
 class AdminTokenObtainView(TokenObtainPairView):
@@ -160,7 +161,7 @@ class DeliveryList(APIView):
             deliveries = Delivery.objects.filter(status=filter_status).order_by('-created_at') 
         else:
             deliveries = Delivery.objects.all().order_by('-created_at') 
-        delivery_serializer = DeliverySerializers(deliveries,many=True)
+        delivery_serializer = DeliveryViewSerializer(deliveries,many=True)
 
         return Response({
             "deliveries":delivery_serializer.data
@@ -437,3 +438,48 @@ class DashboardView(APIView):
 
         return Response(data,status=status.HTTP_200_OK)
 
+
+
+class CountView(APIView):
+   
+
+    def get_user_count(self):
+       
+        users_count = CustomUser.objects.count()
+        return {'user_count': users_count}
+
+    def get_ongoing_deliveries(self):
+       
+        ongoing_deliveries = Delivery.objects.filter(status__in=['ASSIGNED', 'PICKED_UP']).count()
+        return {'ongoing_deliveries': ongoing_deliveries}
+
+    def get_ongoing_rides(self):
+       
+        ongoing_rides = Ride.objects.filter(status='ongoing').count()
+        return {'ongoing_rides': ongoing_rides}
+    
+    def total_revenue(self):
+        print('revenuueueueue')
+        total_revenue = Transaction.objects.filter(status='completed').aggregate(
+        total_commission=Sum('platform_commisson')
+        )
+        
+        # Extract the total commission, and default to 0 if no completed transactions
+        total_commission = total_revenue['total_commission'] or 0
+        
+        print(f"Total revenue: {total_commission}")  # This will print the total commission
+        
+        # Return the rounded total revenue
+        return {'total_revenue': round(total_commission, 2)}
+
+    def get(self, request, *args, **kwargs):
+        """
+        Combines all the counts in one response.
+        """
+        data = {
+            **self.get_user_count(),
+            **self.get_ongoing_deliveries(),
+            **self.get_ongoing_rides(),
+            **self.total_revenue(),
+        }
+        return Response(data)

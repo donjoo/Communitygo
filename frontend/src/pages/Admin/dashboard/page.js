@@ -16,8 +16,25 @@ import { TopDrivers } from "./components/top-drivers"
 import { CustomerSatisfaction } from "./components/customer-satisfaction"
 import AdminNavbar from "../../../components/AdminComponents/AdminNavbar"
 import AdminFooter from "../../../components/AdminComponents/AdminFooter"
+import adminAxiosInstance from "../../../adminaxiosconfig"
+import { useEffect, useState } from "react"
 
 export default function DashboardPage() {
+
+
+
+  const [revenue,SetRevenue ] = useState(0);
+
+  const totalrevenue = async() => {
+    const response = await adminAxiosInstance.get('dashboard/revenue/');
+    SetRevenue(response.data.total_revenue)
+
+  }
+
+  useEffect(() =>{
+    totalrevenue()
+  },[])
+
   return (
    
     <div className="space-y-4">
@@ -43,9 +60,9 @@ export default function DashboardPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">$45,231.89</div>
+                  <div className="text-2xl font-bold">₹{revenue}</div>
                   <p className="text-xs text-muted-foreground">
-                    +20.1% from last month
+                    *includes completed transaction only
                   </p>
                 </CardContent>
               </Card>
