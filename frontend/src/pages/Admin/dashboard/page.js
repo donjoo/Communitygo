@@ -94,14 +94,14 @@ export default function DashboardPage() {
                   <RideOverviewGraph />
                 </CardContent>
               </Card>
-              <Card className="col-span-3">
+              {/* <Card className="col-span-3">
                 <CardHeader>
                   <CardTitle>Top Drivers</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <TopDrivers />
                 </CardContent>
-              </Card>
+              </Card> */}
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
               <Card className="col-span-4">
@@ -112,14 +112,14 @@ export default function DashboardPage() {
                   <UserRegistrationGraph />
                 </CardContent>
               </Card>
-              <Card className="col-span-3">
+              {/* <Card className="col-span-3">
                 <CardHeader>
                   <CardTitle>Customer Satisfaction</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CustomerSatisfaction />
                 </CardContent>
-              </Card>
+              </Card> */}
             </div>
           </TabsContent>
           <TabsContent value="analytics" className="space-y-4">

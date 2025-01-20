@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.permissions import IsAuthenticated
 from users.serializers import UserSerializer
 from Delivery.models import Delivery,Courier
-from Delivery.serializers import DeliverySerializers, CourierSerializer,DeliveryViewSerializer
+from Delivery.serializers import DeliverySerializers, CourierSerializer,DeliveryViewSerializer,TopCourierSerializer
 from users.models import CustomUser,UserProfile
 from django.shortcuts import get_object_or_404
 from google.oauth2 import id_token
@@ -33,6 +33,9 @@ import calendar
 from django.http import JsonResponse
 from Payment.models import Transaction
 from rest_framework import generics
+from django.utils.timezone import now
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
 
 
@@ -491,3 +494,133 @@ class CountView(APIView):
 class RecentDeliveriesList(generics.ListAPIView):
     queryset = Delivery.objects.order_by('-created_at')[:5]  # Fetch the latest 5 deliveries
     serializer_class = DeliveryViewSerializer
+
+
+
+class UserRegistrationStats(APIView):
+    def get(self, request):
+        # Get the current date
+        now = timezone.now()
+        # Prepare a list for the response
+        monthly_data = []
+
+        # Loop through the last 6 months
+        for i in range(6):
+            month_start = (now - relativedelta(months=i)).replace(day=1)
+            month_end = (month_start + relativedelta(months=1)) - timezone.timedelta(days=1)
+
+            # Count users registered in that month
+            user_count = CustomUser.objects.filter(
+                date_joined__gte=month_start,
+                date_joined__lte=month_end
+            ).count()
+
+            monthly_data.append({
+                'name': month_start.strftime('%b'),  # Month name (Jan, Feb, etc.)
+                'users': user_count,
+            })
+
+        # Reverse data so it's in chronological order
+        monthly_data.reverse()
+
+        return Response(monthly_data)
+    
+
+
+class RideOverviewStats(APIView):
+    def get(self, request):
+        now = timezone.now()
+        ride_data = []
+
+        # Aggregate data for the last 6 months
+        for i in range(6):
+            month_start = (now - relativedelta(months=i)).replace(day=1)
+            month_end = (month_start + relativedelta(months=1)) - timezone.timedelta(days=1)
+
+            # Count rides for each status
+            completed_count = Ride.objects.filter(
+                status='completed', created_at__gte=month_start, created_at__lte=month_end
+            ).count()
+            canceled_count = Ride.objects.filter(
+                status='canceled', created_at__gte=month_start, created_at__lte=month_end
+            ).count()
+
+            ride_data.append({
+                'name': month_start.strftime('%b'),  # Month name
+                'completed': completed_count,
+                'canceled': canceled_count,
+            })
+
+        # Reverse data to show chronological order
+        ride_data.reverse()
+
+        return Response(ride_data)
+    
+
+class MonthlyRevenueStats(APIView):
+    def get(self, request):
+        current_date = now()
+        revenue_data = []
+
+        # Generate revenue for the past 12 months
+        for i in range(12):
+            month_start = (current_date - relativedelta(months=i)).replace(day=1)
+            month_end = (month_start + relativedelta(months=1)) - relativedelta(days=1)
+
+            # Calculate total revenue for the month
+            total_revenue = Transaction.objects.filter(
+                status='completed',
+                created_at__gte=month_start,
+                created_at__lte=month_end,
+            ).aggregate(total=Sum('platform_commisson'))['total'] or 0
+
+            revenue_data.append({
+                'name': month_start.strftime('%b'),  # Month name (e.g., Jan, Feb)
+                'total': round(total_revenue, 2),   # Rounded to 2 decimal places
+            })
+
+        # Reverse data to show chronological order
+        revenue_data.reverse()
+
+        return Response(revenue_data)
+
+
+class TopCouriersView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        top_couriers = Courier.objects.annotate(
+            rides=Count('courier_deliveries')
+        ).order_by('-rating')[:5]  # Top 5 couriers based on rating
+
+        serializer = TopCourierSerializer(top_couriers, many=True)
+        return Response(serializer.data)
+
+
+
+class DeliveryOverview(APIView):
+    def get(self, request):
+        # Aggregate the data by month
+        current_year = datetime.now().year
+        data = []
+        
+        for month in range(1, 13):
+            completed_count = Delivery.objects.filter(
+                status='DELIVERED',
+                created_at__year=current_year,
+                created_at__month=month
+            ).count()
+
+            canceled_count = Delivery.objects.filter(
+                status='CANCELED',
+                created_at__year=current_year,
+                created_at__month=month
+            ).count()
+
+            data.append({
+                'name': datetime(current_year, month, 1).strftime('%b'),
+                'completed': completed_count,
+                'canceled': canceled_count,
+            })
+        
+        return Response(data, status=status.HTTP_200_OK)

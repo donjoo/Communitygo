@@ -1,18 +1,34 @@
 "use client"
 
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend } from "recharts"
+import { useEffect, useState } from "react";
+import adminAxiosInstance from "../../../../adminaxiosconfig"
 
-const data = [
-  { name: 'Jan', completed: 65, canceled: 12 },
-  { name: 'Feb', completed: 59, canceled: 15 },
-  { name: 'Mar', completed: 80, canceled: 8 },
-  { name: 'Apr', completed: 81, canceled: 10 },
-  { name: 'May', completed: 56, canceled: 14 },
-  { name: 'Jun', completed: 55, canceled: 11 },
-  { name: 'Jul', completed: 40, canceled: 9 },
-]
 
 export function DeliveryOverview() {
+  const [data, setData] = useState([]);
+  
+  useEffect(() => {
+    const fetchDeliveryData = async () => {
+      try {
+        const response = await adminAxiosInstance.get('/dashboard/delivery_overview/');
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching delivery data:', error);
+      }
+    };
+    
+    // Initial fetch
+    fetchDeliveryData();
+
+    // Set an interval to fetch data every 30 seconds (for real-time update)
+    const interval = setInterval(fetchDeliveryData, 30000);
+    
+    // Clean up interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
+
+
   return (
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={data}>

@@ -1,18 +1,39 @@
 "use client"
 
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from "recharts"
+import adminAxiosInstance from "../../../../adminaxiosconfig"
+import { useEffect, useState } from "react";
 
-const data = [
-  { name: 'Jan', completed: 65, canceled: 12 },
-  { name: 'Feb', completed: 59, canceled: 15 },
-  { name: 'Mar', completed: 80, canceled: 8 },
-  { name: 'Apr', completed: 81, canceled: 10 },
-  { name: 'May', completed: 56, canceled: 14 },
-  { name: 'Jun', completed: 55, canceled: 11 },
-  { name: 'Jul', completed: 40, canceled: 9 },
-]
+
 
 export function RideOverviewGraph() {
+
+
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchRideStats = async () => {
+      try {
+        const response = await adminAxiosInstance.get('/dashboard/ride_overview/'); // Update API endpoint as needed
+        setData(response.data); // Axios automatically parses JSON
+      } catch (error) {
+        setError(error.message || "Failed to fetch ride stats");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRideStats();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+
+
+
   return (
     <ResponsiveContainer width="100%" height={350}>
       <LineChart data={data}>

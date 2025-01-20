@@ -107,3 +107,15 @@ class CourierSerializer(serializers.ModelSerializer):
 
 
 
+class TopCourierSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='user.username')
+    avatar = serializers.SerializerMethodField()
+    rides = serializers.IntegerField(source='courier_deliveries.count')
+
+    class Meta:
+        model = Courier
+        fields = ['id', 'name', 'avatar', 'rides', 'rating']
+
+    def get_avatar(self, obj):
+        # Return the avatar URL or a placeholder if none exists
+        return obj.user.profile_picture.url if obj.user.profile_picture else "/placeholder-user.jpg"

@@ -1,30 +1,49 @@
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../component/ui/avatar"
+import adminAxiosInstance from "../../../../adminaxiosconfig"
+import { useEffect, useState } from "react";
 
-const topDrivers = [
-  { id: 1, name: "John Doe", avatar: "/placeholder-user.jpg", rides: 120, rating: 4.8 },
-  { id: 2, name: "Jane Smith", avatar: "/placeholder-user.jpg", rides: 115, rating: 4.9 },
-  { id: 3, name: "Mike Johnson", avatar: "/placeholder-user.jpg", rides: 108, rating: 4.7 },
-  { id: 4, name: "Sarah Williams", avatar: "/placeholder-user.jpg", rides: 102, rating: 4.8 },
-  { id: 5, name: "Chris Brown", avatar: "/placeholder-user.jpg", rides: 95, rating: 4.6 },
-]
+
 
 export function TopDrivers() {
+
+
+  const [topCouriers, setTopCouriers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchTopCouriers = async () => {
+      try {
+        const response = await adminAxiosInstance.get("/dashboard/couriers/top/");
+        setTopCouriers(response.data);
+      } catch (err) {
+        setError(err.message || "Failed to fetch top couriers.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTopCouriers();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
   return (
     <div className="space-y-8">
-      {topDrivers.map((driver) => (
-        <div key={driver.id} className="flex items-center">
+      {topCouriers.map((courier) => (
+        <div key={courier.id} className="flex items-center">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={driver.avatar} alt="Avatar" />
-            <AvatarFallback>{driver.name[0]}</AvatarFallback>
+            <AvatarImage src={courier.avatar} alt="Avatar" />
+            <AvatarFallback>{courier.name[0]}</AvatarFallback>
           </Avatar>
           <div className="ml-4 space-y-1">
-            <p className="text-sm font-medium leading-none">{driver.name}</p>
+            <p className="text-sm font-medium leading-none">{courier.name}</p>
             <p className="text-sm text-muted-foreground">
-              {driver.rides} rides
+              {courier.rides} deliveries
             </p>
           </div>
           <div className="ml-auto font-medium">
-            {driver.rating} ⭐
+            {courier.rating} ⭐
           </div>
         </div>
       ))}
