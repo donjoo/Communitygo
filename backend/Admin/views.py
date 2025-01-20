@@ -624,3 +624,31 @@ class DeliveryOverview(APIView):
             })
         
         return Response(data, status=status.HTTP_200_OK)
+    
+
+
+class PackageSizeOverview(APIView):
+    def get(self, request):
+        # Get the count of each package size (Small, Medium, Large)
+        package_size_data = (
+            Delivery.objects.values('package_size')
+            .annotate(count=Count('package_size'))
+            .order_by('package_size')
+        )
+
+        # Convert to the desired format
+        data = [
+            {'name': 'Small', 'value': 0},
+            {'name': 'Medium', 'value': 0},
+            {'name': 'Large', 'value': 0},
+        ]
+        
+        for entry in package_size_data:
+            if entry['package_size'] == 'SM':
+                data[0]['value'] = entry['count']
+            elif entry['package_size'] == 'MD':
+                data[1]['value'] = entry['count']
+            elif entry['package_size'] == 'LG':
+                data[2]['value'] = entry['count']
+
+        return Response(data, status=status.HTTP_200_OK)

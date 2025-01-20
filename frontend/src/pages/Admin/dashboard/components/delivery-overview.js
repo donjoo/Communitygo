@@ -22,7 +22,7 @@ export function DeliveryOverview() {
     fetchDeliveryData();
 
     // Set an interval to fetch data every 30 seconds (for real-time update)
-    const interval = setInterval(fetchDeliveryData, 30000);
+    const interval = setInterval(fetchDeliveryData, 300000);
     
     // Clean up interval on component unmount
     return () => clearInterval(interval);

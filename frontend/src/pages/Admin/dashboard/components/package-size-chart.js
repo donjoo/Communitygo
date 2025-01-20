@@ -1,16 +1,43 @@
 "use client"
 
 import { Pie, PieChart, ResponsiveContainer, Cell, Legend, Tooltip } from "recharts"
+import { useEffect, useState } from "react";
+import adminAxiosInstance from "../../../../adminaxiosconfig"
 
-const data = [
-  { name: 'Small', value: 400 },
-  { name: 'Medium', value: 300 },
-  { name: 'Large', value: 200 },
-]
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28']
 
 export function PackageSizeChart() {
+
+
+  const [data, setData] = useState([
+    { name: 'Small', value: 0 },
+    { name: 'Medium', value: 0 },
+    { name: 'Large', value: 0 },
+  ]);
+
+  useEffect(() => {
+    const fetchPackageSizeData = async () => {
+      try {
+        const response = await adminAxiosInstance.get('/dashboard/package-size-overview/');
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching package size data:', error);
+      }
+    };
+
+    // Initial fetch
+    fetchPackageSizeData();
+
+    // Set an interval to fetch data every 30 seconds for real-time updates
+    const interval = setInterval(fetchPackageSizeData, 300000);
+
+    // Cleanup on component unmount
+    return () => clearInterval(interval);
+  }, []);
+
+
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>

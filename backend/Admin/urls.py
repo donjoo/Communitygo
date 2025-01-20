@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AdminTokenObtainView,AdminDashboardView,UserList,toggle_user_status,DeliveryList,UpdateDeliveryStatusView,delete_user,user_detail,Create_user,DeliveryDetailView,AdminGoogleAuth,DashboardView,CountView,RecentDeliveriesList,UserRegistrationStats,RideOverviewStats,MonthlyRevenueStats,TopCouriersView,DeliveryOverview
+from .views import AdminTokenObtainView,AdminDashboardView,UserList,toggle_user_status,DeliveryList,UpdateDeliveryStatusView,delete_user,user_detail,Create_user,DeliveryDetailView,AdminGoogleAuth,DashboardView,CountView,RecentDeliveriesList,UserRegistrationStats,RideOverviewStats,MonthlyRevenueStats,TopCouriersView,DeliveryOverview,PackageSizeOverview
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -31,6 +31,8 @@ urlpatterns = [
     path('dashboard/monthly_revenue/',MonthlyRevenueStats.as_view(),name='revenue_overview'),
     path('dashboard/couriers/top/', TopCouriersView.as_view(), name='top_couriers'),
     path('dashboard/delivery_overview/', DeliveryOverview.as_view(), name='delivery_overview'),
+    path('dashboard/package-size-overview/', PackageSizeOverview.as_view(), name='package_size_overview'),
+
 
 
 ]
