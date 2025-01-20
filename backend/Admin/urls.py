@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AdminTokenObtainView,AdminDashboardView,UserList,toggle_user_status,DeliveryList,UpdateDeliveryStatusView,delete_user,user_detail,Create_user,DeliveryDetailView,AdminGoogleAuth,DashboardView,CountView
+from .views import AdminTokenObtainView,AdminDashboardView,UserList,toggle_user_status,DeliveryList,UpdateDeliveryStatusView,delete_user,user_detail,Create_user,DeliveryDetailView,AdminGoogleAuth,DashboardView,CountView,RecentDeliveriesList
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -25,5 +25,6 @@ urlpatterns = [
     path('dashboard/deliveries_count/', CountView.as_view(), {'data_type': 'ongoing_deliveries'}, name='ongoing-deliveries'),
     path('dashboard/rides_count/', CountView.as_view(), {'data_type': 'ongoing_rides'}, name='ongoing-rides'),
     path('dashboard/revenue/', CountView.as_view(), {'data_type': 'total_revenue'}, name='total_revenue'),
+    path('dashboard/recent/deliveries/',RecentDeliveriesList.as_view(),name='recent_delivery_list'),
 
 ]

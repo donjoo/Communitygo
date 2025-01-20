@@ -32,6 +32,10 @@ from RideShare.models import Ride,RidePartner
 import calendar
 from django.http import JsonResponse
 from Payment.models import Transaction
+from rest_framework import generics
+
+
+
 User = CustomUser
 
 class AdminTokenObtainView(TokenObtainPairView):
@@ -483,3 +487,7 @@ class CountView(APIView):
             **self.total_revenue(),
         }
         return Response(data)
+
+class RecentDeliveriesList(generics.ListAPIView):
+    queryset = Delivery.objects.order_by('-created_at')[:5]  # Fetch the latest 5 deliveries
+    serializer_class = DeliveryViewSerializer

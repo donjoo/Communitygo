@@ -1,18 +1,51 @@
+import { useEffect, useState } from "react";
+import adminAxiosInstance from "../../../../adminaxiosconfig";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../component/ui/avatar"
 
 export function RecentDeliveries() {
+
+
+  const [recentDeliveries, setRecentDeliveries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDeliveries = async () => {
+      try {
+        const response = await adminAxiosInstance.get('dashboard/recent/deliveries/');
+        // if (!response.ok) {
+        //   throw new Error('Network response was not ok');
+        // }
+       
+        setRecentDeliveries(response.data);
+        console.log(response.data)
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDeliveries();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+
+
   return (
     <div className="space-y-8">
       {recentDeliveries.map((delivery) => (
         <div key={delivery.id} className="flex items-center">
           <Avatar className="h-9 w-9">
             <AvatarImage src={delivery.avatar} alt="Avatar" />
-            <AvatarFallback>{delivery.name[0]}</AvatarFallback>
+            <AvatarFallback>{delivery.user[0]}</AvatarFallback>
           </Avatar>
           <div className="ml-4 space-y-1">
-            <p className="text-sm font-medium leading-none">{delivery.name}</p>
+            <p className="text-sm font-medium leading-none">{delivery.user}</p>
             <p className="text-sm text-muted-foreground">
-              {delivery.from} to {delivery.to}
+              {delivery.from_address?.address_line_1} to {delivery.to_address?.address_line_1}
             </p>
           </div>
           <div className="ml-auto font-medium">
@@ -23,47 +56,4 @@ export function RecentDeliveries() {
     </div>
   )
 }
-
-const recentDeliveries = [
-  {
-    id: "1",
-    name: "John Doe",
-    avatar: "/placeholder-user.jpg",
-    from: "New York",
-    to: "Los Angeles",
-    status: "In Transit",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    avatar: "/placeholder-user.jpg",
-    from: "Chicago",
-    to: "Houston",
-    status: "Delivered",
-  },
-  {
-    id: "3",
-    name: "Bob Johnson",
-    avatar: "/placeholder-user.jpg",
-    from: "Miami",
-    to: "Seattle",
-    status: "Pending",
-  },
-  {
-    id: "4",
-    name: "Alice Brown",
-    avatar: "/placeholder-user.jpg",
-    from: "Boston",
-    to: "San Francisco",
-    status: "In Transit",
-  },
-  {
-    id: "5",
-    name: "Charlie Wilson",
-    avatar: "/placeholder-user.jpg",
-    from: "Denver",
-    to: "Phoenix",
-    status: "Delivered",
-  },
-]
 
