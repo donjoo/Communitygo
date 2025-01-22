@@ -45,8 +45,8 @@ export default function DashboardPage() {
           <TabsList>
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
-            <TabsTrigger value="rides">Rides</TabsTrigger>
+            {/* <TabsTrigger value="deliveries">Deliveries</TabsTrigger>
+            <TabsTrigger value="rides">Rides</TabsTrigger> */}
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -94,17 +94,7 @@ export default function DashboardPage() {
                   <RideOverviewGraph />
                 </CardContent>
               </Card>
-              {/* <Card className="col-span-3">
-                <CardHeader>
-                  <CardTitle>Top Drivers</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <TopDrivers />
-                </CardContent>
-              </Card> */}
-            </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-4">
+              <Card className="col-span-3">
                 <CardHeader>
                   <CardTitle>User Registration Trend</CardTitle>
                 </CardHeader>
@@ -114,22 +104,41 @@ export default function DashboardPage() {
               </Card>
               {/* <Card className="col-span-3">
                 <CardHeader>
+                  <CardTitle>Top Drivers</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <TopDrivers />
+                </CardContent>
+              </Card> */}
+            </div>
+            {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+              <Card className="col-span-4">
+                <CardHeader>
+                  <CardTitle>User Registration Trend</CardTitle>
+                </CardHeader>
+                <CardContent className="pl-2">
+                  <UserRegistrationGraph />
+                </CardContent>
+              </Card>
+              <Card className="col-span-3">
+                <CardHeader>
                   <CardTitle>Customer Satisfaction</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CustomerSatisfaction />
                 </CardContent>
-              </Card> */}
-            </div>
+              </Card>
+            </div> */}
           </TabsContent>
           <TabsContent value="analytics" className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+             
               <Card className="col-span-4">
                 <CardHeader>
-                  <CardTitle>Delivery Overview</CardTitle>
+                  <CardTitle>Recent Rides</CardTitle>
                 </CardHeader>
-                <CardContent className="pl-2">
-                  <DeliveryOverview />
+                <CardContent>
+                  <RecentRides />
                 </CardContent>
               </Card>
               <Card className="col-span-3">
@@ -142,20 +151,20 @@ export default function DashboardPage() {
               </Card>
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-4">
+              {/* <Card className="col-span-4">
                 <CardHeader>
                   <CardTitle>Ride Duration Distribution</CardTitle>
                 </CardHeader>
                 <CardContent className="pl-2">
                   <RideDurationChart />
                 </CardContent>
-              </Card>
-              <Card className="col-span-3">
+              </Card> */}
+              <Card className="col-span-6">
                 <CardHeader>
-                  <CardTitle>Recent Rides</CardTitle>
+                  <CardTitle>Delivery Overview</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <RecentRides />
+                <CardContent className="pl-2">
+                  <DeliveryOverview />
                 </CardContent>
               </Card>
             </div>

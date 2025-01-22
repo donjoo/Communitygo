@@ -1,6 +1,32 @@
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../component/ui/avatar"
-
+import { useEffect, useState } from "react";
+import adminAxiosInstance from "../../../../adminaxiosconfig"
 export function RecentRides() {
+
+
+  const [recentRides, setRecentRides] = useState([]);
+
+  // Fetch data when component mounts and every 30 seconds
+  useEffect(() => {
+    const fetchRecentRides = async () => {
+      try {
+        const response = await adminAxiosInstance.get('/dashboard/recent-rides/');
+        setRecentRides(response.data);
+      } catch (error) {
+        console.error("Error fetching recent rides:", error);
+      }
+    };
+
+    // Initial fetch
+    fetchRecentRides();
+
+    // Set an interval to fetch data every 30 seconds
+    const interval = setInterval(fetchRecentRides, 300000);
+
+    // Cleanup on component unmount
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="space-y-8">
       {recentRides.map((ride) => (
@@ -23,47 +49,4 @@ export function RecentRides() {
     </div>
   )
 }
-
-const recentRides = [
-  {
-    id: "1",
-    name: "Emma Davis",
-    avatar: "/placeholder-user.jpg",
-    from: "Downtown",
-    to: "Airport",
-    status: "Completed",
-  },
-  {
-    id: "2",
-    name: "Michael Lee",
-    avatar: "/placeholder-user.jpg",
-    from: "Suburb",
-    to: "City Center",
-    status: "In Progress",
-  },
-  {
-    id: "3",
-    name: "Sophia Garcia",
-    avatar: "/placeholder-user.jpg",
-    from: "University",
-    to: "Shopping Mall",
-    status: "Scheduled",
-  },
-  {
-    id: "4",
-    name: "Liam Taylor",
-    avatar: "/placeholder-user.jpg",
-    from: "Beach",
-    to: "Hotel",
-    status: "Completed",
-  },
-  {
-    id: "5",
-    name: "Olivia Martinez",
-    avatar: "/placeholder-user.jpg",
-    from: "Restaurant",
-    to: "Residential Area",
-    status: "In Progress",
-  },
-]
 

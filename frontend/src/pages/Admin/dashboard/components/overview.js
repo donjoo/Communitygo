@@ -45,7 +45,7 @@ export function Overview() {
           fontSize={12}
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => `$${value.toFixed(2)}`}
+          tickFormatter={(value) => `₹${value.toFixed(2)}`}
         />
         <Bar dataKey="total" fill="#adfa1d" radius={[4, 4, 0, 0]} />
       </BarChart>

@@ -36,7 +36,7 @@ adminAxiosInstance.interceptors.response.use(
           console.error('Token refresh failed:', refreshError);
           // Log out the admin if the refresh fails
           localStorage.clear();
-          window.location.href = '/admin-login';
+          window.location.href = '/admin/login';
         }
       }
       return Promise.reject(error);

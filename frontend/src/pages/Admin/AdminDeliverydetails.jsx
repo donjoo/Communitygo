@@ -85,7 +85,7 @@ useEffect(() => {
         <AdminNavbar />
         <main className="container mx-auto py-8">
           <section className="bg-white shadow-md rounded-lg p-6">
-            <h1 className="text-2xl font-bold text-gray-700 mb-4">Delivery Details</h1>
+            <h1  className="text-2xl font-bold text-gray-700 mb-4">Delivery Details</h1>
 
             {/* Delivery Information Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -93,21 +93,21 @@ useEffect(() => {
 
               <div>
                 <div onClick={() => navigate(`/user/${user.id}`)} className="cursor-pointer">                
-                    <h3>User</h3>
+                    <h3 className="text-lg font-semibold text-gray-600" >Delivey requested User</h3>
               <p>{user.first_name} {user.last_name}</p>
               <p>{user.phone_number}</p>
               </div>
 
                 <p>
-                  {delivery.from_address.city}, {delivery.from_address.state}
+                  {delivery.from_address_data?.city}, {delivery.from_address_data?.state}
                 </p>
 
 
               <div>
                 <h2 className="text-lg font-semibold text-gray-600">From Address</h2>
-                <p>{delivery.from_address.address_line_1}</p>
+                <p>{delivery.from_address_data?.address_line_1}</p>
                 <p>
-                  {delivery.from_address.city}, {delivery.from_address.state}
+                  {delivery.from_address_data?.city}, {delivery.from_address_data?.state}
                 </p>
               </div>
 
@@ -127,9 +127,9 @@ useEffect(() => {
               <div>
               <div>
                 <h2 className="text-lg font-semibold text-gray-600">To Address</h2>
-                <p>{delivery.to_address.address_line_1}</p>
+                <p>{delivery.to_address_data?.address_line_1}</p>
                 <p>
-                  {delivery.to_address.city}, {delivery.to_address.state}
+                  {delivery.to_address_data?.city}, {delivery.to_address_data?.state}
                 </p>
               </div>
 
@@ -164,7 +164,7 @@ useEffect(() => {
               </div>
 
               {/* Status (Aligned to top-right) */}
-              <div className="flex justify-end">
+              <div >
                 <h2 className="text-lg font-semibold text-gray-600">
                   Status: <span>{delivery.status}</span>
                 </h2>

@@ -44,3 +44,21 @@ class RideSerializer(serializers.ModelSerializer):
         
         return instance
 
+
+
+class RideViewSerializer(serializers.ModelSerializer):
+    route = RideRouteSerializer()  # Nested serializer for the route
+    partners = RidePartnerSerializer(many=True, read_only=True)  # Nested serializer for partners
+
+    # Add a custom field to serialize user full name
+    user_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Ride
+        fields = ['id', 'user', 'user_name', 'route', 'vehicle', 'available_seats', 
+                  'date', 'starting_time', 'status', 
+                  'created_at', 'is_completed', 'partners', 'total_seats', 'amount']
+
+    def get_user_name(self, obj):
+        # Assuming obj.user is a User instance (change if you're using a custom user model)
+        return f"{obj.user.first_name} {obj.user.last_name}"

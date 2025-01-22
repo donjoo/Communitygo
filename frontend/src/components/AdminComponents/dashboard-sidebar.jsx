@@ -32,8 +32,8 @@ const navItems = [
     icon: ShoppingCart,
   },
   {
-    title: "Rides",
-    href: "ridemanagment",
+    title: "Ride management",
+    href: "/ridemanagement",
     icon: Car,
   },
   {

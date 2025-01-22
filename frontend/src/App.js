@@ -43,6 +43,7 @@ import PasswordOtp from "./pages/User/PasswordOtp";
 import ChangePassword from "./pages/User/ChangePassword";
 import DashboardPage from "./pages/Admin/dashboard/page";
 import {DashboardLayout} from "./pages/Admin/dashboard/layout";
+import RideManagement from "./pages/Admin/Ridemanagement";
 
 function Signin(){
   // localStorage.clear()
@@ -91,7 +92,7 @@ function App() {
         <Route path='/deliverymanagement' element={ <DashboardLayout >< DeliveryManagement/> </DashboardLayout>} />
         <Route path='/profile' element={< Profile />} />
         <Route path ='/user/:id' element={< UserDetail />} />
-        <Route path='/admindeliverydetail/:deliveryId' element = {< AdminDeliveryDetails />} />
+        <Route path='/admindeliverydetail/:deliveryId' element = {<DashboardLayout > < AdminDeliveryDetails /> </DashboardLayout>} />
         <Route path='/courier_currlocation/:deliveryId' element = {< Currentlocation />} />
         <Route path='/pickuplocation/:deliveryId' element={<Pickuplocation />}/>
         <Route path='/dropofflocation/:deliveryId' element={< Dropofflocation />}/>
@@ -106,6 +107,9 @@ function App() {
         <Route path='/change-password' element={<ChangePassword />} />
         
 
+
+
+        <Route path='/ridemanagement' element= { <DashboardLayout > <RideManagement />  </DashboardLayout>} />
 
 
 

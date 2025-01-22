@@ -36,7 +36,7 @@ from rest_framework import generics
 from django.utils.timezone import now
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
-
+from RideShare.serializers import RideSerializer,RideViewSerializer
 
 
 User = CustomUser
@@ -347,6 +347,48 @@ class DeliveryDetailView(APIView):
 
 
 
+# Ride Managment views  # Ride Managment views  # Ride Managment views  # Ride Managment views
+# Ride Managment views  # Ride Managment views  # Ride Managment views  # Ride Managment views
+# Ride Managment views  # Ride Managment views  # Ride Managment views  # Ride Managment views
+
+
+
+class RideListView(APIView):
+    def get(self, request):
+        filter_status = request.query_params.get('filter', None)
+        rides = Ride.objects.all()
+        if filter_status:
+            rides = rides.filter(status=filter_status)
+        serializer = RideSerializer(rides, many=True)
+        return Response({'rides': serializer.data}, status=status.HTTP_200_OK)
+
+class UpdateRideStatusView(APIView):
+    def patch(self, request, pk):
+        try:
+            ride = Ride.objects.get(pk=pk)
+            new_status = request.data.get('status')
+            if new_status in dict(Ride.STATUS_CHOICES):
+                ride.status = new_status
+                ride.save()
+                return Response({'message': 'Ride status updated successfully'}, status=status.HTTP_200_OK)
+            return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+        except Ride.DoesNotExist:
+            return Response({'error': 'Ride not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+
+
+
+
+
+# Dashboard views   # Dashboard views   # Dashboard views    # Dashboard views
+# Dashboard views   # Dashboard views   # Dashboard views    # Dashboard views
+# Dashboard views   # Dashboard views   # Dashboard views    # Dashboard views
+
+
+
 class DashboardView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -650,5 +692,26 @@ class PackageSizeOverview(APIView):
                 data[1]['value'] = entry['count']
             elif entry['package_size'] == 'LG':
                 data[2]['value'] = entry['count']
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+
+class RecentRidesOverview(APIView):
+    def get(self, request):
+        # Query the database for recent rides
+        recent_rides = Ride.objects.select_related('user', 'route').order_by('-created_at')[:5]
+        serialized_data = RideViewSerializer(recent_rides, many=True)
+
+        data = []
+        for ride in serialized_data.data:  # Use `data` to access serialized data
+            data.append({
+                'id': str(ride['id']),
+                'user':ride['user'],
+                'name': ride['user_name'],  # Access user_name from the serializer
+                'from': ride['route']['starting_point'],
+                'to': ride['route']['endpoint'],
+                'status': ride['status'],
+            })
 
         return Response(data, status=status.HTTP_200_OK)
