@@ -44,6 +44,8 @@ import ChangePassword from "./pages/User/ChangePassword";
 import DashboardPage from "./pages/Admin/dashboard/page";
 import {DashboardLayout} from "./pages/Admin/dashboard/layout";
 import RideManagement from "./pages/Admin/Ridemanagement";
+import AdminRideDetail from "./pages/Admin/RideDetail";
+import AdminPartnerDetails from "./pages/Admin/Ride/partnerdetails";
 
 function Signin(){
   // localStorage.clear()
@@ -110,7 +112,11 @@ function App() {
 
 
         <Route path='/ridemanagement' element= { <DashboardLayout > <RideManagement />  </DashboardLayout>} />
+        <Route path='/ridedetail/:ride_Id' element= { <DashboardLayout > <AdminRideDetail />  </DashboardLayout>} />
+        <Route path='/Adminpartnerdetail/:partnerId' element={ <DashboardLayout > <AdminPartnerDetails /> </DashboardLayout> } /> 
 
+
+    
 
 
          {/* RideSharing */}

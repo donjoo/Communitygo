@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import adminAxiosInstance from "../../adminaxiosconfig"; // Axios instance for admin API calls
 import AdminNavbar from "../../components/AdminComponents/AdminNavbar";
 import { NavLink } from "react-router-dom";
+import { Table, TableHeader, TableRow, TableCell, TableBody } from "../../component/ui/table";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "../../component/ui/select";
+import { Button } from "../../component/ui/button";
 
 function RideManagement() {
   const [rides, setRides] = useState([]);
@@ -14,15 +17,26 @@ function RideManagement() {
   const startIndex = (currentPage - 1) * ridesPerPage;
   const currentRides = rides.slice(startIndex, startIndex + ridesPerPage);
 
+  // const fetchRides = async () => {
+  //   try {
+  //     const params = selectedStatus ? { filter: selectedStatus } : {};
+  //     const response = await adminAxiosInstance.get("ridemanagement/rides/", { params });
+  //     setRides(response.data.rides || []);
+  //   } catch (error) {
+  //     console.error("Error fetching rides:", error);
+  //   }
+  // };
+
   const fetchRides = async () => {
     try {
-      const params = selectedStatus ? { filter: selectedStatus } : {};
+      const params = selectedStatus !== "all" ? { filter: selectedStatus } : {};
       const response = await adminAxiosInstance.get("ridemanagement/rides/", { params });
       setRides(response.data.rides || []);
     } catch (error) {
       console.error("Error fetching rides:", error);
     }
   };
+  
 
   const handleStatusChange = async (rideId, newStatus) => {
     try {
@@ -44,102 +58,115 @@ function RideManagement() {
   }, [selectedStatus]);
 
   return (
-    <>
-      <AdminNavbar />
-      <div className="container mx-auto p-4">
-        <h1 className="text-2xl font-bold mb-4">Ride Management</h1>
-        <div className="flex items-center space-x-2 mb-6">
-          <label htmlFor="status">Filter by Status:</label>
-          <select
-            id="status"
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-4 py-2 border rounded-md text-lg"
-          >
-            <option value="">All</option>
-            {statuses.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="px-6 py-3 text-left">Date</th>
-                <th className="px-6 py-3 text-left">Route</th>
-                <th className="px-6 py-3 text-left">Status</th>
-                <th className="px-6 py-3 text-left">Actions</th>
-                <th className="px-6 py-3 text-left">Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentRides.map((ride) => (
-                <tr key={ride.id}>
-                  <td className="px-6 py-4">{ride.date}</td>
-                  <td className="px-6 py-4">{`${ride.route.starting_point} → ${ride.route.endpoint}`}</td>
-                  <td className="px-6 py-4">{ride.status}</td>
-                  <td className="px-6 py-4">
-                    <select
-                      value={ride.status}
-                      onChange={(e) => handleStatusChange(ride.id, e.target.value)}
-                      className="p-2 border rounded"
-                    >
-                      {statuses.map((status) => (
-                        <option key={status} value={status}>
-                          {status}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td>
-                    <NavLink
-                      to={`/adminridedetail/${ride.id}`}
-                      className="text-blue-500 hover:underline"
-                    >
-                      View Details
-                    </NavLink>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="flex justify-center mt-6 space-x-4">
-            <button
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`px-4 py-2 border rounded ${
-                currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-white"
-              }`}
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`px-4 py-2 border rounded ${
-                  currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-white"
-                }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`px-4 py-2 border rounded ${
-                currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-white"
-              }`}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Ride Management</h1>
+      <div className="flex items-center space-x-4 mb-6">
+        <label htmlFor="status" className="text-lg font-medium">
+          Filter by Status:
+        </label>
+        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+  <SelectTrigger className="w-40 border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm">
+    <span className="text-sm text-gray-700">
+      {selectedStatus || "All"}
+    </span>
+  </SelectTrigger>
+  <SelectContent className="bg-white border border-gray-300 rounded-md shadow-lg mt-1 z-50">
+    <SelectItem value="all" className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm text-gray-700">
+      All
+    </SelectItem>
+    {statuses.map((status) => (
+      <SelectItem
+        key={status}
+        value={status}
+        className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm text-gray-700"
+      >
+        {status}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
+
+
       </div>
-    </>
+
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableCell>Date</TableCell>
+              <TableCell>Route</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Actions</TableCell>
+              <TableCell>Details</TableCell>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {currentRides.map((ride) => (
+              <TableRow key={ride.id}>
+                <TableCell>{ride.date}</TableCell>
+                <TableCell>{`${ride.route.starting_point} → ${ride.route.endpoint}`}</TableCell>
+                <TableCell>{ride.status}</TableCell>
+                <TableCell>
+                  <Select
+                    value={ride.status}
+                    onValueChange={(newStatus) => handleStatusChange(ride.id, newStatus)}
+                  >
+                    <SelectTrigger  className="w-40 border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm">
+                    <span className="text-sm text-gray-700">
+                      {ride.status}
+                      </span>
+                    </SelectTrigger>
+                    <SelectContent  className="bg-white border border-gray-300 rounded-md shadow-lg mt-1 z-50">
+                      {statuses.map((status) => (
+                        <SelectItem key={status} value={status} className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm text-gray-700">
+                          {status}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+
+
+                </TableCell>
+                <TableCell>
+                  <NavLink to={`/ridedetail/${ride.id}`} className="text-blue-600 hover:underline">
+                    View Details
+                  </NavLink>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="flex justify-between items-center mt-6">
+        <Button
+          variant="outline"
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <div className="flex space-x-2">
+          {Array.from({ length: totalPages }, (_, index) => (
+            <Button
+              key={index}
+              variant={currentPage === index + 1 ? "default" : "outline"}
+              onClick={() => setCurrentPage(index + 1)}
+            >
+              {index + 1}
+            </Button>
+          ))}
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
   );
 }
 

@@ -36,7 +36,7 @@ from rest_framework import generics
 from django.utils.timezone import now
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
-from RideShare.serializers import RideSerializer,RideViewSerializer
+from RideShare.serializers import RideSerializer,RideViewSerializer,RidePartnerSerializer
 
 
 User = CustomUser
@@ -376,7 +376,31 @@ class UpdateRideStatusView(APIView):
             return Response({'error': 'Ride not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
+class RideDetail(APIView):
+    
+    def get(self, request, ride_Id):
+        ride = get_object_or_404(Ride, id=ride_Id)
 
+        # Retrieve all ride partners for this ride
+        ride_partners = RidePartner.objects.filter(ride=ride)
+
+        # Filter partners into pending and accepted categories
+        pending = ride_partners.filter(status="pending")
+        accepted = ride_partners.exclude(status__in=["pending", "rejected",'canceled','payment'])
+        # Serialize the ride and partners
+        ride_serializer = RideSerializer(ride)
+        pending_serializer = RidePartnerSerializer(pending, many=True)  # Use many=True for multiple objects
+        accepted_serializer = RidePartnerSerializer(accepted, many=True)  # Use many=True for multiple objects
+
+        # Construct the response data
+        data = {
+            'ride': ride_serializer.data,
+            'pending': pending_serializer.data,
+            'partners': accepted_serializer.data,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
+            
 
 
 

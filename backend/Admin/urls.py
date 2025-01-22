@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AdminTokenObtainView,AdminDashboardView,UserList,toggle_user_status,DeliveryList,UpdateDeliveryStatusView,delete_user,user_detail,Create_user,DeliveryDetailView,AdminGoogleAuth,DashboardView,CountView,RecentDeliveriesList,UserRegistrationStats,RideOverviewStats,MonthlyRevenueStats,TopCouriersView,DeliveryOverview,PackageSizeOverview,RecentRidesOverview,RideListView,UpdateRideStatusView
+from .views import AdminTokenObtainView,AdminDashboardView,UserList,toggle_user_status,DeliveryList,UpdateDeliveryStatusView,delete_user,user_detail,Create_user,DeliveryDetailView,AdminGoogleAuth,DashboardView,CountView,RecentDeliveriesList,UserRegistrationStats,RideOverviewStats,MonthlyRevenueStats,TopCouriersView,DeliveryOverview,PackageSizeOverview,RecentRidesOverview,RideListView,UpdateRideStatusView,RideDetail
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
@@ -35,6 +35,8 @@ urlpatterns = [
     path('dashboard/recent-rides/', RecentRidesOverview.as_view(), name='recent_rides_overview'),
     path('ridemanagement/rides/', RideListView.as_view(), name='ride-list'),
     path('ride/<int:pk>/update-status/', UpdateRideStatusView.as_view(), name='update-ride-status'),
+    path('ride/<int:ride_Id>/ridedetail/', RideDetail.as_view(), name='update-ride-status'),
+
 
 
 
