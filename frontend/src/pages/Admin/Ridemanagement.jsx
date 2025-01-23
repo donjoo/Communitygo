@@ -10,12 +10,15 @@ function RideManagement() {
   const [rides, setRides] = useState([]);
   const [statuses] = useState(["pending", "ongoing", "completed", "canceled"]);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [filteredRides, setFilteredRides] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  
   const [currentPage, setCurrentPage] = useState(1);
   const ridesPerPage = 6;
 
-  const totalPages = Math.ceil(rides.length / ridesPerPage);
+  const totalPages = Math.ceil(filteredRides.length / ridesPerPage);
   const startIndex = (currentPage - 1) * ridesPerPage;
-  const currentRides = rides.slice(startIndex, startIndex + ridesPerPage);
+  const currentRides = filteredRides.slice(startIndex, startIndex + ridesPerPage);
 
   // const fetchRides = async () => {
   //   try {
@@ -32,6 +35,7 @@ function RideManagement() {
       const params = selectedStatus !== "all" ? { filter: selectedStatus } : {};
       const response = await adminAxiosInstance.get("ridemanagement/rides/", { params });
       setRides(response.data.rides || []);
+      setFilteredRides(response.data.rides || [])
     } catch (error) {
       console.error("Error fetching rides:", error);
     }
@@ -52,6 +56,20 @@ function RideManagement() {
       alert("Failed to update status");
     }
   };
+
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query)
+    const filtered = rides.filter(
+      (ride) =>
+        ride.route.starting_point.toLowerCase().includes(query) ||
+        ride.route.endpoint.toLowerCase().includes(query)
+    );
+
+    setFilteredRides(filtered);
+  };
+
 
   useEffect(() => {
     fetchRides();
@@ -88,6 +106,16 @@ function RideManagement() {
 
 
       </div>
+
+      <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search by username, email, or name"
+            value={searchQuery}
+            onChange={handleSearch}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
       <div className="overflow-x-auto">
         <Table>

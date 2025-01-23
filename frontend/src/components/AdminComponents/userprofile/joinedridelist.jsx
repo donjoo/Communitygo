@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
     Table,
@@ -14,16 +14,23 @@ import { setRideData } from '../../../redux/ride/rideslice';
 
 
 function AdminRideJoinedlist({ joinedRides }) {
+    const [filteredRides, setFilteredRides] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const ridesPerPage = 5; // Number of deliveries per page
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+
+    useEffect(() => {
+        setFilteredRides(joinedRides)
+    },[])
     // Calculate total pages
-    const totalPages = Math.ceil(joinedRides.length / ridesPerPage);
+    const totalPages = Math.ceil(filteredRides.length / ridesPerPage);
 
     // Get the current page's deliveries
     const startIndex = (currentPage - 1) * ridesPerPage;
-    const currentrides = joinedRides.slice(startIndex, startIndex + ridesPerPage);
+    const currentrides = filteredRides.slice(startIndex, startIndex + ridesPerPage);
     console.log(joinedRides)
     // Handle page change
     const handlePageChange = (page) => {
@@ -42,10 +49,33 @@ function AdminRideJoinedlist({ joinedRides }) {
    
     };
 
+
+    const handleSearch = (e) => {
+        const query = e.target.value.toLowerCase();
+        setSearchQuery(query)
+        const filtered = joinedRides.filter(
+          (ride) =>
+            ride.pickup.toLowerCase().includes(query) ||
+            ride.dropoff.toLowerCase().includes(query) ||
+            ride.status.toLowerCase().includes(query) 
+        );
+    
+        setFilteredRides(filtered);
+      };
+
     return (
         <div className="flex flex-col items-center justify-center">
             {/* Responsive Table Container */}
             <div className="w-full max-w-6xl px-4 overflow-x-auto">
+            <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search by username, email, or name"
+            value={searchQuery}
+            onChange={handleSearch}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
                 <Table className="table-auto border border-gray-200 shadow-lg">
 
