@@ -64,7 +64,7 @@ function UserProfile({ user, profile, deliveries }) {
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-10">
             <div className="relative">
               <img
-                src={`${baseURL}${profile.profile_picture}`}
+                src={`${baseURL}${profile?.profile_picture}`}
                 alt={user.username}
                 className="w-40 h-40 rounded-full object-cover border-4 border-blue-500"
               />

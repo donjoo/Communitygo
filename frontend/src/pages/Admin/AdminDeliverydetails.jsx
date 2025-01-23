@@ -82,7 +82,6 @@ useEffect(() => {
   return (
     <>
       <div className="flex flex-col min-h-screen">
-        <AdminNavbar />
         <main className="container mx-auto py-8">
           <section className="bg-white shadow-md rounded-lg p-6">
             <h1  className="text-2xl font-bold text-gray-700 mb-4">Delivery Details</h1>
@@ -148,7 +147,7 @@ useEffect(() => {
                   
                   </div>
                 ):(
-                  <p><span className="text-orange-500">waiting for a courier to accept your delivery request.</span></p>
+                  <p><span className="text-orange-500">waiting for a courier to accept delivery request.</span></p>
                 )}
 
                 {delivery.picked_upat && (

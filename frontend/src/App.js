@@ -93,7 +93,7 @@ function App() {
         <Route path='/usermanagement' element={<DashboardLayout > <Usermanagement /> </DashboardLayout>} />
         <Route path='/deliverymanagement' element={ <DashboardLayout >< DeliveryManagement/> </DashboardLayout>} />
         <Route path='/profile' element={< Profile />} />
-        <Route path ='/user/:id' element={< UserDetail />} />
+        <Route path ='/user/:id' element={ <DashboardLayout > < UserDetail /> </DashboardLayout>} />
         <Route path='/admindeliverydetail/:deliveryId' element = {<DashboardLayout > < AdminDeliveryDetails /> </DashboardLayout>} />
         <Route path='/courier_currlocation/:deliveryId' element = {< Currentlocation />} />
         <Route path='/pickuplocation/:deliveryId' element={<Pickuplocation />}/>

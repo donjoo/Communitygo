@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.permissions import IsAuthenticated
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer,UserProfileSerializer
 from Delivery.models import Delivery,Courier
 from Delivery.serializers import DeliverySerializers, CourierSerializer,DeliveryViewSerializer,TopCourierSerializer
 from users.models import CustomUser,UserProfile
@@ -216,17 +216,28 @@ class user_detail(APIView):
     def get(self,request,user_id):
         try:
             user = User.objects.get(id=user_id)
+            profile = UserProfile.objects.get(user = user)
             deliveries = Delivery.objects.filter(user=user)
             couriers = Courier.objects.filter(user = user)
+            rides = Ride.objects.filter(user = user)
+            joinedRides = RidePartner.objects.filter(user = user)
             print(couriers)
             serializer = UserSerializer(user)
+            profileserializer = UserProfileSerializer(profile)
             deliveryserializer = DeliverySerializers(deliveries,many=True)
             courierserializer = CourierSerializer(couriers,many=True)
+            rideserializer = RideViewSerializer(rides, many=True)
+            joinedserializer = RidePartnerSerializer(joinedRides, many=True)
             data = {
                 'user':serializer.data,
+                'profile':profileserializer.data,
                 'deliveries':deliveryserializer.data,
                 'couriers':courierserializer.data,
+                'rides': rideserializer.data,
+                'joined_rides':joinedserializer.data,
             }
+            # print(rideserializer.data)
+            print(joinedserializer.data)
             return Response(data)
         except User.DoesNotExist:
             return Response({'error':"user not found"},status=status.HTTP_404_NOT_FOUND)
@@ -244,6 +255,47 @@ class Create_user(APIView):
             return Response(status=status.HTTP_200_OK)
         print(serializer.errors)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+
+
+
+
+
+class UpdateUserProfile(APIView):
+
+    def put(self, request,user_id):
+        user = CustomUser.objects.get(id = user_id)
+        print(request.data)
+        # Update user data
+        user_serializer = UserSerializer(user, data=request.data, partial=True)
+        
+        if user_serializer.is_valid():
+            user_serializer.save()
+        
+            # Handle profile updates
+            # profile_data = request.data.get('profile', {})
+            # print(profile_data,'profile_data')
+            # if profile_data:
+            profile_picture = request.data.get('profile_picture', None)
+            if profile_picture:
+                # Get or create the UserProfile instance for the user
+                profile, created = UserProfile.objects.get_or_create(user=user)
+                
+                # Create a serializer instance with the existing profile data
+                profile_serializer = UserProfileSerializer(profile, data={'profile_picture': profile_picture}, partial=True)
+                
+                if profile_serializer.is_valid():
+                    profile_serializer.save()
+                    return Response(user_serializer.data, status=200)
+                else:
+                    return Response(profile_serializer.errors, status=400)
+
+            return Response(user_serializer.data, status=200)
+
+        return Response(user_serializer.errors, status=400)
+
 
 # @api_view(['POST'])
 # @permission_classes([permissions.IsAdminUser])
