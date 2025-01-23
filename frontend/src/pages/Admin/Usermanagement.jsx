@@ -15,6 +15,8 @@ import { setAuthData } from '../../redux/auth/authSlice';
 function Usermanagement() {
 
     const [users, setUsers] = useState([]);
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const [newUser, setNewUser] = useState({ name: '', email: '', role: '' })
     const [editingUser, setEditingUser] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -28,16 +30,12 @@ function Usermanagement() {
     const [currentPage, setCurrentPage] = useState(1);
     const usersPerPage = 6;
 
-    const totalPages = Math.ceil(users.length / usersPerPage);
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
     const startIndex = (currentPage - 1) * usersPerPage;
-    const currentUsers = users.slice(startIndex,startIndex + usersPerPage)
+    const currentUsers = filteredUsers.slice(startIndex,startIndex + usersPerPage)
  
-    const handlePageChange = (page) => {
-      if (page >=1 && page <= totalPages) {
-        setCurrentPage(page);
-      }
-    }
+ 
 
     useEffect(() => {
       if (!user) {
@@ -58,6 +56,7 @@ function Usermanagement() {
 
             if (response.data){
                 setUsers(response.data.users); 
+                setFilteredUsers(response.data.users)
             } else {
                 setError('No users found.');
             }
@@ -101,6 +100,24 @@ function Usermanagement() {
         alert('An error occured while updataing user status');
       }
     };
+
+
+    const handleSearch = (e) => {
+      const query = e.target.value.toLowerCase();
+      setSearchQuery(query);
+      const filtered = users.filter(
+          (user) =>
+              user.username.toLowerCase().includes(query) ||
+              user.email.toLowerCase().includes(query) ||
+              user.first_name.toLowerCase().includes(query) ||
+              user.last_name.toLowerCase().includes(query)
+      );
+      setFilteredUsers(filtered);
+  };
+
+
+
+
 
     
     useEffect(() => {
@@ -161,6 +178,12 @@ function Usermanagement() {
       setIsModalOpen(true)
     }
   
+
+    const handlePageChange = (page) => {
+      if (page >=1 && page <= totalPages) {
+        setCurrentPage(page);
+      }
+    }
 
   return (
    <>
@@ -223,6 +246,17 @@ function Usermanagement() {
         </div>
       </form>
 
+
+      <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Search by username, email, or name"
+                        value={searchQuery}
+                        onChange={handleSearch}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white">
         <thead className="bg-gray-100">
@@ -235,7 +269,7 @@ function Usermanagement() {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {users.map((user) => (
+          {currentUsers.map((user) => (
             <tr key={user.id} >
                {/* <Link to={`/user/${user.id}`} className="text-blue-600 hover:underline"> */}
                         
