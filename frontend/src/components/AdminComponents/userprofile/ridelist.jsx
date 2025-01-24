@@ -18,13 +18,10 @@ function AdminRidelist({ rides }) {
     const ridesPerPage = 5; // Number of deliveries per page
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [filteredRides, setFilteredRides] = useState([]);
+    const [filteredRides, setFilteredRides] = useState(rides || []);
     const [searchQuery, setSearchQuery] = useState('');
     
 
-    useEffect(() => {
-        setFilteredRides(rides)
-    },[])
     // Calculate total pages
     const totalPages = Math.ceil(filteredRides.length / ridesPerPage);
 

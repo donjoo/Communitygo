@@ -11,10 +11,10 @@ function Footer() {
               <p className="mt-2 text-sm text-gray-400">Empowering communities through shared resources.</p>
             </div>
             <div className="flex flex-wrap justify-center md:justify-end space-x-6">
-              <a href="#" className="text-gray-400 hover:text-orange-500 transition duration-300">About Us</a>
-              <a href="#" className="text-gray-400 hover:text-orange-500 transition duration-300">Privacy Policy</a>
-              <a href="#" className="text-gray-400 hover:text-orange-500 transition duration-300">Terms of Service</a>
-              <a href="#" className="text-gray-400 hover:text-orange-500 transition duration-300">Contact Us</a>
+              <a href="/aboutus" className="text-gray-400 hover:text-orange-500 transition duration-300">About Us</a>
+              <a href="/profile" className="text-gray-400 hover:text-orange-500 transition duration-300">My profile</a>
+              <a href="/my_earnings" className="text-gray-400 hover:text-orange-500 transition duration-300">My earnings</a>
+              {/* <a href="#" className="text-gray-400 hover:text-orange-500 transition duration-300">Contact Us</a> */}
             </div>
           </div>
           <div className="mt-8 text-center text-gray-400 text-sm">

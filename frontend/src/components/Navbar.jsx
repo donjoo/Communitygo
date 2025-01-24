@@ -42,9 +42,9 @@ function Navbar() {
           {/* Normal Nav Links */}
           <div className={`hidden md:flex space-x-6`}>
             <NavLink to="/" className="text-gray-600 hover:text-orange-500 transition duration-300">Home</NavLink>
-            <a href="#" className="text-gray-600 hover:text-orange-500 transition duration-300">How It Works</a>
-            <a href="#" className="text-gray-600 hover:text-orange-500 transition duration-300">About Us</a>
-            <a href="#" className="text-gray-600 hover:text-orange-500 transition duration-300">Contact</a>
+            {/* <a href="#" className="text-gray-600 hover:text-orange-500 transition duration-300">How It Works</a> */}
+            <a href="/aboutus" className="text-gray-600 hover:text-orange-500 transition duration-300">About Us</a>
+            {/* <a href="#" className="text-gray-600 hover:text-orange-500 transition duration-300">Contact</a> */}
             {user ? (
               <>
                 <NavLink to='/profile' className="text-orange-500 hover:underline">{user.username}</NavLink>

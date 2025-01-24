@@ -11,16 +11,16 @@ import {
 } from "../../../component/ui/table"
 
 function AdminCourierlist({ couriers }) {
-  const [filteredCouriers, setFilteredCouriers] = useState([]);
+  const [filteredCouriers, setFilteredCouriers] = useState(couriers || []);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const couriersPerPage = 5; // Number of couriers per page
 
 
-  useEffect(() => {
-    setFilteredCouriers(couriers)
+  // useEffect(() => {
+  //   setFilteredCouriers(couriers)
 
-  },[])
+  // },[])
   // Calculate total pages
   const totalPages = Math.ceil(filteredCouriers.length / couriersPerPage);
 

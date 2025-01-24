@@ -99,11 +99,11 @@ function UserProfile({ user, profile, deliveries }) {
                 <span className="text-lg">+{user.phone_number}</span>
               </div>
 
-              <p onClick={sendOtp}>change password</p>
             </div>
 
             <div>
-              <p onClick={() => navigate('/my_earnings')}> my earnings</p>
+              <p onClick={() => navigate('/my_earnings')}  className="text-blue-500 cursor-pointer hover:underline mt-4"> my earnings</p>
+              <p onClick={sendOtp}  className="text-blue-500 cursor-pointer hover:underline mt-2">change password</p>
             </div>
           </div>
 

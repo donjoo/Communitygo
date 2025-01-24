@@ -12,14 +12,10 @@ import {
 
 
 function AdminDeliverylist({ deliveries }) {
-  const [filteredDeliveries, setFilteredDeliveries] = useState([]);
+  const [filteredDeliveries, setFilteredDeliveries] = useState( deliveries || []);
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const deliveriesPerPage = 5; // Number of deliveries per page
-  useEffect(() => {
-    setFilteredDeliveries(deliveries)
-
-  },[])
 
   // Calculate total pages
   const totalPages = Math.ceil(filteredDeliveries.length / deliveriesPerPage);

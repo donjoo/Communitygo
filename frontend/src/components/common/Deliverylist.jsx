@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   Table,
@@ -9,19 +9,25 @@ import {
   TableHeader,
   TableRow,
 } from "../../component/ui/table"
+import { debounce } from 'lodash';
 
 
 function Deliverylist({ deliveries }) {
+  const [filteredDeliveries, setFilteredDeliveries] = useState(deliveries  || []);
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const deliveriesPerPage = 6; // Number of deliveries per page
+  const deliveriesPerPage = 5; // Number of deliveries per page
+  useEffect(() => {
+    setFilteredDeliveries(deliveries)
 
+  },[])
 
   // Calculate total pages
-  const totalPages = Math.ceil(deliveries.length / deliveriesPerPage);
+  const totalPages = Math.ceil(filteredDeliveries.length / deliveriesPerPage);
 
   // Get the current page's deliveries
   const startIndex = (currentPage - 1) * deliveriesPerPage;
-  const currentDeliveries = deliveries.slice(startIndex, startIndex + deliveriesPerPage);
+  const currentDeliveries = filteredDeliveries.slice(startIndex, startIndex + deliveriesPerPage);
 
   // Handle page change
   const handlePageChange = (page) => {
@@ -30,10 +36,41 @@ function Deliverylist({ deliveries }) {
     }
   };
 
+
+  const debouncedSearch = debounce((query) => {
+    const filtered = deliveries.filter(
+      (delivery) =>
+        delivery.from_address_data.address_line_1.toLowerCase().includes(query) ||
+        delivery.to_address_data.address_line_1.toLowerCase().includes(query) ||
+        delivery.status.toLowerCase().includes(query) ||
+        delivery.package_size.toLowerCase().includes(query)
+    );
+
+    setFilteredDeliveries(filtered);
+  }, 300);
+
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    debouncedSearch(query);
+};
+
+
   return (
     <div className="flex flex-col items-center justify-center">
       {/* Responsive Table Container */}
       <div className="w-full max-w-6xl px-4 overflow-x-auto">
+        {/* Search Input */}
+ <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search by username, email, or name"
+            value={searchQuery}
+            onChange={handleSearch}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
       <Table  className="table-auto border border-gray-200 shadow-lg">
   

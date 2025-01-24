@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   Table,
@@ -9,17 +9,43 @@ import {
   TableHeader,
   TableRow,
 } from "../../component/ui/table"
+import { debounce } from 'lodash';
 
 function Courierlist({ couriers }) {
+  const [filteredCouriers, setFilteredCouriers] = useState( couriers || []);
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const couriersPerPage = 6; // Number of couriers per page
+  const couriersPerPage = 5; // Number of couriers per page
+  useEffect(() => {
+    setFilteredCouriers(couriers)
 
+  },[])
   // Calculate total pages
-  const totalPages = Math.ceil(couriers.length / couriersPerPage);
+  const totalPages = Math.ceil(filteredCouriers.length / couriersPerPage);
 
   // Get the current page's couriers
   const startIndex = (currentPage - 1) * couriersPerPage;
-  const currentCouriers = couriers.slice(startIndex, startIndex + couriersPerPage);
+  const currentCouriers = filteredCouriers.slice(startIndex, startIndex + couriersPerPage);
+
+
+  const debouncedSearch = debounce((query) => {
+    const filtered = couriers.filter(
+      (courier) =>
+        courier.delivery.from_address_data.address_line_1.toLowerCase().includes(query) ||
+        courier.delivery.to_address_data.address_line_1.toLowerCase().includes(query) ||
+        courier.delivery.status.toLowerCase().includes(query) ||
+        courier.delivery.package_size.toLowerCase().includes(query)
+    );
+
+    setFilteredCouriers(filtered);
+  }, 300);
+
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    debouncedSearch(query);
+};
 
   // Handle page change
   const handlePageChange = (page) => {
@@ -37,6 +63,16 @@ function Courierlist({ couriers }) {
     <div className="flex flex-col items-center justify-center">
     {/* Responsive Table Container */}
     <div className="w-full max-w-6xl px-4 overflow-x-auto">
+             {/* Search Input */}
+ <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search by username, email, or name"
+            value={searchQuery}
+            onChange={handleSearch}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
     <Table  className="table-auto border border-gray-200 shadow-lg">
 
@@ -54,8 +90,8 @@ function Courierlist({ couriers }) {
 {currentCouriers.map((courier) => (
 <TableRow  key={courier.id}>
     <TableCell className=" p-4 font-medium">{courier.id}</TableCell>
-    <TableCell className="p-4">{courier.delivery.from_address?.address_line_1}, {courier.delivery.from_address?.city}, {courier.delivery.from_address?.state}</TableCell>
-    <TableCell className="p-4"> {courier.delivery.to_address?.address_line_1}, {courier.delivery.to_address?.city}, {courier.delivery.to_address?.state}</TableCell>
+    <TableCell className="p-4">{courier.delivery.from_address_data?.address_line_1}, {courier.delivery.from_address_data?.city}, {courier.delivery.from_address_data?.state}</TableCell>
+    <TableCell className="p-4"> {courier.delivery.to_address_data?.address_line_1}, {courier.delivery.to_address_data?.city}, {courier.delivery.to_address_data?.state}</TableCell>
     <TableCell className="p-4"> {courier.delivery.package_size}</TableCell>
     <TableCell className="p-4">{courier.delivery.status}</TableCell>
   

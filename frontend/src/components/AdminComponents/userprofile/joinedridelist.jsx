@@ -14,7 +14,7 @@ import { setRideData } from '../../../redux/ride/rideslice';
 
 
 function AdminRideJoinedlist({ joinedRides }) {
-    const [filteredRides, setFilteredRides] = useState([]);
+    const [filteredRides, setFilteredRides] = useState(joinedRides || []);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const ridesPerPage = 5; // Number of deliveries per page
@@ -22,9 +22,6 @@ function AdminRideJoinedlist({ joinedRides }) {
     const navigate = useNavigate();
 
 
-    useEffect(() => {
-        setFilteredRides(joinedRides)
-    },[])
     // Calculate total pages
     const totalPages = Math.ceil(filteredRides.length / ridesPerPage);
 

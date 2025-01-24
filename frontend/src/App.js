@@ -46,6 +46,7 @@ import {DashboardLayout} from "./pages/Admin/dashboard/layout";
 import RideManagement from "./pages/Admin/Ridemanagement";
 import AdminRideDetail from "./pages/Admin/RideDetail";
 import AdminPartnerDetails from "./pages/Admin/Ride/partnerdetails";
+import AboutUs from "./components/About_us";
 
 function Signin(){
   // localStorage.clear()
@@ -76,6 +77,7 @@ function App() {
 
                 <Route path="/login" element={<Signin />} />
                 <Route path="/register" element={<RegisterAndLogout />} />
+                <Route path="/aboutus" element={<AboutUs />} />
         
         
         <Route path='/verifyotp' element={< VerifyOtp />} />
