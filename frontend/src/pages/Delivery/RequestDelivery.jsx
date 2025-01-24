@@ -254,7 +254,9 @@ export default function DeliveryPage() {
 
   useEffect(() => {
     if (delivery_id) {
-      navigate(`/delivery/payment/${delivery_id}`);
+      navigate(`/delivery/payment/${delivery_id}`, { replace: true });
+      // console.log("Replacing state:", `/delivery/payment/${delivery_id}`);
+      // window.history.replaceState(null, null, `/delivery/payment/${delivery_id}`)
     }
   }, [delivery_id, navigate]);
 

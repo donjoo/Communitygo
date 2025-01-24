@@ -37,7 +37,7 @@ const AdminLogin = () => {
             const response = await adminAxiosInstance.post('admin/token/',{email,password});
             localStorage.setItem('adminToken',response.data.admin_token);
             localStorage.setItem('adminData', JSON.stringify(response.data));
-
+            localStorage.setItem('admin_refresh', response.data.admin_refresh); 
 
             dispatch(setAuthData(response.data));
 

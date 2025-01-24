@@ -3,11 +3,15 @@ import {jwtDecode} from "jwt-decode"; // Ensure proper import for jwtDecode
 import api from "../../api";
 import { REFRESH_TOKEN, ACCESS_TOKEN } from "../../constants";
 import { useState, useEffect } from "react";
+import { useDispatch } from 'react-redux';
+import { clearAuthData } from '../../redux/auth/authSlice';
 
 function ProtectedRoute({ children }) {
     const [isAuthorized, setIsAuthorized] = useState(null); // Track authorization state
+    const dispatch = useDispatch();
 
     useEffect(() => {
+        console.log(isAuthorized,'isAuthorized')
         const checkAuthStatus = async () => {
             try {
                 const isAuthenticated = await checkAuth();
@@ -23,11 +27,12 @@ function ProtectedRoute({ children }) {
     }, [isAuthorized]); // Depend only on `isAuthorized`
 
     const checkAuth = async () => {
-        const token = localStorage.getItem(ACCESS_TOKEN);
+        const token = localStorage.getItem('ACCESS_TOKEN');
         if (!token) {
             return false; // No token, unauthorized
         }
 
+        console.log('heyyyyyyy')
         const decoded = jwtDecode(token);
         const tokenExpiration = decoded.exp;
         const now = Date.now() / 1000;
@@ -40,7 +45,7 @@ function ProtectedRoute({ children }) {
     };
 
     const refreshToken = async () => {
-        const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+        const refreshToken = localStorage.getItem('REFRESH_TOKEN');
         if (!refreshToken) {
             return false; // No refresh token available
         }
@@ -50,11 +55,14 @@ function ProtectedRoute({ children }) {
                 refresh: refreshToken,
             });
             if (res.status === 200) {
-                localStorage.setItem(ACCESS_TOKEN, res.data.access);
+                localStorage.setItem('ACCESS_TOKEN', res.data.access);
                 return true; // Token refreshed, authorized
             }
         } catch (error) {
             console.error("Error refreshing token:", error);
+            localStorage.clear();
+            dispatch(clearAuthData());
+            window.location.href = "/login";
         }
         return false; // Refresh failed, unauthorized
     };

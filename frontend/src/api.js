@@ -27,5 +27,40 @@ api.interceptors.request.use(
 )
 
 
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            const refreshToken = localStorage.getItem("REFRESH_TOKEN");
+
+            if (refreshToken) {
+                try {
+                    const response = await axios.post(
+                        "http://localhost:8000/api/token/refresh/",
+                        { refresh: refreshToken }
+                    );
+                    const newAccessToken = response.data.access;
+
+                    localStorage.setItem("ACCESS_TOKEN", newAccessToken);
+                    originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+                    return api(originalRequest);
+                } catch (refreshError) {
+                    if (refreshError.response?.status === 401) {
+                        // Redirect to login page after clearing tokens
+                        localStorage.clear();
+                        window.location.href = "/login";
+                    }
+                    console.error("Token refresh failed:", refreshError);
+                    // Handle refresh failure (e.g., logout user)
+                }
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 
 export default api

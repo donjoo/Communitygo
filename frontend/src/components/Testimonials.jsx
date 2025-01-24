@@ -65,12 +65,12 @@ const Testimonials = () => {
       ))}
     </div>
 
-    <Button
+    {/* <Button
       className="mt-10 px-8 py-3 bg-orange-600 text-white rounded-lg hover:bg-blue-700"
       href="/get-started"
     >
       Get Started
-    </Button>
+    </Button> */}
   </div>
 
 

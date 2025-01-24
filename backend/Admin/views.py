@@ -53,6 +53,7 @@ class AdminTokenObtainView(TokenObtainPairView):
                 'username':user.username,
             }
             response.data['admin_token'] = response.data['access']
+            response.data['admin_refresh'] = response.data['refresh']
             return response
         return Response({"detail": "Only superuser are allowed."}, status= status.HTTP_403_FORBIDDEN)
    
@@ -88,15 +89,15 @@ class AdminGoogleAuth(APIView):
             # Generate JWT tokens
             refresh = RefreshToken.for_user(user)
             return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
+                'admin_refresh': str(refresh),
+                'admin_token': str(refresh.access_token),
                 'user': {
                     'email': user.email,
                     'first_name': user.first_name,
                     'last_name': user.last_name,
                     'username': user.username,
                 },
-                'admin_token': str(refresh.access_token)
+                
             })
         return Response({"error": "Only superuser are allowed."}, status= status.HTTP_403_FORBIDDEN)
 
@@ -213,6 +214,8 @@ def delete_user(request,user_id):
 
 
 class user_detail(APIView):
+    permission_classes =[IsAuthenticated,IsAdminUser]
+
     def get(self,request,user_id):
         try:
             user = User.objects.get(id=user_id)
@@ -244,6 +247,8 @@ class user_detail(APIView):
 
 
 class Create_user(APIView):
+    permission_classes =[IsAuthenticated,IsAdminUser]
+
     def post(self,request):
         data = request.data
         print(data)
@@ -264,6 +269,7 @@ class Create_user(APIView):
 
 
 class UpdateUserProfile(APIView):
+    permission_classes =[IsAuthenticated,IsAdminUser]
 
     def put(self, request,user_id):
         user = CustomUser.objects.get(id = user_id)
@@ -322,6 +328,8 @@ class UpdateUserProfile(APIView):
 
 
 class UpdateDeliveryStatusView(APIView):
+    permission_classes =[IsAuthenticated,IsAdminUser]
+
     def patch(self, request, delivery_id):
         try:
             delivery = Delivery.objects.get(id=delivery_id)
@@ -357,6 +365,8 @@ class UpdateDeliveryStatusView(APIView):
 
 
 class DeliveryDetailView(APIView):
+    permission_classes =[IsAuthenticated,IsAdminUser]
+
     def get(self, request, delivery_id):
         try:
             # delivery = Delivery.objects.get(id=delivery_id)
@@ -406,6 +416,8 @@ class DeliveryDetailView(APIView):
 
 
 class RideListView(APIView):
+    permission_classes =[IsAuthenticated,IsAdminUser]
+
     def get(self, request):
         filter_status = request.query_params.get('filter', None)
         rides = Ride.objects.all()
@@ -429,7 +441,8 @@ class UpdateRideStatusView(APIView):
 
 
 class RideDetail(APIView):
-    
+    permission_classes =[IsAuthenticated,IsAdminUser]
+
     def get(self, request, ride_Id):
         ride = get_object_or_404(Ride, id=ride_Id)
 
@@ -466,7 +479,7 @@ class RideDetail(APIView):
 
 
 class DashboardView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes =[IsAuthenticated,IsAdminUser]
 
     def get(self, request, *args, **kwargs):
         now = timezone.now()
@@ -567,6 +580,7 @@ class DashboardView(APIView):
 
 class CountView(APIView):
    
+    permission_classes =[IsAuthenticated,IsAdminUser]
 
     def get_user_count(self):
        

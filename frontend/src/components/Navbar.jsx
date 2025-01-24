@@ -65,9 +65,9 @@ function Navbar() {
         <div className={`md:hidden bg-white shadow-md`}>
           <div className={`flex flex-col space-y-2 p-4`}>
             <NavLink to="/" onClick={toggleMenu} className="text-gray-600 hover:text-orange-500 transition duration-300">Home</NavLink>
-            <a href="#" onClick={toggleMenu} className="text-gray-600 hover:text-orange-500 transition duration-300">How It Works</a>
-            <a href="#" onClick={toggleMenu} className="text-gray-600 hover:text-orange-500 transition duration-300">About Us</a>
-            <a href="#" onClick={toggleMenu} className="text-gray-600 hover:text-orange-500 transition duration-300">Contact</a>
+            {/* <a href="#" onClick={toggleMenu} className="text-gray-600 hover:text-orange-500 transition duration-300">How It Works</a> */}
+            <a href="/aboutus" onClick={toggleMenu} className="text-gray-600 hover:text-orange-500 transition duration-300">About Us</a>
+            {/* <a href="#" onClick={toggleMenu} className="text-gray-600 hover:text-orange-500 transition duration-300">Contact</a> */}
             {user ? (
               <>
                 <NavLink to='/profile' onClick={toggleMenu} className="text-orange-500 hover:underline">{user.username}</NavLink>

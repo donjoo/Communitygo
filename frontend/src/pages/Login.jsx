@@ -6,6 +6,8 @@ import { setAuthData } from '../redux/auth/authSlice'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { GoogleLogin } from '@react-oauth/google';
+// import { clearAuthData } from './authSlice';
+
 
 const Login = () => {
 
@@ -22,13 +24,19 @@ const Login = () => {
 
   const user = useSelector((state) => state.auth.user);
 
+
   console.log(user)
   useEffect(() => {
     if (user && user.phone_number) {
-      navigate('/')
+      navigate('/',{replace:true})
     }
   },[user,navigate])
 
+  useEffect(() => {
+    if (user && user.phone_number) {
+      navigate('/',{replace:true})
+    }
+  },[])
 
   const togglePasswordVisibility = () => {
     setShowPassword(prevState => !prevState)
@@ -39,9 +47,12 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await api.post('login/', {email, password});
-      const {user,token} = response.data;
+      const {user} = response.data;
       localStorage.setItem('user',JSON.stringify(user));
-      localStorage.setItem('ACCESS_TOKEN',token);
+      localStorage.setItem("ACCESS_TOKEN", response.data.access);
+      localStorage.setItem("REFRESH_TOKEN", response.data.refresh);
+      // const {user,token} = response.data;
+      // localStorage.setItem('ACCESS_TOKEN',token);
       dispatch(setAuthData(response.data));
       navigate('/',{replace:true})
     } catch (error) {

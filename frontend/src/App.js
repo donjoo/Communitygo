@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Home from "./pages/Home";
-import ProtectedRoute from "./components/protectedroutes/privateroutes";
+// import ProtectedRoute from "./components/protectedroutes/privateroutes";
 import Logout from "./components/Logout";
 import RequestDelivery from "./pages/Delivery/RequestDelivery";
 import DeliveryList from "./pages/Delivery/Deliverylist";
@@ -47,6 +47,7 @@ import RideManagement from "./pages/Admin/Ridemanagement";
 import AdminRideDetail from "./pages/Admin/RideDetail";
 import AdminPartnerDetails from "./pages/Admin/Ride/partnerdetails";
 import AboutUs from "./components/About_us";
+import ProtectedRoute from "./components/protectedroutes/protectedroutes";
 
 function Signin(){
   // localStorage.clear()
@@ -81,7 +82,7 @@ function App() {
         
         
         <Route path='/verifyotp' element={< VerifyOtp />} />
-        <Route path="/" element={<Home />}/>
+        <Route path="/" element={ <Home />}/>
         <Route path="/logout" element={<Logout />} /> {/* Redirects and clears localStorage */}     
         <Route path="/request-delivery" element={<RequestDelivery />} />
         <Route path="/delivery/payment/:deliveryId" element={<DeliveryPayment />} />
@@ -94,7 +95,12 @@ function App() {
         <Route path='/dashboard' element={<DashboardLayout > <DashboardPage /> </DashboardLayout>} />
         <Route path='/usermanagement' element={<DashboardLayout > <Usermanagement /> </DashboardLayout>} />
         <Route path='/deliverymanagement' element={ <DashboardLayout >< DeliveryManagement/> </DashboardLayout>} />
-        <Route path='/profile' element={< Profile />} />
+
+
+        <Route path='/profile' element={  <ProtectedRoute> <Profile /> </ProtectedRoute>} />
+
+
+
         <Route path ='/user/:id' element={ <DashboardLayout > < UserDetail /> </DashboardLayout>} />
         <Route path='/admindeliverydetail/:deliveryId' element = {<DashboardLayout > < AdminDeliveryDetails /> </DashboardLayout>} />
         <Route path='/courier_currlocation/:deliveryId' element = {< Currentlocation />} />

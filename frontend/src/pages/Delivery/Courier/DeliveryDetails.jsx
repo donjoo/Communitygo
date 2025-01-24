@@ -211,12 +211,14 @@ function DeliveryDetails() {
     </main>
     <Footer />
     
+    { courier && (
     <Button
       className="fixed bottom-4 right-4 z-50"
       onClick={() => setShowChat(!showChat)}
     >
       {showChat ? 'Close Chat' : 'Open Chat'}
     </Button>
+    )}
 
     {showChat && (
       <div className="fixed bottom-16 right-4 z-50 w-96 h-[calc(100vh-6rem)] max-h-[32rem] bg-white shadow-lg rounded-lg overflow-hidden">

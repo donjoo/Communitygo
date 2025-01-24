@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import SignupView , LoginView,UserProfileView,OTPVerificationView,ResendOTPView,UserGoogleAuth,AddPhoneNumberView,UpdateProfileView,SendOtpView,ChangePasswordView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 app_name='users'
 
@@ -14,6 +15,7 @@ urlpatterns = [
     path('profile/update/', UpdateProfileView.as_view(), name='profile-update'),
     path('changepassword/send-otp/', SendOtpView.as_view(), name='send_otp'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
 ]    
     

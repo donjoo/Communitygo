@@ -24,7 +24,7 @@ adminAxiosInstance.interceptors.response.use(
       if (error.response.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-          const refreshToken = localStorage.getItem('refresh');
+          const refreshToken = localStorage.getItem('admin_refresh');
           const refreshResponse = await axios.post('http://localhost:8000/admin/token/refresh/', {
             refresh: refreshToken,
           });
