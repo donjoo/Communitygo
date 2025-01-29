@@ -1,0 +1,33 @@
+# Ignore node_modules directory
+/frontend/node_modules/
+
+
+# Ignore Python virtual environment
+venv/
+justenv/
+__pycache__/
+
+# Ignore build artifacts
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.sqlite3
+*.db
+
+# Ignore frontend build artifacts
+/frontend/build/
+/frontend/node_modules/
+
+# Ignore .env files (if sensitive data is stored)
+.env
+.env.local
+
+# Ignore Docker-related files
+docker-compose.yml
+Dockerfile
+Dockerfile.*
+
+# Ignore system files
+.DS_Store
+Thumbs.db

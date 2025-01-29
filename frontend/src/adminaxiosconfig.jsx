@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 const adminAxiosInstance = axios.create({
-    baseURL: 'http://localhost:8000/admin/'
+    baseURL: process.env.REACT_APP_Admin_BASE_URL
 });
 
 adminAxiosInstance.interceptors.request.use(
@@ -25,7 +25,7 @@ adminAxiosInstance.interceptors.response.use(
         originalRequest._retry = true;
         try {
           const refreshToken = localStorage.getItem('admin_refresh');
-          const refreshResponse = await axios.post('http://localhost:8000/admin/token/refresh/', {
+          const refreshResponse = await axios.post(`${process.env.REACT_APP_Admin_BASE_URL}/token/refresh/`, {
             refresh: refreshToken,
           });
           // Store the new admin token

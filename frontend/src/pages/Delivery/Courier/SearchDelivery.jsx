@@ -22,6 +22,7 @@ const DeliverySearch = () => {
 
         // Check if the response contains data
         if (response.data && response.data.length > 0) {
+          console.log(response.data)
           setDeliveries(response.data);
         } else {
           setError('No available deliveries.');

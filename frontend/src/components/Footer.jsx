@@ -32,24 +32,22 @@ function Footer() {
           <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="/aboutus" className="text-slate-400 hover:text-orange-500 transition-colors">
+              <Link to="/aboutus" className="text-slate-400 hover:text-orange-500 transition-colors">
                 About Us
               </Link>
             </li>
             <li>
-              <Link href="/profile" className="text-slate-400 hover:text-orange-500 transition-colors">
+              <Link to="/profile" className="text-slate-400 hover:text-orange-500 transition-colors">
                 My Profile
               </Link>
             </li>
             <li>
-              <Link href="/my_earnings" className="text-slate-400 hover:text-orange-500 transition-colors">
+              <Link to="/my_earnings" className="text-slate-400 hover:text-orange-500 transition-colors">
                 My Earnings
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="text-slate-400 hover:text-orange-500 transition-colors">
-                Contact Us
-              </Link>
+             
             </li>
           </ul>
         </div>
@@ -57,23 +55,23 @@ function Footer() {
           <h3 className="text-lg font-semibold mb-4">Services</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="/ridesharing" className="text-slate-400 hover:text-orange-500 transition-colors">
-                Ridesharing
+              <Link to="/make_a_ride" className="text-slate-400 hover:text-orange-500 transition-colors">
+               Share a Ride
               </Link>
             </li>
             <li>
-              <Link href="/delivery" className="text-slate-400 hover:text-orange-500 transition-colors">
-                Delivery
+              <Link to="/request-delivery" className="text-slate-400 hover:text-orange-500 transition-colors">
+               Request a Delivery
               </Link>
             </li>
             <li>
-              <Link href="/community-events" className="text-slate-400 hover:text-orange-500 transition-colors">
-                Community Events
+              <Link to="/join_a_ride" className="text-slate-400 hover:text-orange-500 transition-colors">
+                Join a Ride 
               </Link>
             </li>
             <li>
-              <Link href="/resource-sharing" className="text-slate-400 hover:text-orange-500 transition-colors">
-                Resource Sharing
+              <Link to="/deliverysearch" className="text-slate-400 hover:text-orange-500 transition-colors">
+                Find delivery
               </Link>
             </li>
           </ul>

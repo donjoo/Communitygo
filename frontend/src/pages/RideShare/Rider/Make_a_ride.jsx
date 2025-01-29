@@ -151,17 +151,16 @@ function Make_a_ride() {
 
   return (
     <>
-     <div className="flex flex-col min-h-screen">
-        < Navbar />
-        <div className=" mt- flex flex-1 overflow-hidden">
-          <div className="flex-1 p-6 bg-white overflow-y-auto">
-            <main className="container mx-auto px-6 py-20">
-              <h1 className="text-4xl font-bold text-center text-gray-800 mb-10">Make a Ride</h1>
-              <div className="bg-white shadow-lg rounded-lg p-8 max-w-3xl mx-auto">
-
-                <form onSubmit={handleSubmit}>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+        <div className="flex-1 p-6 bg-white overflow-y-auto">
+          <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <h1 className="text-3xl sm:text-4xl font-bold text-center text-gray-800 mb-8">Make a Ride</h1>
+            <div className="bg-white shadow-lg rounded-lg p-6 sm:p-8 max-w-3xl mx-auto">
+                <form onSubmit={handleSubmit} className="grid gap-4">
                   {/* From Address */}
-                  <div className="mb-6">
+                  <div >
                     <label htmlFor="from" className="block text-gray-800 font-semibold mb-2">Starting from</label>
                     <input
                       type="text"
@@ -180,7 +179,7 @@ function Make_a_ride() {
 
 
                   {/* From City */}
-                  <div className="mb-6">
+                  <div >
                     <label htmlFor="from_city" className="block text-gray-800 font-semibold mb-2">Destination</label>
                     <input
                       type="text"
@@ -196,7 +195,7 @@ function Make_a_ride() {
                   </div>
 
                   {/* From Postal Code */}
-                  <div className="mb-6">
+                  <div >
                     <label htmlFor="from_postal_code" className="block text-gray-800 font-semibold mb-2">Vehicle</label>
                     <input
                       type="text"
@@ -210,7 +209,7 @@ function Make_a_ride() {
                     {errors.vehicle && <span className='text-red-500 text-sm'>{errors.vehicle}</span>}
                   </div>
 
-                  <div className="mb-6">
+                  <div >
                     <label htmlFor="from_State" className="block text-gray-800 font-semibold mb-2">Number of available Seats</label>
                     <input
                       type="text"
@@ -226,7 +225,7 @@ function Make_a_ride() {
                   </div>
 
                   {/* To Address */}
-                  <div className="mb-6">
+                  <div >
                     <label htmlFor="to_address" className="block text-gray-800 font-semibold mb-2">Date</label>
                     <input
                       type="date"
@@ -244,7 +243,7 @@ function Make_a_ride() {
 
 
                   {/* To City */}
-                  <div className="mb-6">
+                  <div >
                     <label htmlFor="to_city" className="block text-gray-800 font-semibold mb-2">Starting time</label>
                     <input
                       type="time"

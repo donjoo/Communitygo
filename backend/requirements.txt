@@ -26,7 +26,7 @@ django-filter==24.3
 djangorestframework==3.15.2
 djangorestframework-simplejwt==5.3.1
 future==1.0.0
-GDAL==3.8.4
+GDAL==3.6.2
 geocoder==1.38.1
 google-auth==2.37.0
 hyperlink==21.0.0

@@ -46,6 +46,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      console.log(process.env.REACT_APP_API_BASE_URL,'heyyyy')
       const response = await api.post('login/', {email, password});
       const {user} = response.data;
       localStorage.setItem('user',JSON.stringify(user));

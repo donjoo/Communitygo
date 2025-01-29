@@ -1,14 +1,19 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import api from "../../api"
 import { Navigate, useNavigate } from "react-router-dom";
 
 function UserProfile({ user, profile, deliveries }) {
   const [editing, setEditing] = useState(false)
   const navigate = useNavigate();
-  const baseURL = "http://localhost:8000"; // Replace with your actual base URL if different
+  const baseURL = process.env.REACT_APP_BASE_URL; // Replace with your actual base URL if different
+  useEffect(() => {
 
+  
+  console.log(process.env.REACT_APP_BASE_URL,'hyyttt')
+
+})
   const [formData, setFormData] = useState({
     first_name: user.first_name,
     last_name: user.last_name,

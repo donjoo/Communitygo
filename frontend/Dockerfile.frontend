@@ -1,0 +1,32 @@
+# Stage 1: Build the React application
+FROM node:20-alpine as builder
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the package.json and package-lock.json files first (for Docker cache)
+COPY package*.json ./
+
+# Increase Node.js memory limit to avoid "JavaScript heap out of memory" errors
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
+# Install dependencies
+RUN npm install
+
+# Copy the rest of the application code
+COPY . .
+
+# Build the React app
+RUN npm run build
+
+# Stage 2: Serve the React app using Nginx
+FROM nginx:alpine
+
+# Copy the build output from the previous stage
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Expose port 80 for serving the app
+EXPOSE 80
+
+# Start Nginx and keep it running in the foreground
+CMD ["nginx", "-g", "daemon off;"]

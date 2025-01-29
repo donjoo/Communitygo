@@ -48,7 +48,7 @@ import AdminRideDetail from "./pages/Admin/RideDetail";
 import AdminPartnerDetails from "./pages/Admin/Ride/partnerdetails";
 import AboutUs from "./components/About_us";
 import ProtectedRoute from "./components/protectedroutes/protectedroutes";
-
+import ScrollToTop from "./components/ScrollToTop"
 function Signin(){
   // localStorage.clear()
   return <Login />
@@ -62,6 +62,7 @@ function RegisterAndLogout()  {
 function App() {
   return (
     <BrowserRouter>
+          <ScrollToTop />
      <GoogleOAuthProvider clientId={google_id}>
       <Routes>
 

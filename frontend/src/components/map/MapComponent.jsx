@@ -22,6 +22,45 @@ const MapComponent = ({ selectingPickup, onPickupSelect,onDropoffSelect ,onRoute
   const [route, setRoute] = useState(null); // To store route geometry
 
 
+
+
+
+
+
+  useEffect(() => {
+    const getCurrentLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            setPickupCoordinates({ latitude, longitude });
+            onPickupSelect({ latitude, longitude });
+
+            // Update viewport to center on current location
+            setViewport((prev) => ({
+              ...prev,
+              latitude,
+              longitude,
+              zoom: 14, // Adjust zoom level for better visibility
+            }));
+          },
+          (error) => {
+            console.error("Error getting current location:", error);
+          },
+          { enableHighAccuracy: true }
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    };
+
+    getCurrentLocation();
+  }, []);
+
+
+
+
+
   const handleMapClick = (event) => {
     const { lng, lat } = event.lngLat;
 
@@ -69,7 +108,7 @@ const MapComponent = ({ selectingPickup, onPickupSelect,onDropoffSelect ,onRoute
     <div>
       <div style={{ width: "100%", height: "500px" }}>
         <Map
-          initialViewState={viewport}
+         {...viewport}  v   
           style={{ width: "100%", height: "100%" }}
           // mapStyle="mapbox://styles/mapbox/streets-v12"
           mapStyle="mapbox://styles/donjo/cm5pmc8bv00hn01rz8ss36y6z"
