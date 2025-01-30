@@ -123,6 +123,18 @@ function DeliveryDetails() {
               <p>{delivery.to_address.address_line_1}</p>
               <p>{delivery.to_address.city}, {delivery.to_address.state}</p>
 
+              {!delivery.is_pickedup &&  delivery.est_pickup !== undefined && (
+                  <p className="mt-4">
+                    <strong>Estimated Pickup time:</strong> {formatDate(delivery.est_pickup)}
+                  </p>
+                )}
+
+                  {!delivery.delivered_at &&  delivery.est_dropoff !== undefined && (
+                  <p className="mt-4">
+                    <strong>Estimated delivery time:</strong> {formatDate(delivery.est_dropoff)}
+                  </p>
+                )}
+
               <div className="mt-8">
                 <h2 className="text-lg font-semibold text-gray-600 mb-4">Courier Details</h2>
                 {courier ? (
@@ -167,6 +179,11 @@ function DeliveryDetails() {
               
               
               }
+
+               
+
+
+
                 {delivery.picked_upat && (
                   <p className="mt-4"><strong>Picked Up At:</strong> {formatDate(delivery.picked_upat)}</p>
                 )}

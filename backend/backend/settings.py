@@ -39,7 +39,7 @@ DEBUG = True
 # SECURE_SSL_REDIRECT = True
 
 # Add localhost to allowed hosts
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','192.168.26.202','d406-2409-4073-4d82-d8c6-6553-9395-d2a1-76bd.ngrok-free.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','192.168.26.202']
 # For Django versions < 4.0
 # CORS_ORIGIN_WHITELIST = [
 #     'http://localhost:3000',
@@ -230,8 +230,8 @@ SIMPLE_JWT = {
 ## CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://d7df-2409-4073-4d82-d8c6-6553-9395-d2a1-76bd.ngrok-free.app",
-    # "https://192.168.26.202:3000",
+    "http://127.0.0.1:3000",
+    "https://192.168.26.202:3000",
 ]
 
 CORS_ALLOW_CREDENTIALS = True

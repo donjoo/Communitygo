@@ -7,6 +7,10 @@ import { ACCESS_TOKEN } from "./constants"
 const api = axios.create({
     baseURL: process.env.REACT_APP_API_BASE_URL,
     // baseURL: "http://192.168.26.202:8000/api/",
+    timeout: 5000,
+    validateStatus: function (status) {
+        return status >= 200 && status < 500;
+    },
 
 })
 

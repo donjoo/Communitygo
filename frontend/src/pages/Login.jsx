@@ -47,6 +47,8 @@ const Login = () => {
     e.preventDefault();
     try {
       console.log(process.env.REACT_APP_API_BASE_URL,'heyyyy')
+      console.log('Attempting to connect to:', process.env.REACT_APP_API_BASE_URL);
+
       const response = await api.post('login/', {email, password});
       const {user} = response.data;
       localStorage.setItem('user',JSON.stringify(user));
@@ -58,6 +60,13 @@ const Login = () => {
       navigate('/',{replace:true})
     } catch (error) {
       console.error('Login Failed:', error)
+      console.error("Login failed:", error?.response?.data || error.message);
+      console.error('Login Failed:', {
+        message: error.message,
+        status: error?.response?.status,
+        data: error?.response?.data,
+        config: error?.config
+      });
       setError('Login faliled.Please check your credentials');
     }
   }

@@ -16,6 +16,7 @@ function Pickuplocation() {
   const [end, setEnd] = useState(null);
   const [user, setUser] = useState(null);
   const [showChat, setShowChat] = useState(false);
+  const [duration,setDuration] = useState(null);
 
   const navigate = useNavigate()
 
@@ -65,8 +66,29 @@ function Pickuplocation() {
       console.log(delivery, 'deliveryyyyyyyyyyyyyyyyyy')
       console.log(start, 'start updated');
       console.log(end, 'end updated');
+      console.log(duration,'duration')
     }
-  }, [start, end]);
+  }, [start, end, duration]);
+
+
+
+  const estpickup = async (duration) => {
+    try {
+      const response = await api.post('est_pickuptime/update/', {
+        deliveryId: deliveryId,
+        est_pickup: duration
+      });
+      console.log("Pickup time updated:", response.data);
+    } catch (error) {
+      console.error("Error updating pickup time:", error);
+    }
+  };
+
+  useEffect(() =>{
+    if (duration){
+      estpickup(duration)
+    }
+  },[duration])
 
 
 
@@ -79,7 +101,7 @@ function Pickuplocation() {
           <div className="w-full lg:w-1/2 flex-grow mt-4 lg:mt-0">
             <div className="h-full">
               {start && end ? (
-                <Navigation startlocation={start} endlocation={end} />
+                <Navigation startlocation={start} endlocation={end}   onDuration={(duration) => setDuration(duration)} />
               ) : (
                 <div className="flex items-center justify-center h-full bg-gray-100">Loading map...</div>
               )}

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RequestDelivery,DeliveryList,DeliverySearch,AcceptDelivery,UpdateTime,DeliveryDetailView,Courier_details,Rate_courier,Courier_completed,courier_currlocation,Pickedup_StatusUpdate,verify_otp,CancelDelivery
+from .views import RequestDelivery,DeliveryList,DeliverySearch,AcceptDelivery,UpdateTime,DeliveryDetailView,Courier_details,Rate_courier,Courier_completed,courier_currlocation,Pickedup_StatusUpdate,verify_otp,CancelDelivery,estpickuptime,estdropofftime
 
 app_name='Delivery'
 
@@ -16,7 +16,10 @@ urlpatterns = [
     path('<int:delivery_id>/couriercompleted/',Courier_completed,name='courier_completed'),
     path('<int:courier_id>/ratecourier/',Rate_courier,name='courier_rating'),
     path('update_time/',UpdateTime.as_view(),name='deliverytime_update'),
+    path('est_pickuptime/update/',estpickuptime,name='estpickuptime_update'),
+    path('est_dropofftime/update/',estdropofftime,name='estpickuptime_update'),
     path('delivery/<int:delivery_id>/cancel',CancelDelivery.as_view(),name='cancle_delivery'),
 
 
 ]
+

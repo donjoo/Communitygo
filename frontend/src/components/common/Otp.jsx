@@ -30,7 +30,7 @@ const OtpCard = () => {
   const Pickedup = async () => {
       const response = await api.post(`${deliveryId}/picked_up/`);
       if (response.status === 200){
-        navigate(`/dropofflocation/${deliveryId}`)
+        navigate(`/dropofflocation/${deliveryId}`,{replace: true})
       }
     };
 
@@ -39,7 +39,7 @@ const OtpCard = () => {
       try{
           const response = await api.post(`${deliveryId}/couriercompleted/`);
               if (response.status === 200){
-                  navigate(`/couriercompleted/${deliveryId}`)
+                  navigate(`/couriercompleted/${deliveryId}`,{replace: true})
               }
       }catch (error){
           console.log("error completing courier",'error')

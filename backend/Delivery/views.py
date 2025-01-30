@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
-from .serializers import DeliverySerializers, CourierSerializer, UpdateDeliveryTimeSerializer, DeliveryViewSerializer
+from .serializers import DeliverySerializers, CourierSerializer, UpdateDeliveryTimeSerializer, DeliveryViewSerializer,UpdatePickupTimeSerializer,UpdateDropoffTimeSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework import status
@@ -22,6 +22,8 @@ from rest_framework.exceptions import PermissionDenied
 from datetime import datetime
 from Payment.models import Transaction, MyEarnings, TransactionLog
 from Payment.views import transfer_to_provider
+from datetime import datetime, timedelta
+
 User = get_user_model()
 
 
@@ -144,6 +146,84 @@ class UpdateTime(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
+@api_view(['POST'])
+def estpickuptime(request):
+    data = request.data
+    current_time = datetime.now() 
+    today = datetime.now().date()
+    print(data['est_pickup'],'est_pickup')
+    print(current_time,'current time')
+    estimated_time = current_time + timedelta(seconds=int(data['est_pickup'])) 
+    print(estimated_time,'estimated timeee')
+    data['est_pickup'] = estimated_time.isoformat()
+    serializer = UpdatePickupTimeSerializer(data=data)
+
+    if serializer.is_valid():
+        try:
+
+            # Retrieve the delivery object using the provided deliveryId
+            delivery = Delivery.objects.get(
+                id=serializer.validated_data['deliveryId'])
+
+            # Update the estimated pickup and dropoff times
+            delivery.est_pickup = serializer.validated_data['est_pickup']
+
+            # Save the updated delivery object
+            delivery.save()
+
+            # Return a success response
+            return Response({"message": "Estimated times updated successfully."}, status=status.HTTP_200_OK)
+
+        except Delivery.DoesNotExist:
+            return Response({"error": "Delivery not found."}, status=status.HTTP_404_NOT_FOUND)
+    print(serializer.errors)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def estdropofftime(request):
+    data = request.data
+    current_time = datetime.now() 
+    today = datetime.now().date()
+    delivery = Delivery.objects.get(
+                id=data['deliveryId'])
+    print(data['est_dropoff'],'est_dropoff')
+    print(current_time,'current time')
+    try:
+        if delivery.picked_upat:
+            estimated_time = delivery.picked_upat + timedelta(seconds=int(data['est_dropoff'])) 
+        else:
+            estimated_time = delivery.est_pickup + timedelta(seconds=int(data['est_dropoff'])) 
+
+    except:
+        return Response({"message": "not pickedup yet."},status=status.HTTP_406_NOT_ACCEPTABLE)
+    print(estimated_time,'estimated timeee')
+    data['est_dropoff'] = estimated_time.isoformat()
+    serializer = UpdateDropoffTimeSerializer(data=data)
+   
+
+    if serializer.is_valid():
+        try:
+
+            # Retrieve the delivery object using the provided deliveryId
+            delivery = Delivery.objects.get(
+                id=serializer.validated_data['deliveryId'])
+
+            # Update the estimated pickup and dropoff times
+            delivery.est_dropoff = serializer.validated_data['est_dropoff']
+
+            # Save the updated delivery object
+            delivery.save()
+
+            # Return a success response
+            return Response({"message": "Estimated times updated successfully."}, status=status.HTTP_200_OK)
+
+        except Delivery.DoesNotExist:
+            return Response({"error": "Delivery not found."}, status=status.HTTP_404_NOT_FOUND)
+    print(serializer.errors)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class DeliveryList(APIView):
     def get(self, request):
         print('helloooo')
@@ -174,7 +254,7 @@ class DeliverySearch(APIView):
 
     def get(self, request):
         deliveries = Delivery.objects.filter(
-            status='PENDING').exclude(user=request.user)
+            status='PENDING').exclude(user=request.user).order_by('-created_at')
         if deliveries.exists():
             serializer = DeliveryViewSerializer(deliveries, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)

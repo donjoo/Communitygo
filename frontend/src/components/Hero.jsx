@@ -2,7 +2,8 @@ import React, {useState} from 'react'
 import { ChevronRight, Package, Car, Star, Clock, Section } from 'lucide-react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-
+import Hyperspeed from '../Hyperspeed/Hyperspeed'
+import '../Hyperspeed/Hyperspeed.css';  
 
 
 
@@ -24,11 +25,13 @@ const Hero = () => {
   }
 
   return (
-    <section className="relative h-screen flex items-center">
-          <div 
+    <section className="relative h-screen bg-black flex items-center">
+          {/* <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{backgroundImage: "url('/placeholder.svg?height=1080&width=1920&text=Community+Delivery+and+Ride-Sharing')"}}
-          ></div>
+          ></div> */}
+
+          <Hyperspeed />
           <div className="absolute inset-0 bg-black opacity-50"></div>
           <div className="relative container mx-auto px-6 text-center text-white z-10">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">

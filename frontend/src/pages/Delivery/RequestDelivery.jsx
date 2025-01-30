@@ -236,6 +236,7 @@ export default function DeliveryPage() {
         }
 
         try {
+            console.log('herere')
             const response = await api.post('request_delivery/', formDataa, {
                 headers: {
                     'Content-Type': 'multipart/form-data' // Important for file uploads
@@ -244,7 +245,7 @@ export default function DeliveryPage() {
 
             if (response.status >= 200 && response.status < 300) {
                 setDelivery_id(response.data.delivery_id);
-                console.log(response.data.delivery_id, 'Delivery ID');
+                // console.log(response.data.delivery_id, 'Delivery ID');
             }
         } catch (error) {
             console.error("Error submitting delivery request:", error.response.data);

@@ -75,15 +75,31 @@ class DeliveryViewSerializer(serializers.ModelSerializer):
     
 class UpdateDeliveryTimeSerializer(serializers.Serializer):
     deliveryId = serializers.IntegerField(required=True)
-    est_pickup = serializers.DateTimeField(required=True)
-    est_dropoff = serializers.DateTimeField(required=True)
+    est_pickup = serializers.DateTimeField()
+    est_dropoff = serializers.DateTimeField()
 
 
     class Meta:
         model = Delivery
         fields = ['est_pickup', 'est_dropoff']
 
-    
+class UpdatePickupTimeSerializer(serializers.Serializer):
+    deliveryId = serializers.IntegerField(required=True)
+    est_pickup = serializers.DateTimeField()
+
+
+    class Meta:
+        model = Delivery
+        fields = ['est_pickup']
+
+class UpdateDropoffTimeSerializer(serializers.Serializer):
+    deliveryId = serializers.IntegerField(required=True)
+    est_dropoff = serializers.DateTimeField()
+
+
+    class Meta:
+        model = Delivery
+        fields = ['est_dropoff']
 
 class CourierSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField()  # Displays the username

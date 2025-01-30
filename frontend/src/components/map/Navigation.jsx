@@ -7,7 +7,7 @@ const mapboxToken = "pk.eyJ1IjoiZG9uam8iLCJhIjoiY200NHRxeGp3MG4zNDJqcjQ1dGxpNWo1
 // Mapbox Directions API URL
 const directionsUrl = "https://api.mapbox.com/directions/v5/mapbox/driving/";
 
-const Navigation = ({ startlocation, endlocation }) => {
+const Navigation = ({ startlocation, endlocation , onDuration}) => {
   const [viewport, setViewport] = useState({
     longitude: startlocation[0],
     latitude: startlocation[1],
@@ -24,6 +24,7 @@ const Navigation = ({ startlocation, endlocation }) => {
         const data = await response.json();
         console.log(data,'this is data of map api return')
         setRoute(data.routes[0].geometry); // Set the route geometry for the map
+        onDuration(data.routes[0].duration)
 
         // Adjust viewport based on the route
         const bounds = data.routes[0].bbox;
@@ -43,6 +44,13 @@ const Navigation = ({ startlocation, endlocation }) => {
       getDirections();
     }
   }, [startlocation, endlocation]);
+
+
+
+
+
+
+
 
   return (
     <div style={{ width: "100%", height: "500px" }}>

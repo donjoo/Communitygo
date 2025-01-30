@@ -17,6 +17,7 @@ function Dropofflocation() {
   const [user,setUser] = useState(null);
   const navigate = useNavigate()
   const [showChat, setShowChat] = useState(false);
+  const [duration,setDuration] = useState(null);
 
    
 
@@ -58,7 +59,23 @@ function Dropofflocation() {
       }
     }, [start, end]); 
 
-
+    const estdropoff = async (duration) => {
+      try {
+        const response = await api.post('est_dropofftime/update/', {
+          deliveryId: deliveryId,
+          est_dropoff: duration
+        });
+        console.log("dropoff time updated:", response.data);
+      } catch (error) {
+        console.error("Error updating dropoff time:", error);
+      }
+    };
+  
+    useEffect(() =>{
+      if (duration){
+        estdropoff(duration)
+      }
+    },[duration])
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -134,7 +151,7 @@ function Dropofflocation() {
         <div className=" mt-4 mb-4 mr-6 flex-1 bg-gray-100">
           {/* <MapComponent /> */}
           {start && end ? (
-        <Navigation startlocation={start} endlocation={end} />
+        <Navigation startlocation={start} endlocation={end} onDuration={(duration) => setDuration(duration)}/>
       ) : (
         <div>Loading map...</div> // You can show a loading indicator here
       )}

@@ -20,6 +20,7 @@ const MapComponent = ({ selectingPickup, onPickupSelect,onDropoffSelect ,onRoute
   const [dropoffCoordinates, setDropoffCoordinates] = useState(null);
   const [routeDistance, setRouteDistance] = useState(null);
   const [route, setRoute] = useState(null); // To store route geometry
+  // const [duration,setDuration] = useState(null)
 
 
 
@@ -151,7 +152,7 @@ const MapComponent = ({ selectingPickup, onPickupSelect,onDropoffSelect ,onRoute
                   "line-cap": "round",
                 }}
                 paint={{
-                  "line-color": "#FFFFFF",
+                  "line-color": "#0000FF",     //"#FFFFFF" white color
                   "line-width": 8,
                 }}
               />
