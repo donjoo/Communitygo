@@ -29,6 +29,7 @@ future==1.0.0
 GDAL==3.6.2
 geocoder==1.38.1
 google-auth==2.37.0
+gunicorn==20.1.0
 hyperlink==21.0.0
 idna==3.10
 incremental==24.7.2

@@ -8,9 +8,11 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libffi-dev \
     python3-dev \
+    python3-gdal \
     gcc \
     gdal-bin \
     libgdal-dev \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -24,11 +26,8 @@ WORKDIR /app
 
 COPY requirements.txt /app/
 RUN pip install --upgrade pip \
-    && pip install --no-cache-dir \
-        setuptools \
-        wheel \
-        numpy \
-        GDAL==3.6.2 \
+    && pip install --no-cache-dir setuptools wheel \
+    && pip install --no-cache-dir GDAL==`gdal-config --version` \
     && pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Production stage
@@ -38,10 +37,16 @@ FROM python:3.12-slim
 RUN apt-get update && apt-get install -y \
     gdal-bin \
     libgdal-dev \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV CPLUS_INCLUDE_PATH=/usr/include/gdal
+ENV C_INCLUDE_PATH=/usr/include/gdal
+ENV GDAL_LIBRARY=/usr/lib/x86_64-linux-gnu/libgdal.so 
+ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+
 
 WORKDIR /app
 
@@ -56,4 +61,7 @@ COPY . /app/
 RUN pip install gunicorn daphne channels-redis
 
 # Command to run both Gunicorn and Daphne
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:8000 backend.wsgi:application --workers 3 & daphne -u /tmp/daphne.sock backend.asgi:application"]
+# CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:8000 backend.wsgi:application --workers 3 & daphne -u /tmp/daphne.sock backend.asgi:application"]
+# CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 backend.wsgi:application --workers 3 & daphne -b 0.0.0.0 -p 8001 backend.asgi:application"]
+# In Dockerfile.backend, update the CMD line to:
+CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 backend.wsgi:application --workers 3 & daphne -b 0.0.0.0 -p 8001 backend.asgi:application"]
