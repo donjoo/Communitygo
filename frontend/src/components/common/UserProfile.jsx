@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import api from "../../api"
 import { Navigate, useNavigate } from "react-router-dom";
-import { UserIcon } from '@heroicons/react/outline'; // Heroicons v1
+import { UserIcon } from '@heroicons/react/24/outline';
 
 
 
@@ -78,7 +78,7 @@ function UserProfile({ user, profile, deliveries }) {
             className="w-40 h-40 rounded-full object-cover border-4 border-blue-500"
           />
         ) : (
-          <UserIcon className="w-20 h-20 text-white" /> 
+          <UserIcon className="w-20 h-20 text-gray" /> 
         )}
               {!editing && (
                 <button

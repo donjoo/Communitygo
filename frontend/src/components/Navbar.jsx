@@ -14,9 +14,13 @@ function Navbar() {
     if (!user) {
       const storedUserData = localStorage.getItem('user');
       if (storedUserData) {
-        const parsedUserData = JSON.parse(storedUserData);
-        dispatch(setAuthData({ user: parsedUserData }));
-      } 
+        try {
+          const parsedUserData = JSON.parse(storedUserData);
+          dispatch(setAuthData({ user: parsedUserData }));
+        } catch (error) {
+          console.error('Error parsing stored user data:', error);  
+        }
+      }
     }
   }, [dispatch, navigate, user]);
 
