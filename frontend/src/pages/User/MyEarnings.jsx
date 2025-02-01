@@ -26,8 +26,14 @@ const Earnings = () => {
   const fetchEarningsAndTransactions = async () => {
     try {
       const Response = await api.get('payments/my_earnings/');
+      if (Response.data.message) {
+        setEarnings(null); // Reset earnings data if no earnings found
+        setTransactions([]); // Reset transactions if none found
+        setError(Response.data.message);
+      }else {
       setEarnings(Response.data.earnings);
       setTransactions(Response.data.transactions);
+      }
     } catch (err) {
       setError('Failed to fetch data');
     } finally {

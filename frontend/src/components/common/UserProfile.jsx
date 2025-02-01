@@ -3,6 +3,9 @@
 import React, { useEffect, useState } from "react"
 import api from "../../api"
 import { Navigate, useNavigate } from "react-router-dom";
+import { UserIcon } from '@heroicons/react/outline'; // Heroicons v1
+
+
 
 function UserProfile({ user, profile, deliveries }) {
   const [editing, setEditing] = useState(false)
@@ -68,11 +71,15 @@ function UserProfile({ user, profile, deliveries }) {
           <h1 className="text-3xl font-bold mb-8 text-gray-800">User Profile</h1>
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-10">
             <div className="relative">
-              <img
-                src={`${baseURL}${profile?.profile_picture}`}
-                alt={user.username}
-                className="w-40 h-40 rounded-full object-cover border-4 border-blue-500"
-              />
+            {profile?.profile_picture ? (
+          <img
+            src={`${baseURL}${profile?.profile_picture}`}
+            alt={user.username}
+            className="w-40 h-40 rounded-full object-cover border-4 border-blue-500"
+          />
+        ) : (
+          <UserIcon className="w-20 h-20 text-white" /> 
+        )}
               {!editing && (
                 <button
                   onClick={() => setEditing(true)}

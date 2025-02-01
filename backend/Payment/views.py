@@ -116,6 +116,7 @@ class PaymentViewSet(viewsets.ViewSet):
                 'key': settings.RAZORPAY_KEY_ID
             })
         except Exception as e:
+            print(str(e),'payment create order')
             return Response({
                 'error': str(e)
             }, status=status.HTTP_400_BAD_REQUEST)
@@ -288,4 +289,7 @@ class Earnings(APIView):
 
             return Response(data, status=200)
         except MyEarnings.DoesNotExist:
-            return Response({"error": "Earnings data not found."}, status=404)
+            return Response({"message": "No earnings data found."}, status=200)
+        except TransactionLog.DoesNotExist:
+            return Response({"message": "No transactions found."}, status=200)
+

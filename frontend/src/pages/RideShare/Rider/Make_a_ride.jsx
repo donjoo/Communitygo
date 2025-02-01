@@ -32,7 +32,7 @@ function Make_a_ride() {
         vehicle:'',
         available_seats:'',
         date:'',
-        time:'',
+        time:'12:00',
 
 
     });
@@ -133,7 +133,7 @@ function Make_a_ride() {
                       vehicle:'',
                       available_seats:'',
                       date:'',
-                      time:'',
+                      time:'12:00',
                     })
                     
                     dispatch(setRideData(ridedata));
@@ -244,7 +244,7 @@ function Make_a_ride() {
 
                   {/* To City */}
                   <div >
-                    <label htmlFor="to_city" className="block text-gray-800 font-semibold mb-2">Starting time</label>
+                    <label htmlFor="time" className="block text-gray-800 font-semibold mb-2">Starting time</label>
                     <input
                       type="time"
                       id="time"

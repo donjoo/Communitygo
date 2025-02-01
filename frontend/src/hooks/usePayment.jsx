@@ -25,6 +25,8 @@ export const usePayment = () => {
         service_id: serviceId
       });
 
+      console.log('Order:', order);
+
       // Initialize Razorpay
       const options = {
         key: order.key,
