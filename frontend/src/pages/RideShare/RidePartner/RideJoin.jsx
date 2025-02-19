@@ -8,6 +8,7 @@ import Footer from '../../../components/Footer';
 import { FaCar } from 'react-icons/fa'; // Importing a car icon from react-icons
 import { ChevronsLeftRightEllipsis } from 'lucide-react';
 import Navigation from '../../../components/map/Navigation';
+import { toast } from 'sonner';
 
 function RideJoin() {
     const [pickup, setPickup] = useState();
@@ -65,7 +66,8 @@ function RideJoin() {
         console.log('data submiteddddddd')
 
         if (!pickup || !dropoff || !startCoordinates || !endCoordinates || selectedSeats <= 0) {
-            alert("Please fill in all required fields and select at least one seat.");
+            // alert("Please fill in all required fields and select at least one seat.");
+            toast.error("Please fill in all required fields and select at least one seat.")
             return; // Exit the function if validation fails
         }
 

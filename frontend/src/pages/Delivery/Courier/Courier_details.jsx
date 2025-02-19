@@ -20,7 +20,7 @@ function CourierDetails() {
   const [showForm, setShowForm] = useState(false);  // State to toggle the form visibility
   const [showChat, setShowChat] = useState(false);
 
-  const baseURL = "http://localhost:8000"; // Replace with your actual base URL if different
+  const baseURL = process.env.REACT_APP_BASE_URL;  // Replace with your actual base URL if different
 
 
   

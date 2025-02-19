@@ -4,8 +4,11 @@ import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react"
 import { Button } from "../component/ui/button";
 import { Input } from "../component/ui/input";
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 function Footer() {
+  const user = useSelector((state) => state.auth.user);
+
   return (
     <footer className="bg-slate-900 text-slate-200 py-12 mt-auto w-full">
     <div className="container mx-auto px-6">
@@ -36,7 +39,9 @@ function Footer() {
                 About Us
               </Link>
             </li>
-            <li>
+            {user ? (
+              <>
+              <li>
               <Link to="/profile" className="text-slate-400 hover:text-orange-500 transition-colors">
                 My Profile
               </Link>
@@ -45,7 +50,10 @@ function Footer() {
               <Link to="/my_earnings" className="text-slate-400 hover:text-orange-500 transition-colors">
                 My Earnings
               </Link>
+              
             </li>
+            </>
+               ): ('')}
             <li>
              
             </li>
@@ -53,7 +61,9 @@ function Footer() {
         </div>
         <div>
           <h3 className="text-lg font-semibold mb-4">Services</h3>
+          {user ? (
           <ul className="space-y-2">
+            
             <li>
               <Link to="/make_a_ride" className="text-slate-400 hover:text-orange-500 transition-colors">
                Share a Ride
@@ -75,6 +85,7 @@ function Footer() {
               </Link>
             </li>
           </ul>
+          ):('Sign up to use services')}
         </div>
         {/* <div>
           <h3 className="text-lg font-semibold mb-4">Stay Updated</h3>

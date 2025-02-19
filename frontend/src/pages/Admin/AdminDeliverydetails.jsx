@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../../api";
 import AdminNavbar from "../../components/AdminComponents/AdminNavbar";
 import adminAxiosInstance from "../../adminaxiosconfig";
+import { toast } from "sonner";
 
 function AdminDeliveryDetails() {
   const { deliveryId } = useParams(); // Get the delivery ID from the URL
@@ -46,12 +47,14 @@ function AdminDeliveryDetails() {
         { status: newStatus }
       );
       if (response.status === 200) {
-        alert("Status updated successfully");
+        // alert("Status updated successfully");
+        toast.success('Status updated successfully');
         fetchDeliveryDetails(); // Refresh the list
       }
     } catch (error) {
       console.error("Error updating status", error);
-      alert("Failed to update status");
+      // alert("Failed to update status");
+      toast.error("Failed to update status")
     }
   };
 useEffect(() => {

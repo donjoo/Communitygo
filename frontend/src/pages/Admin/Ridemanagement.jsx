@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 import { Table, TableHeader, TableRow, TableCell, TableBody } from "../../component/ui/table";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "../../component/ui/select";
 import { Button } from "../../component/ui/button";
+import { toast } from "sonner";
 
 function RideManagement() {
   const [rides, setRides] = useState([]);
@@ -48,12 +49,14 @@ function RideManagement() {
         status: newStatus,
       });
       if (response.status === 200) {
-        alert("Status updated successfully");
+        // alert("Status updated successfully");
+        toast.success("Status updated successfully")
         fetchRides();
       }
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update status");
+      // alert("Failed to update status");
+      toast.error("Failed to update status")
     }
   };
 

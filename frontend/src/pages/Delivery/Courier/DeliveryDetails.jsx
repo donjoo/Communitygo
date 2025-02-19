@@ -7,6 +7,7 @@ import MapComponent from "../../../components/map/MapComponent";
 import RatingCard from "../../../components/common/Rating";
 import ChatRoom from "../../Chat/ChatRoom";
 import { Button } from "../../../component/ui/button";
+import { toast } from "sonner";
 
 function DeliveryDetails() {
   const { deliveryId } = useParams(); // Get the delivery ID from the URL
@@ -19,7 +20,7 @@ function DeliveryDetails() {
   const [change,setChange] = useState(null);
   const navigate = useNavigate();
 
-  const baseURL = "http://localhost:8000"; // Replace with your actual base URL if different
+  const baseURL =  process.env.REACT_APP_BASE_URL; // Replace with your actual base URL if different
 
   useEffect(() => {
     const fetchDeliveryDetails = async () => {
@@ -45,14 +46,16 @@ function DeliveryDetails() {
     try {
      const response =  await api.post(`${courier.id}/ratecourier/`, { rating,feedback });
      if (response.status === 200) {
-            alert("Rating submitted successfully!");
+            // alert("Rating submitted successfully!");
+            toast.success('Rating submitted successfully!');
             setCourier((prevCourier) => ({
               ...prevCourier,
               rating: rating,
             }));
             setChange('rating')
           } else {
-            alert("Failed to submit rating. Please try again.");
+            // alert("Failed to submit rating. Please try again.");
+            toast.error('Failed to submit rating. Please try again.');
           }
      
     } catch (error) {
@@ -66,7 +69,9 @@ function DeliveryDetails() {
         const response = await api.post(`delivery/${deliveryId}/cancel`);
         setChange('cancled')
       } catch (error){
-        alert("Failed to cancel")
+
+        // alert("Failed to cancel")
+        toast.error('Failed to cancel')
       }
 
   }
@@ -123,17 +128,18 @@ function DeliveryDetails() {
               <p>{delivery.to_address.address_line_1}</p>
               <p>{delivery.to_address.city}, {delivery.to_address.state}</p>
 
-              {!delivery.is_pickedup &&  delivery.est_pickup !== undefined && (
-                  <p className="mt-4">
-                    <strong>Estimated Pickup time:</strong> {formatDate(delivery.est_pickup)}
-                  </p>
-                )}
+              {!delivery.is_pickedup && delivery.est_pickup && (
+              <p className="mt-4">
+                <strong>Estimated Pickup time:</strong> {formatDate(delivery.est_pickup)}
+              </p>
+            )}
 
-                  {!delivery.delivered_at &&  delivery.est_dropoff !== undefined && (
-                  <p className="mt-4">
-                    <strong>Estimated delivery time:</strong> {formatDate(delivery.est_dropoff)}
-                  </p>
-                )}
+            {!delivery.delivered_at && delivery.est_dropoff && (
+              <p className="mt-4">
+                <strong>Estimated delivery time:</strong> {formatDate(delivery.est_dropoff)}
+              </p>
+            )}
+
 
               <div className="mt-8">
                 <h2 className="text-lg font-semibold text-gray-600 mb-4">Courier Details</h2>
@@ -161,7 +167,7 @@ function DeliveryDetails() {
                     <p className="text-red-600 font-semibold">
                       Complete payment to assign a courier
                     </p>
-                    <Button onClick={CompletePayment}>Complete Payment</Button>
+                    {/* <Button onClick={CompletePayment}>Complete Payment</Button> */}
                   </div>
                 ) : delivery.payment_done && delivery.status === 'Canceled' ? (
                   <p className="text-gray-500 font-semibold">No courier was assigned</p>

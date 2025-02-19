@@ -16,6 +16,8 @@ const Register = () => {
 
   const user = useSelector((state) => state.auth.user)
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  
 
   useEffect(() => {
     if (user) {
@@ -23,6 +25,9 @@ const Register = () => {
     }
   },[user,navigate])
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevState) => !prevState);
+  };
 
 
 
@@ -126,6 +131,7 @@ const Register = () => {
             password: formData.password,
           });
 
+          console.log(response,'heyyeyeyeye')
           navigate('/verifyotp', {
             state: { email: formData.email },
           });
@@ -215,9 +221,9 @@ const Register = () => {
           </div>
 
 
-          <div className='mb-4'>
+          <div className='mb-4 relative'>
             <input
-            type="text"
+            type={showPassword ? "text" : "password"}
             name='password'
             value={formData.password}
             onChange={handleChange}
@@ -225,6 +231,13 @@ const Register = () => {
             required
             className='w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus;ring-blue-500'
             ></input>
+            <span
+              onClick={togglePasswordVisibility} // Toggle password visibility
+              className="absolute top-2 right-2 cursor-pointer text-gray-500"
+            >
+              {showPassword ? "🙈" : "👁️"}{" "}
+              {/* Change the icon based on visibility */}
+            </span>
             {errors.password && <span className='text-red-500  text-sm'>{errors.password}</span>}
           </div>
 

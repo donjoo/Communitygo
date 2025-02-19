@@ -49,6 +49,11 @@ import AdminPartnerDetails from "./pages/Admin/Ride/partnerdetails";
 import AboutUs from "./components/About_us";
 import ProtectedRoute from "./components/protectedroutes/protectedroutes";
 import ScrollToTop from "./components/ScrollToTop"
+
+import "react-toastify/dist/ReactToastify.css"; // Import default styles
+import { ToastContainer } from 'react-toastify'
+import { Toaster } from 'sonner';
+
 function Signin(){
   // localStorage.clear()
   return <Login />
@@ -64,6 +69,20 @@ function App() {
     <BrowserRouter>
           <ScrollToTop />
      <GoogleOAuthProvider clientId={google_id}>
+     <ToastContainer
+        position="top-right" // or use other options like "top-center", "bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick //new
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        style={{ zIndex: 9999 }}  // Ensure the toast is above other content
+      />
+
+      <Toaster position="top-right" richColors={true} />
       <Routes>
 
 

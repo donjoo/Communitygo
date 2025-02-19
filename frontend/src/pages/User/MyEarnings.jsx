@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '../../component/ui/table';
+import { toast } from 'sonner';
 
 const Earnings = () => {
   const [earnings, setEarnings] = useState(null);
@@ -62,12 +63,14 @@ const Earnings = () => {
     }
     try {
       const response = await api.post('payments/withdraw/', withdrawData);
-      alert(response.data.message || 'Withdrawal successful!');
+      // alert(response.data.message || 'Withdrawal successful!');
+      toast.success(response.data.message || 'Withdrawal successful!');
       setWithdrawData({ accountNumber: '', amount: '' });
       setShowWithdrawForm(false);
       fetchEarningsAndTransactions(); // Refresh earnings
     } catch (error) {
-      alert('Withdrawal failed. Please try again.');
+      // alert('Withdrawal failed. Please try again.');
+      toast.error('Withdrawal failed. Please try again.');
     }
   };
 

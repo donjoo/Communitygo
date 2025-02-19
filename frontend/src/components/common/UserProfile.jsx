@@ -4,10 +4,10 @@ import React, { useEffect, useState } from "react"
 import api from "../../api"
 import { Navigate, useNavigate } from "react-router-dom";
 import { UserIcon } from '@heroicons/react/24/outline';
+import { toast } from "sonner";
 
 
-
-function UserProfile({ user, profile, deliveries }) {
+function UserProfile({ user, profile, deliveries, refreshProfileData }) {
   const [editing, setEditing] = useState(false)
   const navigate = useNavigate();
   const baseURL = process.env.REACT_APP_BASE_URL; // Replace with your actual base URL if different
@@ -49,11 +49,14 @@ function UserProfile({ user, profile, deliveries }) {
       const response = await api.put("profile/update/", formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       })
-      alert("Profile updated successfully!")
+      // alert("Profile updated successfully!")
+      toast.success("Profile updated successfully!");
       setEditing(false)
+      refreshProfileData();
     } catch (err) {
       console.error(err)
-      alert("Failed to update profile.")
+      // alert("Failed to update profile.")
+      toast.error("Failed to update profile.")
     }
   }
 

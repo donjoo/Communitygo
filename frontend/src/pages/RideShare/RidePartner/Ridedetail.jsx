@@ -9,6 +9,8 @@ import Footer from '../../../components/Footer'
 import ChatRoom from '../../Chat/ChatRoom'
 import { Button } from '../../../component/ui/button';
 import RatingCard from "../../../components/common/Rating";
+import RideRatingCard from '../../../components/common/Ride/RideRating'
+import { toast } from "sonner";
 
 function RideDetail() {
 
@@ -59,11 +61,12 @@ const handleRatingSubmit = async (rating,feedback) => {
     try {
      const response =  await api.post(`${partner_id}/rateride/`, { rating,feedback });
      if (response.status === 200) {
-            alert("Rating submitted successfully!");
-          
+            // alert("Rating submitted successfully!");
+            toast.success('Rating submitted successfully!');          
           } else {
-            alert("Failed to submit rating. Please try again.");
-          }
+            // alert("Failed to submit rating. Please try again.");
+            toast.error('Failed to submit rating. Please try again.');
+        }
      
     } catch (error) {
       console.error("Error submitting rating:", error);
@@ -107,9 +110,10 @@ const handleRatingSubmit = async (rating,feedback) => {
                 <div className="flex flex-col mb-4">
                     <p><strong>Pickup Point:</strong> {partner.pickup}</p>
                     <p><strong>Dropoff Point:</strong> {partner.dropoff}</p>
+                    <p><strong>Name:</strong> {user.username}</p>
                     <p><strong>seats:</strong> {partner.seats}</p>
                     <p><strong>Status:</strong> {partner.status}</p>
-                    <p><strong>Status:</strong> {user.username}</p>
+                    
 
                 </div>
 
@@ -123,9 +127,10 @@ const handleRatingSubmit = async (rating,feedback) => {
                     </button>
                 )}
 
-                {(!partner?.rating && partner.status === 'dropedoff') && (
+                {(!partner?.rating && partner.status == 'dropedoff') && (
                 <div className="w-full">
-                  <RatingCard partnerId={partner?.id} onSubmit={handleRatingSubmit} />
+                  {/* <RatingCard partnerId={partner?.id} onSubmit={handleRatingSubmit} /> */}
+                  <RideRatingCard partnerId={partner?.id} onSubmit={handleRatingSubmit} />
                 </div>
               )}
 

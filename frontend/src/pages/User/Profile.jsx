@@ -56,6 +56,26 @@ export default function Profile() {
     );
   }
 
+
+
+  const refreshProfileData = async () => {
+    try {
+      const response = await api.get(`/profile`);
+      if (response.status === 200) {
+        setUser(response.data.user);
+        setProfile(response.data.profile);
+        setDeliveries(response.data.deliveries);
+        setCouriers(response.data.couriers);
+        setRides(response.data.rides);
+        setJoins(response.data.partner);
+      }
+    } catch (error) {
+      console.log('Error while refreshing profile data', error);
+    }
+  };
+
+
+
   const handlemailverify = async (e) => {
     e.preventDefault();
     try {
@@ -114,7 +134,7 @@ export default function Profile() {
   return (
     <>
       <Navbar />
-      <UserProfile user={user} profile={profile} deliveries={deliveries} />
+      <UserProfile user={user} profile={profile} deliveries={deliveries} refreshProfileData={refreshProfileData} />
 
       {!user.email_verified && (
         <div className="mt-4 text-left pl-4">

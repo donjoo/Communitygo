@@ -7,6 +7,7 @@ import adminAxiosInstance from '../../adminaxiosconfig'
 import { useSelector } from 'react-redux'
 import AdminNavbar from '../../components/AdminComponents/AdminNavbar'
 import { NavLink } from 'react-router-dom'
+import { toast } from "sonner";
 
 
 
@@ -85,12 +86,14 @@ function DeliveryManagement() {
         { status: newStatus }
       );
       if (response.status === 200) {
-        alert("Status updated successfully");
+        // alert("Status updated successfully");
+        toast.success("Status updated successfully")
         fetchDeliveries(); // Refresh the list
       }
     } catch (error) {
       console.error("Error updating status", error);
-      alert("Failed to update status");
+      // alert("Failed to update status");
+      toast.error("Failed to update status");
     }
   };
 

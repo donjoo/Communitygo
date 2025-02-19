@@ -25,14 +25,16 @@ from google.auth.transport import requests
 from rest_framework.exceptions import AuthenticationFailed, ParseError
 from RideShare.models import Ride,RidePartner
 from RideShare.serializers import RideSerializer,RidePartnerSerializer
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser,AllowAny
 
 User = get_user_model()
 
 class SignupView(APIView):
+    permission_classes = [AllowAny]
     def post(self,request):
         print(request.data)
         data = request.data
+        print('here on signup view wwwwwww wwwwwwwwwwwww w         w w w  w w  w')
         mapped_data = {
             "first_name": data.get("firstname"),
             "last_name": data.get("lastname"),
@@ -131,6 +133,7 @@ class ResendOTPView(APIView):
 
 
 class LoginView(APIView):
+    permission_classes = [AllowAny]
     def post(self,request):
         data = request.data
         email = data.get('email')
@@ -154,7 +157,7 @@ class LoginView(APIView):
                     },
                      'access': str(refresh.access_token),
                      'refresh': str(refresh)
-                })
+                },status=status.HTTP_200_OK)
             else:
                 return Response({'error':'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:

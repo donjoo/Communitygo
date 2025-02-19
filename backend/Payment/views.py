@@ -270,26 +270,84 @@ def complete_ride(self, request):
         }, status=400)
 
 
-class Earnings(APIView):
+# class Earnings(APIView):
 
    
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         try:
+#             earnings = MyEarnings.objects.get(user=request.user)
+#             logs = TransactionLog.objects.filter(user = request.user).order_by('-timestamp')
+#             earningsserializer = MyEarningsSerializer(earnings)
+#             logserializer  = TransactionLogSerializer(logs,many=True)
+            
+#             data = {
+#                 "earnings" :earningsserializer.data,
+#                 'transactions':logserializer.data
+#             }
+
+#             return Response(data, status=200)
+#         except MyEarnings.DoesNotExist:
+#             return Response({"message": "No earnings data found."}, status=200)
+#         except TransactionLog.DoesNotExist:
+#             return Response({"message": "No transactions found."}, status=200)
+
+# class Earnings(APIView):
+
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         try:
+#             earnings = MyEarnings.objects.get(user=request.user)
+#             logs = TransactionLog.objects.filter(user=request.user).order_by('-timestamp')
+#             earningsserializer = MyEarningsSerializer(earnings)
+#             logserializer = TransactionLogSerializer(logs, many=True)
+            
+#             data = {
+#                 "earnings": earningsserializer.data,  # Contains the earnings data
+#                 'transactions': logserializer.data    # Contains transaction logs
+#             }
+
+#             return Response(data, status=200)
+        
+#         except MyEarnings.DoesNotExist:
+#             # Return earnings as 0 if the earnings record does not exist
+#             data = {
+#                 "earnings": {"total_earnings": 0, "earnings": 0},  # Default earnings data
+#                 'transactions': []  # No transactions found
+#             }
+#             return Response(data, status=200)
+        
+#         except TransactionLog.DoesNotExist:
+#             # If there are no transaction logs, return only the earnings
+#             data = {
+#                 "earnings": earningsserializer.data if 'earningsserializer' in locals() else {"total_earnings": 0, "earnings": 0},
+#                 'transactions': []  # No transactions
+#             }
+#             return Response(data, status=200)
+
+
+class Earnings(APIView):
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        # Fetch transactions first to ensure they are always included
+        logs = TransactionLog.objects.filter(user=request.user).order_by('-timestamp')
+        logserializer = TransactionLogSerializer(logs, many=True)
+
         try:
             earnings = MyEarnings.objects.get(user=request.user)
-            logs = TransactionLog.objects.filter(user = request.user).order_by('-timestamp')
             earningsserializer = MyEarningsSerializer(earnings)
-            logserializer  = TransactionLogSerializer(logs,many=True)
-            
-            data = {
-                "earnings" :earningsserializer.data,
-                'transactions':logserializer.data
-            }
-
-            return Response(data, status=200)
         except MyEarnings.DoesNotExist:
-            return Response({"message": "No earnings data found."}, status=200)
-        except TransactionLog.DoesNotExist:
-            return Response({"message": "No transactions found."}, status=200)
+            # Default earnings if no record exists
+            earningsserializer = {"total_earnings": 0, "earnings": 0}
+
+        data = {
+            "earnings": earningsserializer if isinstance(earningsserializer, dict) else earningsserializer.data,
+            "transactions": logserializer.data if logs.exists() else []  # Ensure empty list if no transactions
+        }
+
+        return Response(data, status=200)
 

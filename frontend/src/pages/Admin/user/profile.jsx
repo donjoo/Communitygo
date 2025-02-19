@@ -5,11 +5,12 @@ import React, { useState } from "react"
 import { Navigate, useNavigate } from "react-router-dom";
 import api from "../../../api";
 import adminAxiosInstance from "../../../adminaxiosconfig";
+import { toast } from "sonner";
 
 function AdminUserProfile({ user, profile, deliveries }) {
   const [editing, setEditing] = useState(false)
   const navigate = useNavigate();
-  const baseURL = "http://localhost:8000"; // Replace with your actual base URL if different
+  const baseURL = process.env.REACT_APP_BASE_URL;// Replace with your actual base URL if different
 
   const [formData, setFormData] = useState({
     first_name: user.first_name,
@@ -43,11 +44,13 @@ function AdminUserProfile({ user, profile, deliveries }) {
       const response = await adminAxiosInstance.put(`user/${user.id}/profile/update/`, formDataToSend, {
         headers: { "Content-Type": "multipart/form-data" },
       })
-      alert("Profile updated successfully!")
+      // alert("Profile updated successfully!")
+      toast.success("Profile updated successfully!");
       setEditing(false)
     } catch (err) {
       console.error(err)
-      alert("Failed to update profile.")
+      // alert("Failed to update profile.")
+      toast.error('Failed to update profile');
     }
   }
 

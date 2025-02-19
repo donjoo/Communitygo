@@ -107,7 +107,7 @@ const PaymentPage = () => {
 
     <Card>
       <CardHeader>
-        <CardTitle>Partner Details</CardTitle>
+        <CardTitle>Your Details</CardTitle>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="flex items-center space-x-2">

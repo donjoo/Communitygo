@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AdminNavbar from '../../components/AdminComponents/AdminNavbar'
 import { Link, useNavigate } from 'react-router-dom'
 import { setAuthData } from '../../redux/auth/authSlice';
+import { toast } from "sonner";
 
 
 
@@ -73,14 +74,17 @@ function Usermanagement() {
             const response = await adminAxiosInstance.post(`${userId}/toggle_status/`);
 
             if (response.data.success) {
-                alert(`User successfully ${newStatus}ed!`);
+                // alert(`User successfully ${newStatus}ed!`);
+                toast.success(`User successfully ${newStatus}ed!`);
                 fetchUserlist();
             } else {
-                alert(`Failed to ${newStatus} the user.`);
+                // alert(`Failed to ${newStatus} the user.`);
+                toast.error(`Failed to ${newStatus} the user.`);
             }
         } catch (error) {
             console.error(`Failed to toggle user status for user ID ${userId}:`, error);
-            alert('An error occurred while updating user status.');
+            // alert('An error occurred while updating user status.');
+            toast.error('An error occurred while updating user status.');
         }
     };
     
@@ -90,14 +94,17 @@ function Usermanagement() {
         const response = await adminAxiosInstance.post(`${userId}/delete_user/`);
 
         if (response.data.success) {
-          alert(`User successfully deleted!`);
+          // alert(`User successfully deleted!`);
+          toast.success(`User successfully deleted!`);
           fetchUserlist();
         } else {
-          alert(`Failed to delete user.`);
+          // alert(`Failed to delete user.`);
+          toast.error(`Failed to delete user.`);
         }
       } catch (error) {
         console.error(`Failed to delete user of user id ${userId}:`,error);
-        alert('An error occured while updataing user status');
+        // alert('An error occured while updataing user status');
+        toast.error('An error occured while updataing user status')
       }
     };
 
@@ -130,14 +137,16 @@ function Usermanagement() {
     
       // Input validation
       if (!newUser.first_name|| !newUser.last_name || !newUser.phone_number || !newUser.name || !newUser.email || !newUser.password) {
-        alert('Please fill in all fields');
+        // alert('Please fill in all fields');
+        toast.error('Please fill in all fields');
         return;
       }
     
       // Check if email is valid
       const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
       if (!emailRegex.test(newUser.email)) {
-        alert('Please enter a valid email address');
+        // alert('Please enter a valid email address');
+        toast.error('Please enter a valid email address');
         return;
       }
 
@@ -281,12 +290,12 @@ function Usermanagement() {
               <td className="px-6 py-4 whitespace-nowrap">
              
                 <div className="flex space-x-2">
-                  <button
+                  {/* <button
                     onClick={() => openEditModal(user)}
                     className="p-1 bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
                     <PencilIcon className="h-4 w-4" />
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => deleteUser(user.id)}
                     className="p-1 bg-red-100 text-red-600 rounded-md hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"

@@ -31,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-6$b!p3q0w)z=tzk8=1y&b9w^slq90^0mm9#2xl87ze3$)_a-zd'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 
@@ -39,7 +39,7 @@ DEBUG = True
 # SECURE_SSL_REDIRECT = True
 
 # Add localhost to allowed hosts
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','192.168.26.202']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','13.233.251.98','communitygo.space','www.communitygo.space', '0.0.0.0','172.18.0.5']
 # For Django versions < 4.0
 # CORS_ORIGIN_WHITELIST = [
 #     'http://localhost:3000',
@@ -234,7 +234,27 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://192.168.26.202:3000",
+    "https://13.233.251.98:3000",
+    "https://13.233.251.98:8000",
+    "https://communitygo.space",
+    "https://www.communitygo.space",
+    "http://communitygo.space",
+    "http://13.233.251.98",
+    "https://13.233.251.98",
+
+
 ]
+
+
+
+CORS_ORIGIN_REGEX_WHITELIST = [
+    r"^https://.*communitygo\.space$"
+]
+
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ORIGIN_ALLOW_ALL = False
+
+
 
 CORS_ALLOW_CREDENTIALS = True
 

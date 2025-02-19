@@ -2,6 +2,7 @@ import { useState } from "react";
 import api from "../api"
 import { useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants";
+import { toast } from "sonner";
 
 
 function Form({ route, method}) {
@@ -27,7 +28,8 @@ function Form({ route, method}) {
                 navigate("/login")
             }
         }catch (error) {
-            alert(error)
+            // alert(error)
+            toast.error(error)
         } finally {
             setLoading(false)
         }

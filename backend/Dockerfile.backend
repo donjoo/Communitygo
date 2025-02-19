@@ -64,4 +64,5 @@ RUN pip install gunicorn daphne channels-redis
 # CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:8000 backend.wsgi:application --workers 3 & daphne -u /tmp/daphne.sock backend.asgi:application"]
 # CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 backend.wsgi:application --workers 3 & daphne -b 0.0.0.0 -p 8001 backend.asgi:application"]
 # In Dockerfile.backend, update the CMD line to:
-CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 backend.wsgi:application --workers 3 & daphne -b 0.0.0.0 -p 8001 backend.asgi:application"]
+# CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind 0.0.0.0:8000 backend.wsgi:application --workers 3 & daphne -b 0.0.0.0 -p 8001 backend.asgi:application"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && (gunicorn --bind 0.0.0.0:8000 backend.wsgi:application --workers 3 &) && daphne -b 0.0.0.0 -p 8001 backend.asgi:application"]

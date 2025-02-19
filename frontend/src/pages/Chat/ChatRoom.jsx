@@ -12,7 +12,7 @@ const ChatRoom = ({ receiverUsername }) => {
     const token = localStorage.getItem("ACCESS_TOKEN");
 
     useEffect(() => {
-        socketRef.current = new WebSocket(`ws://localhost:8000/ws/chat/${receiverUsername}/?token=${token}`);
+        socketRef.current = new WebSocket(`wss://communitygo.space/ws/chat/${receiverUsername}/?token=${token}`);
 
         socketRef.current.onopen = () => {
             console.log('WebSocket connection established.');

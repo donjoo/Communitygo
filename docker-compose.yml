@@ -49,19 +49,7 @@ services:
       - app-net
     restart: always
 
-  # frontend:
-  #   image: communitygo-frontend
-  #   ports:
-  #     - "3000:80"
-  #   volumes:
-  #     - ./frontend:/app  
-  #     - /app/node_modules
-  #   env_file:
-  #     - ./frontend/.env
-  #   environment:
-  #     - CHOKIDAR_USEPOLLING=true
-  #   restart: always
-
+ 
   backend:
     build:
       context: ./backend
@@ -93,34 +81,6 @@ services:
 
     restart: always
 
-  # backend:
-  #   image: sarath583364/teamlink-backend:latest
-  #   ports:
-  #     - "8000:8000"
-  #     - "8001:8001"  
-  #   env_file:
-  #     - ./backend/.env
-  #   environment:
-  #     - PYTHONUNBUFFERED=1
-  #     - DJANGO_SETTINGS_MODULE=backend.settings
-  #   depends_on:
-  #     - redis
-  #     - db
-  #   restart: always
-
-  # daphne:
-  #   image: sarath583364/teamlink-backend
-  #   command: daphne -u /tmp/daphne.sock backend.asgi:application
-  #   volumes:
-  #     - /tmp/daphne.sock:/tmp/daphne.sock
-  #   env_file:
-  #     - ./backend/.env
-  #   environment:
-  #     - PYTHONUNBUFFERED=1
-  #   depends_on:
-  #     - redis
-  #     - db
-  #   restart: always
 
 
   celery:
@@ -166,45 +126,6 @@ services:
     restart: always
 
 
-
-  # nginx:
-  #   image: nginx:latest
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
-  #   depends_on:
-  #     - frontend
-  #     - backend
-
-
-
-  # postgres:
-  #   image: postgres:15
-  #   container_name: communitygo-postgres-1
-  #   environment:
-  #     - POSTGRES_USER=don
-  #     - POSTGRES_PASSWORD=don@mydb
-  #     - POSTGRES_DB=mydb
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-
-
-
-  # nginx:
-  #   image: teamlink-nginx
-  #   ports:
-  #     - "80:80"  
-  #   volumes:
-  #     - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-  #     - static_volume:/app/static  
-  #     - media_volume:/app/media    
-  #   depends_on:
-  #     - frontend
-  #     - backend
-  #   restart: always
 
 volumes:
   postgres_data:

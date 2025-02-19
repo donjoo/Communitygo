@@ -111,12 +111,26 @@ function PartnerDetails() {
               <span className="font-medium text-gray-600">Status: </span>
               <span className="text-gray-800">{partner?.status || 'N/A'}</span>
             </div>
+            
+            {partner?.rating && (
+              <div className="mb-2">
+                <span className="font-medium text-gray-600">Rating: </span>
+                <span className="text-gray-800">{partner.rating}</span>
+              </div>
+            )}
+
+          {partner?.feedback && (
+              <div className="mb-2">
+                <span className="font-medium text-gray-600">feedback: </span>
+                <span className="text-gray-800">{partner.feedback}</span>
+              </div>
+            )}
 
             
 
             {/* Pickup/Dropoff Buttons */}
             <div className="mt-6">
-              {partner.status === "droppedoff" ? (
+              {partner.status === "dropedoff" ? (
                 <p className="font-medium text-red-600">Partner Dropped Off</p>
               ) : partner.is_pickedup ? (
                 <button
