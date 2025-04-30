@@ -39,7 +39,7 @@ DEBUG = False
 # SECURE_SSL_REDIRECT = True
 
 # Add localhost to allowed hosts
-ALLOWED_HOSTS = ['localhost', '127.0.0.1','13.233.251.98','communitygo.space','www.communitygo.space', '0.0.0.0','172.18.0.5']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1','13.233.251.98','communitygo.space','www.communitygo.space', '0.0.0.0','172.18.0.5','.onrender.com']
 # For Django versions < 4.0
 # CORS_ORIGIN_WHITELIST = [
 #     'http://localhost:3000',
