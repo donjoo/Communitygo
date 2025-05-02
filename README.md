@@ -23,12 +23,15 @@ Whether it’s delivering a package or offering a lift, CommunityGo connects use
 - Ratings and reviews for drivers and customers.
 
 <br>
+
 ### 💸 Need a package delivered? Request it for a low cost.
+
 ![request_delivery](images/request_delivery.png)
 
 <br>
 
 ### 📦 Deliver packages and earn while heading to your destination.
+
 ![deivery_details](images/delivery_details.png)
 
 ### Driver Side
