@@ -1,7 +1,14 @@
 # CommunityGo
 
 CommunityGo is a crowdsourced delivery and ride-sharing platform designed to connect users who need transportation or package delivery with drivers willing to offer their services. Built using **Django** for the backend and **React with Redux** for the frontend, CommunityGo ensures secure transactions, real-time tracking, and efficient service management.
+
+
 ![HomePage](images/home_page.png)
+
+
+## Our Vision...
+![About](images/about.png)
+
 ## Features
 
 ### User Side
@@ -12,11 +19,22 @@ CommunityGo is a crowdsourced delivery and ride-sharing platform designed to con
 - Payment integration for seamless transactions.
 - Ratings and reviews for drivers and customers.
 
+#### Request for a delivery
+![request_delivery](images/request_delivery.png)
+
+
+#### Delivery details
+![deivery_details](images/delivery_details.png)
+
 ### Driver Side
 - Register as a driver and manage availability.
 - Accept or decline ride/delivery requests.
 - Real-time navigation and tracking.
 - Earnings dashboard with payment history.
+
+#### Ride Details
+![ride details](images/ride_details.png)
+
 
 ### Admin Side
 - Admin login with role-based access control.
