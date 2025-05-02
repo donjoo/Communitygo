@@ -22,11 +22,13 @@ Whether it’s delivering a package or offering a lift, CommunityGo connects use
 - Payment integration for seamless transactions.
 - Ratings and reviews for drivers and customers.
 
-#### 💸 Need a package delivered? Request it for a low cost.
+<br>
+### 💸 Need a package delivered? Request it for a low cost.
 ![request_delivery](images/request_delivery.png)
 
+<br>
 
-#### 📦 Deliver packages and earn while heading to your destination.
+### 📦 Deliver packages and earn while heading to your destination.
 ![deivery_details](images/delivery_details.png)
 
 ### Driver Side
@@ -35,7 +37,9 @@ Whether it’s delivering a package or offering a lift, CommunityGo connects use
 - Real-time navigation and tracking.
 - Earnings dashboard with payment history.
 
-#### 🚙 Share your ride and make money without extra effort.
+<br>
+
+### 🚙 Share your ride and make money without extra effort.
 ![ride details](images/ride_details.png)
 
 
